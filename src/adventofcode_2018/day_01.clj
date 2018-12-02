@@ -1,7 +1,9 @@
 (ns adventofcode-2018.day-01
-  (:require [util :refer :all]))
+  (:require [util :refer :all]
+            [clojure.edn :as edn]))
 
-(def input (util/get-input))
+(def input (->> (util/get-input)
+                (map edn/read-string ,,,)))
 
 (defn solve-part-1 [puz-in]
   (reduce + puz-in))
