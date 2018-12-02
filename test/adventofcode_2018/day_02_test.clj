@@ -15,3 +15,16 @@
                             "aabcdd"
                             "abcdee"
                             "ababab"]))))
+
+(deftest solve-part-2
+  ;; The IDs abcde and axcye are close, but they differ by two characters
+  ;; (the second and fourth). However, the IDs fghij and fguij differ by
+  ;; exactly one  character, the third (h and u). Those must be the correct boxes.
+  (is (= "fgij"
+         (sut/solve-part-2 ["abcde"
+                            "fghij"
+                            "klmno"
+                            "pqrst"
+                            "fguij"
+                            "axcye"
+                            "wvxyz"]))))
