@@ -8,11 +8,10 @@
   ([] (let [year     (re-find #"\d{4}" (str *ns*))
             day      (re-find #"\d{2}$" (str *ns*))
             filename (str year "/input_" day ".txt")]
-        (try (->> filename
-                  io/resource
-                  io/reader
-                  line-seq
-                  (map edn/read-string ,,,))
+        (try (-> filename
+                 io/resource
+                 io/reader
+                 line-seq)
              (catch Exception ex
                (str "Exception occurred trying to read puzzle input. Does the file exist?")))))
 
