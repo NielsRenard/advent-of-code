@@ -95,3 +95,11 @@
        (map sanitize-entry)
        (map entry->surface)
        (reduce concat)))
+
+(defn solve-part-2
+  "returns non-overlapping claims"
+  [puz-in]
+  (->> puz-in
+       (map sanitize-entry)
+       (map entry->surface)
+       (reduce concat)))
