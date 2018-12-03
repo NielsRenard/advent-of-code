@@ -21,6 +21,28 @@
                             "#2 @ 3,1: 4x4"
                             "#3 @ 5,5: 2x2"]))))
 
+(deftest solve-part-2
+  ;;  Amidst the chaos, you notice that exactly one claim doesn't
+  ;;  overlap by even a single square inch of fabric with any other
+  ;;  claim. If you can somehow draw attention to it, maybe the Elves
+  ;;  will be able to make Santa's suit after all!
+  ;;
+  ;;  For example, in the claims below, only claim 3 is intact after all claims are made.
+  ;;
+  ;;  What is the ID of the only claim that doesn't overlap?
+  ;; ........
+  ;; ...2222.
+  ;; ...2222.
+  ;; .11XX22.
+  ;; .11XX22.
+  ;; .111133.
+  ;; .111133.
+  ;; ........
+  (is (= 3
+         (sut/solve-part-2 ["#1 @ 1,3: 4x4"
+                            "#2 @ 3,1: 4x4"
+                            "#3 @ 5,5: 2x2"]))))
+
 ;; ........
 ;; ...2222.
 ;; ...2222.
