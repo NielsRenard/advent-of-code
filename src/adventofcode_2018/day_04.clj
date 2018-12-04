@@ -25,6 +25,14 @@
   [one-night]
   (apply t/plus (map #(apply sleep-duration %) (partition 2 one-night))))
 
+(defn split-by-shift
+  [chrono-sorted-seq]
+  (let [first-shift-elf (first chrono-sorted)]
+    (->> chrono-sorted-seq
+         (drop 1)
+         (map reverse)
+         (take-while #(not= \G (ffirst %))))))
+
 (defn solve-part-1
   [puz-in]
   -1)
