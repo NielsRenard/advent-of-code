@@ -29,9 +29,9 @@
   [chrono-sorted-seq]
   (let [first-shift-elf (first chrono-sorted)]
     (->> chrono-sorted-seq
-         (drop 1)
          (map reverse)
-         (take-while #(not= \G (ffirst %))))))
+         (partition-by #(not= \G (ffirst %)))
+         (partition 2))))
 
 (defn solve-part-1
   [puz-in]
