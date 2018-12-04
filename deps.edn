@@ -1,6 +1,7 @@
 {:paths ["resources" "src"]
  :deps  {org.clojure/clojure {:mvn/version "RELEASE"}
-         clojure.java-time   {:mvn/version "0.3.2"}}
+         clojure.java-time   {:mvn/version "0.3.2"}
+         org.threeten/threeten-extra {:mvn/version "1.2"}}
  :aliases
  {:test {:extra-paths ["test"]
          :extra-deps  {org.clojure/test.check {:mvn/version "RELEASE"}}}

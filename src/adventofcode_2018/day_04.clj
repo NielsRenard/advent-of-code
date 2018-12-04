@@ -15,7 +15,15 @@
                    first
                    (t/local-date-time "yyyy-MM-dd HH:mm"))
         event (string/trim (first (rest split)))]
-    [(.toString date) event]))
+    [date event]))
+
+(defn sleep-duration "takes two temporals and returns the duration between them"
+  [falls-asleep wakes-up]
+  (t/duration falls-asleep wakes-up))
+
+(defn time-asleep
+  [one-night]
+  (apply t/plus (map #(apply sleep-duration %) (partition 2 one-night))))
 
 (defn solve-part-1
   [puz-in]
