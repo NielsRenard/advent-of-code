@@ -8,20 +8,36 @@
 ;;committing the mess before cleanup to enjoy in git in the future
 
 (defn sanitize-entry
-  "parses an line like:
+  "parses a line like:
   `#1 @ 483,830: 24x18`
   into an entry `((483 830) (26 16))`."
   [line]
-  (partition 2
-             (drop 1
-                   (map #(edn/read-string %) ;;parse to ints
-                        (-> line
-                            (string/replace ":" "")
-                            (string/replace "#" "")
-                            (string/replace "@ " "")
-                            (string/replace "," " ")
-                            (string/replace "x" " ")
-                            (string/split #" "))))))
+  (let []
+    (partition 2
+               (drop 1
+                     (map #(edn/read-string %) ;;parse to ints
+                          (-> line
+                              (string/replace ":" "")
+                              (string/replace "#" "")
+                              (string/replace "@ " "")
+                              (string/replace "," " ")
+                              (string/replace "x" " ")
+                              (string/split #" ")))))))
+
+(defn nice-entry
+  "parses a line like:
+  `#1 @ 483,830: 24x18`"
+  [line]
+  (let [parsed (map #(edn/read-string %)
+                    (-> line
+                        (string/replace ":" "")
+                        (string/replace "#" "")
+                        (string/replace "@ " "")
+                        (string/replace "," " ")
+                        (string/replace "x" " ")
+                        (string/split #" ")))]
+    (seq [(seq [(second parsed) (nth parsed 2)])
+          (seq [(nth parsed 3) (last parsed)]) (first parsed)])))
 
 ;;this is a piece of cloth
 ;;use (get-in @grid-atom [0 1]) to get square 0,1
@@ -49,6 +65,18 @@
     (for [x' (range x (if (zero? x) (+ x p) (+ x p)))
           y' (range y (if (zero? y) (+ y q) (+ y q)))]
       [x' y'])))
+
+(defn entry->surface*
+  "takes a sanitized entry and returns all coordinates"
+  [entry]
+  (let [claim-no (last entry)
+        x (ffirst entry)
+        y (second (first entry))
+        p (first (second entry))
+        q (second (second entry))]
+    (for [x' (range x (if (zero? x) (+ x p) (+ x p)))
+          y' (range y (if (zero? y) (+ y q) (+ y q)))]
+      [x' y' claim-no])))
 
 (defn surface-painter
   [[x y]]
@@ -96,10 +124,38 @@
        (map entry->surface)
        (reduce concat)))
 
+(defn find-duplicate
+  [value coll]
+  (some #(= value %) coll))
+
 (defn solve-part-2
   "returns non-overlapping claims"
   [puz-in]
   (->> puz-in
-       (map sanitize-entry)
-       (map entry->surface)
-       (reduce concat)))
+       (map nice-entry)
+       (map entry->surface*)
+       (reduce concat)
+       (group-by last)))
+
+(comment
+  (->> input
+       (map nice-entry)
+       (map entry->surface*)
+       (reduce concat)
+       (group-by first)
+       frequencies
+       (map group-by last)
+       )
+
+  (->> input
+       (map nice-entry)
+       (map entry->surface*)
+       (reduce concat)
+       (group-by first)
+       frequencies
+       (map #(second (first %))))
+
+  (for [coordinate (->> poz
+                        (map sanitize-entry)
+                        (map entry->surface)
+                        (reduce concat))]))
