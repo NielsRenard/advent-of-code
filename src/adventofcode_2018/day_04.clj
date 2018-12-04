@@ -7,11 +7,15 @@
 
 
 (defn parse-date [line]
-  (t/local-date "yyyy-MM-dd" (-> line
-                                 (string/replace "[" "")
-                                 (string/replace "]" "")
-                                 (string/split #" ")
-                                 first)))
+  (let [split (-> line
+                  (string/replace "[" "")
+                  (string/split #"]"))
+
+        date  (->> split
+                   first
+                   (t/local-date-time "yyyy-MM-dd HH:mm"))
+        event (string/trim (first (rest split)))]
+    [(.toString date) event]))
 
 (defn solve-part-1
   [puz-in]
