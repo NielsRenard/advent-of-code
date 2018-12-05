@@ -19,3 +19,6 @@
                   io/resource
                   io/reader
                   line-seq)))
+
+(defn split-by-whitespace [s]
+  (clojure.string/split s #"\s+"))
