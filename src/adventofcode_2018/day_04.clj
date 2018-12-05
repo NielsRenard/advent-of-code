@@ -27,7 +27,8 @@
                   (string/split #"]"))
         date  (->> split
                    first
-                   (t/local-date-time "yyyy-MM-dd HH:mm"))
+                   (t/local-date-time "yyyy-MM-dd HH:mm")
+                   .toString)
         event (-> split
                   second
                   split-by-whitespace
@@ -51,19 +52,21 @@
 (defn sleep-duration-with-starting
   "takes two temporals and returns the duration between them"
   [falls-asleep wakes-up]
-  (hash-map :duration (-> (t/duration falls-asleep wakes-up)
-                          .toString
-                          (string/replace "PT" "")
-                          (string/replace "M" "")
-                          (Integer/parseInt)
-                          )
-            :started-at (->> falls-asleep
-                             .toString
-                             (drop-while #(not= \: %))
-                             (drop 1)
-                             (apply str)
-                             (Integer/parseInt)
-                             )))
+  (let [falls (t/local-date-time falls-asleep)
+        wakes (t/local-date-time wakes-up)]
+    (hash-map :duration (-> (t/duration falls wakes)
+                            .toString
+                            (string/replace "PT" "")
+                            (string/replace "M" "")
+                            (Integer/parseInt)
+                            )
+              :started-at (->> falls-asleep
+                               .toString
+                               (drop-while #(not= \: %))
+                               (drop 1)
+                               (apply str)
+                               (Integer/parseInt)
+                               ))))
 
 
 (defn time-asleep
@@ -82,7 +85,7 @@
   "Takes a shift, calculates sleep duration."
   [shift]
   (let [start-shift-event (first shift)
-        sleep-wake-events (map first (map reverse (second shift)))]
+        sleep-wake-events (map second (map reverse (second shift)))]
     {:who start-shift-event
      :sleep(->> sleep-wake-events
                 (partition 2)
@@ -93,35 +96,58 @@
 (defn split-by-shift
   "Takes a chronologically sorted seq of events and splits them by shift. "
   [chrono-sorted-seq]
-  (let [first-shift-elf (first chrono-sorted)]
+  (let [first-shift-elf (first chrono-sorted-seq)]
     (->> chrono-sorted-seq
          (map reverse)
          (partition-by #(number? (first %)))
          (partition 2))))
 
-(defn find-all-shifts-of-guard
+(+ 2137)
+
+(defn new-split-by-shift
+  "Takes a chronologically sorted seq of events and splits them by shift. "
+  [chrono-sorted-seq]
+  (let [first-shift-elf (first chrono-sorted-seq)]
+    (->> chrono-sorted-seq
+         (partition-by #(number? (last %)))
+         (partition 2))))
+
+(defn get-all-shifts-of-guard
   "gets all shifts of a certain elf id"
   [id]
-  (filter #(= id (first (ffirst %))) (-> input
-                                         sort-chronologically
-                                         split-by-shift)))
+  (filter #(= id (second (ffirst %))) (-> input
+                                          sort-chronologically
+                                          new-split-by-shift)))
 
+;;TODO rewrite this so it reads better, and make it a function
+(def all-guard-ids (->>
+                    (-> input
+                        sort-chronologically
+                        new-split-by-shift)
+                    (group-by #(second (ffirst %)))
+                    ((comp sort keys))))
+
+(defn get-shift-durations
+  [shifts]
+  (->> shifts
+       (map new-time-asleep)
+       (map second)
+       (map second)))
 
 (defn most-slept-minute
   "takes a seq of these kind of maps
   ({:started-at 42, :duration 16}"
   [durations]
-  (map #(range (:started-at %) (inc (+ (:duration %)
-                                       (:started-at %))))
+  (map #(range (:started-at %) (+ (:duration %)
+                                  (:started-at %)))
        (map first durations)))
 
-(def all-guard-ids (keys (group-by #(first (ffirst %)) split-shifts)))
 
 (defn solve-part-1
   [puz-in]
   (->> puz-in
        sort-chronologically ;; parse-and-sort
-       split-by-shift       ;;
+       new-split-by-shift       ;;
        (map time-asleep)    ;; calc all sleep
        ))   ;; sort by longest sleep (it's guard 2137)
 
@@ -135,7 +161,7 @@
   ;;that one elfs shifts
   (def sleepy-shifts (filter #(= 2137 (first (ffirst %))) (-> input
                                                               sort-chronologically
-                                                              split-by-shift)))
+                                                              new-split-by-shift)))
 
   (def durations
     (->> sleepy-shifts
