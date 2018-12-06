@@ -138,9 +138,44 @@
   "takes a seq of these kind of maps
   ({:started-at 42, :duration 16}"
   [durations]
-  (map #(range (:started-at %) (+ (:duration %)
-                                  (:started-at %)))
-       (map first durations)))
+  (->> durations
+       (map #(range (:started-at %) (+ (:duration %)
+                                       (:started-at %))))
+       flatten
+       frequencies
+       (sort-by val)
+       last
+       first
+       ))
+
+(defn maaa
+  "takes a seq of these kind of maps
+  ({:started-at 42, :duration 16}"
+  [durations]
+  (->> durations
+       (map #(range (:started-at %) (+ (:duration %)
+                                       (:started-at %))))
+       flatten
+       frequencies
+
+       ))
+
+(defn baaa
+  [id] (maaa (flatten (get-shift-durations (get-all-shifts-of-guard id)))))
+
+
+(defn find-most-slept-minute-guard
+  [id] (most-slept-minute (flatten (get-shift-durations (get-all-shifts-of-guard id)))))
+
+
+(defn my-most-slept-minute
+  [durations]
+  (for [s (map #(map :started-at %) durations)
+        d (map #(map :duration %) durations)]
+    [(count s) (count d)]))
+
+(defn total-slept-minutes [id]
+  (reduce + (flatten (map #(map :duration %) (get-shift-durations (get-all-shifts-of-guard id))))))
 
 
 (defn solve-part-1
@@ -148,15 +183,25 @@
   (->> puz-in
        sort-chronologically ;; parse-and-sort
        new-split-by-shift       ;;
-       (map time-asleep)    ;; calc all sleep
+       (map new-time-asleep)    ;; calc all sleep
        ))   ;; sort by longest sleep (it's guard 2137)
+                                        ;
+
 
 (comment
+
+  ;; part two:
+  ;; (map find-most-slept-minute all-guard-ids)
+  ;; check which has the highest frequency of a number
+  ;; poof thats it
+
   ;;let's do a binary search
   ;;64110 too low (2137 * 30)
   ;;96165 too low 37 * 45)
   ;;81206 too high (2137 * 38)
   ;;74795 wrong * 35 (no high or low anymore)
+
+  ;;elf 1993 has most minutes asleep but I get multiple hits for most slept minute
 
   ;;that one elfs shifts
   (def sleepy-shifts (filter #(= 2137 (first (ffirst %))) (-> input
@@ -169,7 +214,8 @@
          (map second)
          (map second)))
 
-  (frequencies (flatten (most-slept-minute durations)))
+  (def (sort-by val (frequencies (flatten (most-slept-minute (get-shift-durations (get-all-shifts-of-guard 2137))))))
+    (frequencies (flatten (most-slept-minute durations))))
 
   ;;that one guys total sleep times
   (filter #(= 2137 ((comp ffirst :who) %)) here
