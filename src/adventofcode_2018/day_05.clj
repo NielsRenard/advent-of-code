@@ -35,7 +35,7 @@
   [string pair]
   (clojure.string/replace string (apply str pair) ""))
 
-;;n n'
+;;something something, keep recurring until current length and length of previous run are the same
 (defn zzz
   [input cnt]
   (let [new-count (count (drop 1 input))]
@@ -44,9 +44,20 @@
       (remove-pair-from-string (drop 1 input) new-count))))
 
 
+(comment
+  ;;quick solution with mutating string
+  (def mutablestring (atom input))
 
-(def mutablestring (atom input))
+  ;;count the atom for first answer
+  (def brute-force-part-1 (dotimes [n 490]
+                            (count(for [cs char-pairs]
+                                    (swap! mutablestring #(remove-pair-from-string % cs))))))
+  (count @mutablestring)
 
-(def brute-force-answer (dotimes [n 490]
-                          (for [cs char-pairs]
-                            (swap! mutablestring #(remove-pair-from-string % cs)))))
+  (count (swap! mutablestring #(clojure.string/replace % #"[tT]" "")))
+  ;; 10244
+  (count (swap! mutablestring #(clojure.string/replace % #"[uU]" "")))
+  ;;-
+  (count (swap! mutablestring #(clojure.string/replace % #"[vV]" "")))
+  ;;4944 taking a guess. correct.
+  )
