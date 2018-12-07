@@ -92,7 +92,7 @@
 
 ;;107000 too low
 ;;too high Please wait one minute before trying again. (You guessed 158971.)
-(count (distinct (reduce concat all-painted)))
+#_(count (distinct (reduce concat all-painted)))
 
 (defn paint
   [line]
