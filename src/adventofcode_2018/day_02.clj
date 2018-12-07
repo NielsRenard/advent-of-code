@@ -22,7 +22,6 @@
     (* twos threes)))
 
 
-
 ;;TODO: optimize by halting the list comprehension when a value is found
 (defn just-one-difference?
   "Returns the diff for strings with one character difference."
