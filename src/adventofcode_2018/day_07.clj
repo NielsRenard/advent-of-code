@@ -62,16 +62,18 @@
   (->> parsed-data
        step))
 
-(defn remove-finished-steps
-  [finished-steps parsed-data]
-  (->> (first finished-steps)
-       #_(apply dissoc parsed-data)
-       (dissoc parsed-data)))
+(defn remove-finished-step
+  [finished-step parsed-data]
+  (dissoc parsed-data finished-step))
 
 (defn one-round
   [parsed-data]
   (let [possible-steps   (->> parsed-data
                               find-possible-steps)
+        next-step (->> parsed-data
+                       find-possible-steps
+                       first
+                       )
         possible-unlocks (->>  possible-steps
                                (map #(get-unlocks % parsed-data))
                                (map (comp flatten seq))
@@ -79,10 +81,10 @@
                                )]
     (if (= 1 (count parsed-data))
       ;; figure out a nicer way to return the secondlast and last
-      [(str (first possible-steps) (ffirst possible-unlocks)) (->> parsed-data
-                                                                   (remove-finished-steps possible-steps))]
-      [(first possible-steps)    (->> parsed-data
-                                      (remove-finished-steps possible-steps))])))
+      [(str next-step (ffirst possible-unlocks))
+       (remove-finished-step next-step parsed-data)]
+
+      [next-step    (remove-finished-step next-step parsed-data)])))
 
 (defn solve-part-1
   ([input]
