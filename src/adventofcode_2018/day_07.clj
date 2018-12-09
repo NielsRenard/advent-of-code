@@ -19,34 +19,30 @@
                   (#(map keyword %))
                   )]
     ;;refactor this :must keyword out of the vector
-    {:must [(first split)] :before [(second split)]}))
+    {(first split) #{(second split)}}))
 
-(defn parse-data-structure [puz-in]
+(defn parse-data [puz-in]
   "Parses and cleans up the input to a seq of instructions"
   (->> puz-in
        (map parse-step)
-       (group-by :must)
-       (map second)
-       (map #(apply merge-with into %))
-       (map #(assoc % :must (distinct (:must %))))))
+       (apply merge-with into (sorted-map))))
 
 (defn all-used-keywords
-  "returns a map with all used keywords, and the ones that"
+  "returns a coll of all used keywords"
   [instructions]
   (let [alphabet  (set (map (comp keyword str) (seq "ABCDEFGHIJKLMNOPQRSTUVWXYZ")))
         first-row (->> instructions
-                       (map :must)
+                       (map first)
                        flatten
                        distinct)]
     (->> instructions
-         (map (comp val second)) ;; get the unlockable steps [:A [:C :B] [:D :C]]
-         flatten                 ;;                          [:A  :C :B   :D :C ]
-         distinct                ;; throw away duplicates    [:A  :C :B   :D    ]
-         (concat first-row)      ;; to get steps with no pre-req
-         sort                    ;;                          [:A  :B :C   :D
-         set                     ;;                         #{:A  :B :C :D}
-         (diff alphabet)
-         last
+         (map (comp seq val)) ;; get the unlockable steps [:A [:C :B] [:D :C]]
+         flatten                 ;;               [:A  :C :B   :D :C ]
+         (concat first-row)      ;; combine steps with no pre-req
+         set                     ;; dedupe       #{:A  :B :C :D}
+         ;;delet this
+         #_(diff alphabet)         ;; diff against alphabet
+         #_last                    ;; take the common keys
          )))
 
 
@@ -56,12 +52,13 @@
   (let [alphabet       (set (map (comp keyword str) (seq "ABCDEFGHIJKLMNOPQRSTUVWXYZ")))
         all-steps-used (all-used-keywords instructions)]
     (->> instructions
-         (map (comp val second))
+         (map (comp seq val))
          flatten
-         distinct
-         sort
          set
-         (diff all-steps-used))))
+         (diff all-steps-used)
+         first
+         sort
+         )))
 
 ;; TODO: too much nesting, refactor '(:must (:C) :before [:A :F]
 ;; to just {:C [:A :F]}
@@ -69,8 +66,7 @@
   "takes a step and returns what other steps they unlock."
   [step parsed-data]
   (->> parsed-data
-       (filter #(= (:must %) (list step)))
-       (apply :before)))
+       step))
 
 ;; TODO: think of better names
 (defn remove-satisfied-befores
@@ -80,7 +76,7 @@
        (map #(update % :before (fn [coll] (remove keys coll))))))
 
 
-(defn remove-satisfied-musts
+(defn remove-satisfied-steps
   "If the before collection is empty, remove the whole entry."
   [parsed-data]
   (let [answer (->> parsed-data
@@ -100,7 +96,7 @@
 
 (defn solve-part-1
   [puz-in]
-  (let [parsed-data (parse-data-structure example-input)]
+  (let [parsed-data (parse-data example-input)]
     (->>  parsed-data
           find-possible-steps
           first
@@ -113,32 +109,27 @@
   [key parsed-data]
   (->> parsed-data
        :before
-
        #_       flatten
        #_(some #{key})))
 
 (defn remove-finished-steps
-  [parsed-data finished-steps]
+  [finished-steps parsed-data]
   (->> finished-steps
-       (map #(dissoc parsed-data %))))
+       (apply dissoc parsed-data)))
 
 (defn one-round
   [parsed-data]
   (let [possible-steps (->> parsed-data
                             find-possible-steps)
-        new-unlocks    (->>  possible-steps
-                             first
-                             (map #(get-unlocks % parsed-data))
-                             flatten
-                             distinct
-                             set
-                             )]
-    (do (prn "possible steps: " (sort (first possible-steps)))
-        (prn "new-unlocks: " (sort new-unlocks))`
-        (-> parsed-data
-            #_(remove-satisfied-musts (first possible-steps))
-            (remove-finished-steps )
-            ))))
+        possible-unlocks    (->>  possible-steps
+                                  (map #(get-unlocks % parsed-data))
+                                  (map (comp flatten seq))
+                                  set
+                                  )]
+    (do (prn "possible steps: " possible-steps)
+        (prn "possible-unlocks: " possible-unlocks)
+        (->> parsed-data
+             (remove-finished-steps possible-steps)))))
 
 (comment
   (parse-data-structure input)
