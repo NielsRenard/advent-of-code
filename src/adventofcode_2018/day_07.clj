@@ -103,10 +103,10 @@
   (let [;; TODO: possible-steps can be refactored away with next-step
         possible-steps   (->> parsed-data
                               find-possible-steps)
-        next-step (->> parsed-data
-                       find-possible-steps
-                       first
-                       )
+        next-step        (->> parsed-data
+                              find-possible-steps
+                              first
+                              )
         possible-unlocks (->>  possible-steps
                                (map #(get-unlocks % parsed-data))
                                (map (comp flatten seq))
