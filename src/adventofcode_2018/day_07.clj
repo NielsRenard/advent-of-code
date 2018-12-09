@@ -90,18 +90,17 @@
    "Step A must be finished before step D can begin."
    "Step B must be finished before step E can begin."
    "Step D must be finished before step E can begin."
-   "Step F must be finished before step E can begin."
-   "Step Q must be finished before step A can begin."])
+   "Step F must be finished before step E can begin."])
 
 
-(defn solve-part-1
-  [puz-in]
-  (let [parsed-data (parse-data example-input)]
-    (->>  parsed-data
-          find-possible-steps
-          first
-          (map #(get-unlocks % parsed-data))
-          )))
+#_(defn solve-part-1
+    [puz-in]
+    (let [parsed-data (parse-data example-input)]
+      (->>  parsed-data
+            find-possible-steps
+            first
+            (map #(get-unlocks % parsed-data))
+            )))
 
 (def bed (atom #{}))
 
@@ -114,24 +113,49 @@
 
 (defn remove-finished-steps
   [finished-steps parsed-data]
-  (->> finished-steps
-       (apply dissoc parsed-data)))
+  (->> (first finished-steps)
+       #_(apply dissoc parsed-data)
+       (dissoc parsed-data)))
 
 (defn one-round
   [parsed-data]
-  (let [possible-steps (->> parsed-data
-                            find-possible-steps)
-        possible-unlocks    (->>  possible-steps
-                                  (map #(get-unlocks % parsed-data))
-                                  (map (comp flatten seq))
-                                  set
-                                  )]
-    (do (prn "possible steps: " possible-steps)
-        (prn "possible-unlocks: " possible-unlocks)
-        (->> parsed-data
-             (remove-finished-steps possible-steps)))))
+  (let [possible-steps   (->> parsed-data
+                              find-possible-steps)
+        possible-unlocks (->>  possible-steps
+                               (map #(get-unlocks % parsed-data))
+                               (map (comp flatten seq))
+                               set
+                               )]
+    (if (= 1 (count parsed-data))
+      ;; figure out a nicer way to return the secondlast and last
+      [(str (first possible-steps) (ffirst possible-unlocks)) (->> parsed-data
+                                                                   (remove-finished-steps possible-steps))]
+      [(first possible-steps)    (->> parsed-data
+                                      (remove-finished-steps possible-steps))])))
+
+(defn solve-part-1
+  ([input]
+   (solve-part-1 nil [:starting input]))    ;; 1 arg self calling fn to kick it off
+  ([answer remaining-data]
+   (let [step      (first remaining-data)
+         remaining (second remaining-data)]
+     (if (nil? step)                        ;; break out of the recur when no next steps
+       (->> answer
+            reverse
+            rest
+            (map name)
+            (apply str)
+            (#(clojure.string/replace % ":" ""))) ;; hack out the keyword : back to string
+
+       (->> remaining
+            one-round
+            (recur (conj answer step))      ;; add the step to the answer and run again
+            )))))
 
 (comment
+  ;;wrong, didn't take into account mid-step shifts
+  ;;GKPTSXBILJNUCDFMVAHEOWYQR
+  ;;GKPTSLUXBIJMNCADFOVHEWYQR
   (parse-data-structure input)
   (parse-data-structure example-input)
   (map (fn [ul pd] (can-be-removed? ul pd)) new-unlocks)
