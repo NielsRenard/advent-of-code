@@ -20,13 +20,44 @@
                   )]
     {(first split) #{(second split)}}))
 
+
 (defn parse-data [puz-in]
   "Parses and cleans up the input to a seq of instructions"
   (->> puz-in
        (map parse-step)
        (apply merge-with into (sorted-map))))
 
-(defn all-used-keywords
+
+;;          this is what it becomes
+;;
+;;         {:A #{:O :Q :E :Y},
+;;          :B #{:F :Q :Y :V},
+;;          :C #{:A :W :H},
+;;          :D #{:O :Q :E :H},
+;;          :E #{:Z :Y},
+;;          :F #{:O :Z :E},
+;;          :G #{:I :O :D :B :X :H},
+;;          :H #{:R :Z :E :Y},
+;;          :I #{:O :A :W :J :Z :V :N},
+;;          :J #{:M :R :O :A :C :H},
+;;          :K #{:A :H :V},
+;;          :L #{:V :U},
+;;          :M #{:R :W :Q :Z :E},
+;;          :N #{:F :Q :D :C :H :V},
+;;          :O #{:R :W :Q :Y},
+;;          :P #{:O :J :Z :C :U},
+;;          :Q #{:R :Z},
+;;          :R #{:Z},
+;;          :S #{:L :R :A :E},
+;;          :T #{:I :F :B :Y :X :U :S :N},
+;;          :U #{:F :W :C},
+;;          :V #{:Q :Z :Y :H},
+;;          :W #{:Q :Z :Y},
+;;          :X #{:I :B :J :E :Y},
+;;          :Y #{:R :Q :Z}}
+
+
+(defn find-all-used-letters
   "returns a coll of all used keywords"
   [instructions]
   (let [alphabet  (set (map (comp keyword str) (seq "ABCDEFGHIJKLMNOPQRSTUVWXYZ")))
@@ -46,7 +77,7 @@
   "Finds the next possible steps: the one that are not in the list of 'unlockable' steps."
   [instructions]
   (let [alphabet       (set (map (comp keyword str) (seq "ABCDEFGHIJKLMNOPQRSTUVWXYZ")))
-        all-steps-used (all-used-keywords instructions)]
+        all-steps-used (find-all-used-letters instructions)]
     (->> instructions
          (map (comp seq val))
          flatten
@@ -54,6 +85,7 @@
          (diff all-steps-used)
          first
          sort
+         ;; TODO: can call first here again and rename to find-next-step
          )))
 
 (defn get-unlocks
@@ -68,7 +100,8 @@
 
 (defn one-round
   [parsed-data]
-  (let [possible-steps   (->> parsed-data
+  (let [;; TODO: possible-steps can be refactored away with next-step
+        possible-steps   (->> parsed-data
                               find-possible-steps)
         next-step (->> parsed-data
                        find-possible-steps
@@ -87,6 +120,7 @@
       [next-step    (remove-finished-step next-step parsed-data)])))
 
 (defn solve-part-1
+  "It looks through one-round until there's no more input"
   ([input]
    (solve-part-1 nil [:starting input]))          ;; 1 arg self calling fn to kick it off
   ([answer remaining-data]
