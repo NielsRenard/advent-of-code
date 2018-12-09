@@ -32,6 +32,7 @@
 (def char-pairs (partition 2 (interleave lower upper upper lower)))
 
 (defn remove-pair-from-string
+  "Takes a string and a char-pair, and removes that char-pair."
   [string pair]
   (clojure.string/replace string (apply str pair) ""))
 
