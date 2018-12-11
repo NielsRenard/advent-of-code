@@ -40,6 +40,22 @@
        (map parse-line)))
 
 
+(defn measure-canvas
+  "Gets the minimum and maximum coordinate values to determine
+   how large the canvas will be initially."
+  [parsed-data]
+  (let [sorted-by-x (sort-by :x parsed-data)
+        sorted-by-y (sort-by :y parsed-data)
+        x-min       ((comp :x first) sorted-by-x )
+        x-max       ((comp :x last) sorted-by-x )
+        y-min       ((comp :x first) sorted-by-x )
+        y-max       ((comp :x first) sorted-by-y)
+        ]
+    ;;I feel like this could be shorter somehow
+    ;;something something juxt identity keyword
+    {:x-min x-min :x-max x-max :y-min y-min :y-max y-max }))
+
+
 (defn solve-part-1
   [puz-in]
   -1
