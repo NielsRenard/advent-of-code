@@ -7,8 +7,9 @@
 
 (defn parse-line
   "parses this string:
-    position=< 9,  1> velocity=< 0,  2>
-    {:x 9, :y 1, :dx 5, :dy 1}"
+   position=< 9,  1> velocity=< 0,  2>
+   to this
+   {:x 9, :y 1, :dx 5, :dy 1}"
   [line]
   (let [split (-> line
                   (string/replace "position=<" "")
@@ -24,8 +25,9 @@
     {:x  (first split) :y  (second split)
      :dx (nth split 2) :dy (last split)}))
 
+
 (defn translate
-  "Takes a pair of coordinate and velocity, calculates
+  "Takes a map of coordinates and velocities, calculates
    the next position. e.g.
    {:x 9,  :y 1, :dx 5, :dy 1} becomes
    {:x 14, :y 2, :dx 5, :dy 1}"
