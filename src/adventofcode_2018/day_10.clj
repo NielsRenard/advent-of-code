@@ -25,7 +25,7 @@
      :dx (nth split 2) :dy (last split)}))
 
 (defn translate
-  "Takes a pair of coordinates & and its velocity, calculates
+  "Takes a pair of coordinate and velocity, calculates
    the next position. e.g.
    {:x 9,  :y 1, :dx 5, :dy 1} becomes
    {:x 14, :y 2, :dx 5, :dy 1}"
@@ -42,3 +42,10 @@
   [puz-in]
   -1
   )
+
+
+(comment
+  ;;alternate translate
+  (-> coord
+      (assoc :x (+ x dx))
+      (assoc :y (+ y dy))))
