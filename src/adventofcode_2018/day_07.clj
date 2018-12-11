@@ -21,8 +21,9 @@
     {(first split) #{(second split)}}))
 
 
-(defn parse-data [puz-in]
+(defn parse-data
   "Parses and cleans up the input to a seq of instructions"
+  [puz-in]
   (->> puz-in
        (map parse-step)
        (apply merge-with into (sorted-map))))
