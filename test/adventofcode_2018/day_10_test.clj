@@ -44,4 +44,6 @@
                            (sut/translate input))
     {:x 9  :y 1 :dx 5 :dy  1}  {:x 14 :y 2 :dx 5 :dy 1}
     {:x 3  :y 9 :dx 1 :dy -2}  {:x 4 :y 7 :dx 1 :dy -2}
-    ))
+    )
+  (is (=  {:x 2  :y 11 :dx 1 :dy -2}
+          (sut/translate {:x 3  :y 9 :dx 1 :dy -2} true) )))
