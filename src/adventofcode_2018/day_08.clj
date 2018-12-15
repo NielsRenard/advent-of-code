@@ -36,38 +36,40 @@
 (def tail-meta
   (get-tail-end-meta input))
 
-(defn sum-all-meta [coll]
-  (reduce + coll))
-
-(defn p-child
-  [children [num-children num-meta & more]]
+(defn parse-tree [[num-children num-meta & remaining]]
   (let []
     (if (zero? num-children)
-      #(p-node (into children (take num-meta more))
-               (nthrest more num-meta))
-      #(p-node children more))))
-
-(defn p-node [children node]
-  (let [num-children (first node)
-        num-meta     (second node)
-        more         (nthrest node 2)]
-    (if (nil? node)
-      children
-      (if (zero? num-children)
-        #(p-child children more)
-        #(p-child children more)))))
-
+      {:meta      (take num-meta remaining)
+       :remaining (drop num-meta remaining)}
+      (let [children  (->> {:remaining remaining}
+                           (iterate #(parse-tree (:remaining %)))
+                           (drop 1)
+                           (take num-children))
+            root-meta (->> children
+                           last
+                           :remaining
+                           (take num-meta))]
+        {:meta      root-meta
+         :children  children
+         :remaining (drop num-meta (:remaining (last children)) )}))))
 
 (defn solve-part-1
   [puz-in]
-  -1
-  )
+  (->> (parse-tree puz-in)
+       (tree-seq (juxt seq :children) :children)
+       (map :meta)
+       flatten
+       (apply +)
+       ))
 
 (comment
   ;; too low 7146
-  ;;wrong 7155
-  (+ (get-tail-end-meta input) (reduce + (flatten (trampoline p-node [] input))))
+  ;; wrong 7155
+  ;; was not going depth first
+
+  ;; this went nowhere
+  (+ (get-tail-end-meta input) (reduce + (flatten (trampoline parse-tree [] input))))
   7146
 
-  (p-node (cons children (into {:meta (into [] (take num-meta more))}))
-          (nthrest more num-meta)))
+  (parse-tree (cons children (into {:meta (into [] (take num-meta more))}))
+              (nthrest more num-meta)))
