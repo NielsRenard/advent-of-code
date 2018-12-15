@@ -25,4 +25,8 @@
 
 (deftest solve-part-1-test
   (is (= 138
-         (-> (sut/solve-part-1 example-input )))))
+         (-> (sut/solve-part-1 example-input)))))
+
+(deftest solve-part-2-test
+  (is (= 66
+         (-> (sut/solve-part-2 example-input)))))

@@ -17,18 +17,18 @@
              [[1 1] [[0 1] [] [99]] [2]]]   [1 1 2]]])
 
 ;; a node tree could look like this;
-(def example-node
-  {:A {:header    [2 3]
-       :children  {:B {:header    [1 1]
-                       :children  []
-                       :meta-data [10 11 12]}
-                   :C {:header    [3 10]
-                       :children
-                       {:D {:header    [0 1]
-                            :children  []
-                            :meta-data [99]}}
-                       :meta-data [2]}}
-       :meta-data [2 1 1 2]}})
+(comment (def example-node
+           {:A {:header    [2 3]
+                :children  {:B {:header    [1 1]
+                                :children  []
+                                :meta-data [10 11 12]}
+                            :C {:header    [3 10]
+                                :children
+                                {:D {:header    [0 1]
+                                     :children  []
+                                     :meta-data [99]}}
+                                :meta-data [2]}}
+                :meta-data [2 1 1 2]}}))
 
 (defn get-tail-end-meta [inp]
   (nthrest inp (+ 2 (.lastIndexOf inp 0))))
@@ -56,13 +56,42 @@
 (defn solve-part-1
   [puz-in]
   (->> (parse-tree puz-in)
-       (tree-seq (juxt seq :children) :children)
+       (tree-seq :children :children)
        (map :meta)
        flatten
        (apply +)
        ))
 
+(def db (atom '()))
+
+(defn node-value
+  [aggr root-node]
+  (let [subnode-index (:meta root-node)]
+    (if (some? subnode-index)
+      (let [sub-nodes (filter coll? (for [sni subnode-index]
+                                      (-> root-node
+                                          :children
+                                          (nth ,,, (dec sni) nil))))]
+        (if (empty? sub-nodes)
+          aggr
+          (for [sn sub-nodes]
+            (if (contains? sn :children)
+              (drop 1 (take (count sub-nodes) (iterate #(node-value aggr %) sn)))
+              (cons aggr (:meta sn))
+              )))))))
+
+(defn solve-part-2
+  [puz-in]
+  (let [tree      (parse-tree puz-in)
+        root-node (first (tree-seq :children :children tree))]
+    (->> (node-value 0 root-node)
+         )))
+
 (comment
+  ;; part 2:
+  ;; too low 36505
+
+  ;;part 1:
   ;; too low 7146
   ;; wrong 7155
   ;; was not going depth first
