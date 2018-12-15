@@ -31,7 +31,7 @@
        :meta-data [2 1 1 2]}})
 
 (defn get-tail-end-meta [inp]
-  (nthrest inp (+ 3 (.lastIndexOf inp 0))))
+  (nthrest inp (+ 2 (.lastIndexOf inp 0))))
 
 (def tail-meta
   (get-tail-end-meta input))
@@ -43,20 +43,19 @@
   [children [num-children num-meta & more]]
   (let []
     (if (zero? num-children)
-      (p-node (cons children (take num-meta more))
-              (nthrest more num-meta))
-      (p-node children more))))
+      #(p-node (into children (take num-meta more))
+               (nthrest more num-meta))
+      #(p-node children more))))
 
 (defn p-node [children node]
   (let [num-children (first node)
         num-meta     (second node)
         more         (nthrest node 2)]
-    (if (= node tail-meta)
+    (if (nil? node)
       children
       (if (zero? num-children)
-        (p-child children  more)
-        (p-child children more)))))
-
+        #(p-child children more)
+        #(p-child children more)))))
 
 
 (defn solve-part-1
@@ -65,5 +64,10 @@
   )
 
 (comment
+  ;; too low 7146
+  ;;wrong 7155
+  (+ (get-tail-end-meta input) (reduce + (flatten (trampoline p-node [] input))))
+  7146
+
   (p-node (cons children (into {:meta (into [] (take num-meta more))}))
           (nthrest more num-meta)))
