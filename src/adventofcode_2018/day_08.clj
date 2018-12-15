@@ -76,15 +76,19 @@
           aggr
           (for [sn sub-nodes]
             (if (contains? sn :children)
-              (drop 1 (take (count sub-nodes) (iterate #(node-value aggr %) sn)))
+              (take (count sub-nodes) (iterate #(node-value aggr %) sn))
               (cons aggr (:meta sn))
               )))))))
 
 (defn solve-part-2
   [puz-in]
   (let [tree      (parse-tree puz-in)
-        root-node (first (tree-seq :children :children tree))]
+        root-node (first (tree-seq (juxt seq :children) :children tree))]
     (->> (node-value 0 root-node)
+         flatten
+         (remove coll?)
+         (remove nil?)
+         (remove zero?)
          )))
 
 (comment
