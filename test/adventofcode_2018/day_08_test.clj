@@ -22,6 +22,8 @@
                                         ;metadata entries. In this example,
                                         ;that sum is 1+1+2+10+11+12+2+99=138.
 
+(def better-example-input
+  '(3 4 0 3 1 2 5 2 2 1 1 0 2 3 3 1 0 3 1 2 4 1 2 1 2 0 1 2 1 2 1 1 2 3))
 
 (deftest solve-part-1-test
   (is (= 138
@@ -30,3 +32,7 @@
 (deftest solve-part-2-test
   (is (= 66
          (-> (sut/solve-part-2 example-input)))))
+
+(deftest solve-part-2-test-b
+  (is (= 31
+         (-> (sut/solve-part-2 better-example-input)))))

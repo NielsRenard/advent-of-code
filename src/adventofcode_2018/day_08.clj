@@ -12,29 +12,16 @@
 (def example-input
   '(2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2))
 
-(def parsed-ex
-  [[[2 3]   [[[0 3] [] [10 11 12]]
-             [[1 1] [[0 1] [] [99]] [2]]]   [1 1 2]]])
-
-;; a node tree could look like this;
-(comment (def example-node
-           {:A {:header    [2 3]
-                :children  {:B {:header    [1 1]
-                                :children  []
-                                :meta-data [10 11 12]}
-                            :C {:header    [3 10]
-                                :children
-                                {:D {:header    [0 1]
-                                     :children  []
-                                     :meta-data [99]}}
-                                :meta-data [2]}}
-                :meta-data [2 1 1 2]}}))
-
-(defn get-tail-end-meta [inp]
-  (nthrest inp (+ 2 (.lastIndexOf inp 0))))
-
-(def tail-meta
-  (get-tail-end-meta input))
+;;  result of running
+;;  (parse-tree example-input)
+;;
+;;  {:meta (1 1 2),
+;;   :children
+;;   ({:meta (10 11 12), :remaining (1 1 0 1 99 2 1 1 2)}
+;;    {:meta (2),
+;;     :children ({:meta (99), :remaining (2 1 1 2)}),
+;;     :remaining (1 1 2)}),
+;;   :remaining ()}
 
 (defn parse-tree [[num-children num-meta & remaining]]
   (let []
@@ -62,47 +49,25 @@
        (apply +)
        ))
 
-(def db (atom '()))
-
 (defn node-value
-  [aggr root-node]
-  (let [subnode-index (:meta root-node)]
-    (if (some? subnode-index)
-      (let [sub-nodes (filter coll? (for [sni subnode-index]
-                                      (-> root-node
-                                          :children
-                                          (nth ,,, (dec sni) nil))))]
-        (if (empty? sub-nodes)
-          aggr
-          (for [sn sub-nodes]
-            (if (contains? sn :children)
-              (take (count sub-nodes) (iterate #(node-value aggr %) sn))
-              (cons aggr (:meta sn))
-              )))))))
+  ([root-node] (node-value 0 root-node))                  ;; one arg starter
+  ([aggr root-node]                                       ;;
+   (let [sub-nodes (for [idx (:meta root-node)]           ;; use the meta-data as indexes
+                     (-> (:children root-node)            ;; check all child-nodes for existing index
+                         (nth ,,, (dec idx) nil)))]       ;;
+     (if (empty? sub-nodes)                               ;; if nothing comes out, we're done
+       aggr                                               ;; and return from here
+       (->> sub-nodes                                     ;;
+            (map (fn [sn]                                 ;; map over each node
+                   (if (:children sn)                     ;; check if node is leaf
+                     (node-value sn)                      ;; if not, recur
+                     (cons aggr (:meta sn))))))))))       ;; if so add meta to our aggr
+
 
 (defn solve-part-2
   [puz-in]
   (let [tree      (parse-tree puz-in)
-        root-node (first (tree-seq (juxt seq :children) :children tree))]
-    (->> (node-value 0 root-node)
+        root-node (first (tree-seq :children :children tree))]
+    (->> (node-value root-node)
          flatten
-         (remove coll?)
-         (remove nil?)
-         (remove zero?)
-         )))
-
-(comment
-  ;; part 2:
-  ;; too low 36505
-
-  ;;part 1:
-  ;; too low 7146
-  ;; wrong 7155
-  ;; was not going depth first
-
-  ;; this went nowhere
-  (+ (get-tail-end-meta input) (reduce + (flatten (trampoline parse-tree [] input))))
-  7146
-
-  (parse-tree (cons children (into {:meta (into [] (take num-meta more))}))
-              (nthrest more num-meta)))
+         (apply +))))
