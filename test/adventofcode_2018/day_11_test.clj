@@ -13,10 +13,18 @@
     [71 101 153] 4
     ))
 
+(deftest sum-of-grid-test
+  (are [input expected]
+      (= (sut/sum-all-vals input) expected)
+    [[4 4 4]
+     [3 3 4]
+     [1 2 4]] 29
+    ))
 
 (deftest solve-part-1
   ;;What is the X,Y coordinate of the top-left fuel cell
   ;;of the 3x3 square with the largest total power?
   (are [input expected]
-      (= (sut/solve-part-1 input) expected)
-    1 -1))
+      (=  (sut/solve-part-1 input) expected)
+    18    29
+    3999 31))
