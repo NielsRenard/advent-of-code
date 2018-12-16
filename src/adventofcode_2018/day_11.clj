@@ -51,10 +51,10 @@
 
 ;; not sure if this works with 0 coords
 ;; but we just leave an empty column/row at 0,0
-(defn calc-subgrid-coords [{:keys [x y] :as coord}]
-  "Returns the coords for a 3x3 grid (starting at the left-top.)"
-  (for [x (range x (+ x 3))
-        y (range y (+ y 3))]
+(defn calc-subgrid-coords [size {:keys [x y] :as coord}]
+  "Returns the coords for a size-x-size grid (starting at the left-top.)"
+  (for [x (range x (+ x size))
+        y (range y (+ y size))]
     {:x x :y y}))
 
 (defn- get-one-coord-val [grid {:keys [x y]}]
@@ -69,8 +69,8 @@
   (reduce + (flatten grid)))
 
 
-(defn sum-a-sub-grid [grid {:keys [x y] :as coord}]
-  (->> (calc-subgrid-coords coord)
+(defn sum-a-sub-grid [grid subsize {:keys [x y] :as coord}]
+  (->> (calc-subgrid-coords subsize coord)
        (get-multi-coord-vals grid ,,,)
        (sum-all-vals)))
 
@@ -81,14 +81,14 @@
     (->> (for [x (range 100)                            ;; get all the subgrids (now just first 100)
                y (range 100)]
            {:coords {:x x :y y}
-            :sum    (sum-a-sub-grid fg { :x x :y y})})  ;; get the sums of all the subgrids
+            :sum    (sum-a-sub-grid fg 3 { :x x :y y})})  ;; get the sums of all the subgrids
          (sort-by :sum)                                 ;; sort
          last                                           ;; biggest one, maybe use max-key here?
          :sum)))
 
 (comment
   ;;to get one subgrid from a filled-grid ww
-  (get-multi-coord-vals ww (calc-subgrid-coords {:x 33 :y 45}))
+  (get-multi-coord-vals ww (calc-subgrid-coords 3 {:x 33 :y 45}))
 
   ;;assoc in grid (vec of vecs)
   (def ex1 (assoc-in (blank-canvas 10) [2 2] "2"))
