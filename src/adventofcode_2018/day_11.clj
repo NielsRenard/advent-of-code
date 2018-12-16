@@ -19,6 +19,12 @@
                          )]
     (- power-level 5)))
 
+(defn grid-maker
+  [serial]
+  (for [x (range 300)
+        y (range 300)]
+    (find-power-level [serial x y])))
+
 (defn solve-part-1
   [puz-in]
   -1
