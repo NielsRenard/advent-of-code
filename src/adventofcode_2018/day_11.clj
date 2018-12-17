@@ -78,15 +78,46 @@
 (defn solve-part-1
   [serial]
   (let [fg (generate-filled-grid serial 300)]
-    (->> (for [x (range 100)                            ;; get all the subgrids (now just first 100)
+    (->> (for [x (range 100)                              ;; get all the subgrids (now just first 100)
                y (range 100)]
            {:coords {:x x :y y}
             :sum    (sum-a-sub-grid fg 3 { :x x :y y})})  ;; get the sums of all the subgrids
-         (sort-by :sum)                                 ;; sort
-         last                                           ;; biggest one, maybe use max-key here?
+         (sort-by :sum)                                   ;; sort
+         last                                             ;; biggest one, maybe use max-key here?
          :sum)))
 
+;;brute forcing guesses
+(defn solve-part-2
+  [serial]
+  (let [fg (generate-filled-grid 3999 300)]
+    (->> (for [x (range 200 250)
+               y (range 200 250)
+               n (range 20 30)]
+           {:coords {:x x :y y}
+            :sum    (sum-a-sub-grid fg n  { :x x :y y})})
+         (sort-by :sum)
+         last
+         )))
+
+
 (comment
+
+  ;;part 2 answer, three guesses
+  (let [fg (generate-filled-grid 3999 300)]
+    (->> (for [x (range 210 260)
+               y (range 210 250)]
+           {:coords {:x x :y y}
+            :sum    (sum-a-sub-grid fg 27  { :x x :y y})})
+         (sort-by :sum)
+         last
+         ))
+
+  ;;returns
+  {:coords {:x 224, :y 222}, :sum 255}
+  ;;you guessed 224,222,27 (255) right
+  ;;you guessed 233,116,15 (210) wrong
+  ;;You guessed 235,0,11 (161) wrong
+
   ;;to get one subgrid from a filled-grid ww
   (get-multi-coord-vals ww (calc-subgrid-coords 3 {:x 33 :y 45}))
 
