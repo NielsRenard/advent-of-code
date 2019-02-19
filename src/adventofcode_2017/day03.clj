@@ -67,7 +67,7 @@ squares
        (map #(* 4 %))
        (map #(- % 4))))
 
-(defn calculate-route-1 [squaresize]
+(defn calculate-route [squaresize]
   "from bottom-right calculates the directions to build the next square"
   (let [others (+ (/ squaresize 4) 2)
         up     (- others 1)]
