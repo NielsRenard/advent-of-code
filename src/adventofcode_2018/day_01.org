@@ -1,0 +1,16 @@
+(org-babel-do-load-languages
+ 'org-babel-load-languages '((perl . t)
+                             (haskell . t)
+                             (clojure . t)))
+
+#+BEGIN_SRC perl :results value
+  use List::Util qw (reduce);
+
+  open(my $file, '<', "../../resources/2018/input_01.txt") or die;
+
+  my @input = <$file>;
+  reduce { $a + $b } <@input>;
+#+END_SRC
+
+#+RESULTS:
+: 442
