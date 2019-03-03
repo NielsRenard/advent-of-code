@@ -5,15 +5,14 @@
 
 (def input (util/get-input))
 
-;;; restart
-
 (defn clean [s]
   "parses a string like:
   \"#1 @ 483,830: 24x18\"
   into {:n 1, :x 483, :y 830, :w 24, :h 18}"
-  (->> (re-seq  #"\d+" s)
-       (map edn/read-string)
+  (->> (re-seq  #"\d+" s)          ;; '("1" "483" "830" "24" "18")
+       (map edn/read-string)       ;; '( 1   483   830   24   18)
        (zipmap [:n :x :y :w :h])))
+
 
 (defn get-coordinates
   "Gets all the coordinates that belong to a claim."
@@ -21,6 +20,7 @@
   (for [x (range x  (+ x w))
         y (range y (+ y h))]
     {:n n :x x :y y}))
+
 
 (defn sanitize-entry
   "parses a line like:
@@ -50,7 +50,6 @@
     (for [x' (range x (if (zero? x) (+ x p) (+ x p)))
           y' (range y (if (zero? y) (+ y q) (+ y q)))]
       [x' y'])))
-
 
 (defn solve-part-1
   [puz-in]
