@@ -118,3 +118,34 @@
                             "#2 @ 3,1: 4x4"
                             "#3 @ 5,5: 2x2"
                             "#4 @ 5,6: 20x20"]))))
+
+;; 33XX
+;; 33XX
+;; XXXX
+;; XXXX
+(deftest solve-part-2-non-overlapping-square
+  (is (= 3
+         (sut/solve-part-2 ["#1 @ 2,0: 2x4"
+                            "#2 @ 2,0: 2x4"
+                            "#3 @ 0,0: 2x2"
+                            "#4 @ 0,2: 4x2"
+                            "#5 @ 0,2: 4x2"]))))
+
+(deftest get-coordinates-test
+  (is (= '({:x 4, :y 1}
+           {:x 4, :y 2}
+           {:x 4, :y 3}
+           {:x 5, :y 1}
+           {:x 5, :y 2}
+           {:x 5, :y 3})
+         (sut/get-coordinates {:claim-number 1, :x 4, :y 1, :w 2, :h 3}))))
+
+
+(deftest get-coordinates-test-with-zeroes
+  (is (=  '({:x 0, :y 0}
+            {:x 0, :y 1}
+            {:x 0, :y 2}
+            {:x 1, :y 0}
+            {:x 1, :y 1}
+            {:x 1, :y 2})
+          (sut/get-coordinates {:claim-number 1, :x 0, :y 0, :w 2, :h 3}))))

@@ -5,7 +5,22 @@
 
 (def input (util/get-input))
 
-;;committing the mess before cleanup to enjoy in git in the future
+;;; restart
+
+(defn clean [s]
+  "parses a string like:
+  \"#1 @ 483,830: 24x18\"
+  into {:n 1, :x 483, :y 830, :w 24, :h 18}"
+  (->> (re-seq  #"\d+" s)
+       (map edn/read-string)
+       (zipmap [:n :x :y :w :h])))
+
+(defn get-coordinates
+  "Gets all the coordinates that belong to a claim."
+  [{:keys [n x y w h] :as claim}]
+  (for [x (range x  (+ x w))
+        y (range y (+ y h))]
+    {:n n :x x :y y}))
 
 (defn sanitize-entry
   "parses a line like:
@@ -24,36 +39,6 @@
                               (string/replace "x" " ")
                               (string/split #" ")))))))
 
-(defn nice-entry
-  "parses a line like:
-  `#1 @ 483,830: 24x18`"
-  [line]
-  (let [parsed (map #(edn/read-string %)
-                    (-> line
-                        (string/replace ":" "")
-                        (string/replace "#" "")
-                        (string/replace "@ " "")
-                        (string/replace "," " ")
-                        (string/replace "x" " ")
-                        (string/split #" ")))]
-    (seq [(seq [(second parsed) (nth parsed 2)])
-          (seq [(nth parsed 3) (last parsed)]) (first parsed)])))
-
-;;this is a piece of cloth
-;;use (get-in @grid-atom [0 1]) to get square 0,1
-(def grid-atom (atom [[[0,0] [0,1] [0,2]]
-                      [[1,0] [1,1] [1,2]]
-                      [[2,0] [2,1] [2,2]]]))
-
-(def fabric (atom {}))
-
-;;(def fabric (atom {0 { 0 1 1 2 2 3 }
-;;                   1 { 0 2 1 3 2 5 }
-;;                   2 { 0 5 1 3 2 2 }
-;;                   3 { 0 3 1 2 2 4 }}))
-
-;;((1 1) (2 2)) should return
-;;{(1 1), (1 2), (2 1), (2 2)}
 
 (defn entry->surface
   "takes a sanitized entry and returns all coordinates"
@@ -65,44 +50,6 @@
     (for [x' (range x (if (zero? x) (+ x p) (+ x p)))
           y' (range y (if (zero? y) (+ y q) (+ y q)))]
       [x' y'])))
-
-(defn entry->surface*
-  "takes a sanitized entry and returns all coordinates"
-  [entry]
-  (let [claim-no (last entry)
-        x (ffirst entry)
-        y (second (first entry))
-        p (first (second entry))
-        q (second (second entry))]
-    (for [x' (range x (if (zero? x) (+ x p) (+ x p)))
-          y' (range y (if (zero? y) (+ y q) (+ y q)))]
-      [x' y' claim-no])))
-
-(defn surface-painter
-  [[x y]]
-  (let [sqinch (get-in @fabric [x y])]
-    (if (nil? sqinch)
-      (swap! fabric assoc-in [x y] 0)
-      (swap! fabric assoc-in [x y] (inc sqinch)))))
-
-(comment (map #(map surface-painter %) (->> input
-                                            (map sanitize-entry)
-                                            (map entry->surface)
-                                            )))
-
-;;107000 too low
-;;too high Please wait one minute before trying again. (You guessed 158971.)
-#_(count (distinct (reduce concat all-painted)))
-
-(defn paint
-  [line]
-  (let [x      (ffirst line)
-        y      (second (first line))
-        db     @fabric
-        sqinch (get-in db [x y])]
-    (if (nil? sqinch)
-      (swap! fabric assoc-in [x y] 0)
-      (swap! fabric assoc-in [x y] (inc sqinch)))))
 
 
 (defn solve-part-1
@@ -116,46 +63,41 @@
        (filter #(< 1 %))    ;;             [3]
        count))              ;;             [1]
 
-(defn get-all-claimed
-  "returns every claimed square inch"
-  [puz-in]
-  (->> puz-in
-       (map sanitize-entry)
-       (map entry->surface)
-       (reduce concat)))
-
-(defn find-duplicate
-  [value coll]
-  (some #(= value %) coll))
-
-(defn solve-part-2
-  "returns non-overlapping claims"
-  [puz-in]
-  (->> puz-in
-       (map nice-entry)
-       (map entry->surface*)
-       (reduce concat)
-       (group-by last)))
+(defn solve-part-2 [puz-in]
+  "please comment and re-write this monster"
+  (let [all-claims (map clean puz-in)
+        claim-nums (map :n all-claims)]
+    (->> all-claims
+         (map get-coordinates)
+         (reduce concat)
+         (group-by
+          (fn [c]
+            {:x (:x c)
+             :y (:y c)}))
+         (filter
+          (fn [c]
+            (< 1 (count (val c)))))
+         vals
+         (map #(map :n %))
+         flatten
+         set
+         (#(remove % claim-nums))
+         first)))
 
 (comment
-  (->> input
-       (map nice-entry)
-       (map entry->surface*)
-       (reduce concat)
-       (group-by first)
-       frequencies
-       (map group-by last)
-       )
+  (def working (->> input
+                    (map clean)
+                    (map get-coordinates)
+                    (reduce concat)
+                    (group-by (fn [c] {:x (:x c) :y (:y c)}))
+                    ))
 
-  (->> input
-       (map nice-entry)
-       (map entry->surface*)
-       (reduce concat)
-       (group-by first)
-       frequencies
-       (map #(second (first %))))
+  (def duplis (filter (fn [item] (< 1 (count (val item)))) working))
+  (def kick-list (set (flatten (map #(map :n %) (vals duplis)))))
 
-  (for [coordinate (->> poz
-                        (map sanitize-entry)
-                        (map entry->surface)
-                        (reduce concat))]))
+  (def duplicate-claim-numbers (-> (map #(->> %
+                                              val
+                                              (map :n)
+                                              ) duplis)
+                                   flatten))
+  )
