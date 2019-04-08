@@ -20,7 +20,7 @@
     {:x-min min-x, :x-max max-x
      :y-min min-y, :y-max max-y}))
 
-;;(max-dimensions input)
+(def canvas-dimensions (max-dimensions input))
 
 (defn manhattan-distance
   [[x1 y1] [x2 y2]]
@@ -29,10 +29,32 @@
     {:h-dist (if (neg? h-dist) (Math/abs h-dist) h-dist)
      :v-dist (if (neg? v-dist) (Math/abs v-dist) v-dist)}))
 
-(defn calculate-all-distances
-  [[x y] nodes]
-  (for [node nodes]
-    (manhattan-distance [x y] (vals node))))
+(defn calc-canvas-coords [size {:keys [x y] :as coord}]
+  "Returns the coords for a size-x-size grid (starting at the left-top.)"
+  (for [x (range x (+ x size))
+        y (range y (+ y size))]
+    {:x x :y y}))
+
+(defn get-closest-node
+  [{:keys [x y]}]
+  (let [nodes  (map clean input)]
+    (->> node
+         vals
+         (manhattan-distance [x y])
+         vals
+         (apply +)
+         (for [node nodes])
+         (map-indexed hash-map)
+         (apply merge-with merge)
+         (sort-by val)
+         ffirst)))
+
+(defn get-shortest-distance
+  [distances]
+  (for [pair distances]
+    (->> (vals pair)
+         (apply +)
+         )))
 
 
 (defn solve-part-1
