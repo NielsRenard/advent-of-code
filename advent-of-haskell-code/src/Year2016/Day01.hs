@@ -4,11 +4,12 @@
 module Year2016.Day01 () where
 
 import RIO
-import RIO.Text (pack)
-import System.IO (hPutStrLn, stderr)
+import Prelude (print)
 import qualified RIO.ByteString as B
 
 main :: IO ()
 main = do
     contents <- B.readFile "data/2016/input/input_2016_01_a.txt"
-    B.putStr contents
+    let contents' = show $ B.length contents
+    print contents
+    print contents'
