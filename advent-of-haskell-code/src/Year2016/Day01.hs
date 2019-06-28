@@ -3,14 +3,12 @@
 module Year2016.Day01 () where
 
 
-import           Prelude                      (print)
-import           RIO
-import           RIO.List as L
+import           Data.Char
+import           Prelude                      (head, print, read)
+import           RIO                          hiding ((<|>))
+import           RIO.List                     as L
 import           RIO.Text                     as T
-import           Text.Parsec ((<|>))
-import           Text.ParserCombinators.ReadP 
-import Text.Parsec.String (Parser)
-import Data.Char
+import           Text.ParserCombinators.ReadP
 
 
 
@@ -24,21 +22,12 @@ main = do
     print fst
     pure fst
 
-
 data Step = Step { direction :: Char
-                 , stepCount :: Int } deriving Show
+                 , amount    :: Int } deriving Show
 
+compassDirection :: ReadP Char
+compassDirection = satisfy (\char ->
+              L.any (char ==) "NWSE")
 
---stepParser :: readP Int
---stepParser  = do
---  direction <- char 'N'
---  stepCount <- numbers 1
---  return stepCount
-
-isVowel :: Char -> Bool
-isVowel char =
-    L.any (char ==) "aouei"
-
-vowel :: ReadP Char
-vowel =
-    satisfy isVowel
+number :: ReadP Char
+number = satisfy isDigit
