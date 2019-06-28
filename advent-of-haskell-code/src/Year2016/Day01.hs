@@ -23,6 +23,11 @@ main = do
 data Step = Step { direction :: Char
                  , amount    :: Int } deriving Show
 
+step :: ReadP Step
+step = do
+  direction <- char 'N' <|> char 'W' <|> char 'S' <|> char 'E'
+  steps <- count 1 digit <|> count 2 digit <|> count 3 digit
+  return Step {direction = direction, amount = read steps}
 
 digit :: ReadP Char
 digit = satisfy isDigit
