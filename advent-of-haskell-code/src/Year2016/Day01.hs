@@ -5,50 +5,48 @@ module Year2016.Day01
   ) where
 
 import           Data.Char
+import           Data.Maybe
 import           Prelude                      (head, print, read)
 import           RIO
 import           RIO.List                     as L
 import           RIO.Text                     as T
 import           Text.ParserCombinators.ReadP
 
-main :: IO Text
+main :: IO [[(Move, String)]]
 main = do
   contents <- readFileUtf8 "data/2016/input/input_2016_01_a.txt"
-  let ws = T.split (== ',') contents
-      fst =
+  let ws = L.map T.strip $ T.split (== ',') contents
+      f1 =
         case (headMaybe ws) of
           Just x  -> x
           Nothing -> error "no"
-  print fst
-  pure fst
+      all = L.map (readP_to_S move . T.unpack)  ws
+      m1 = head $ readP_to_S move $ T.unpack f1
+  pure all
 
-data Step = Step
-  { direction :: Compass
-  , amount    :: Int
+data Move = Move
+  { direction :: Turn
+  , steps     :: Int
   } deriving (Show)
 
-data Compass
-  = North
-  | East
-  | South
-  | West
+data Turn
+  = TurnLeft
+  | TurnRight
   deriving (Show)
 
-step :: ReadP Step
-step = do
-  direction <- compass
+move :: ReadP Move
+move = do
+  direction <- turn
   steps <- numbers
-  return (Step direction steps)
+  return (Move direction steps)
 
-compass :: ReadP Compass
-compass = do
-  c' <- char 'N' <|> char 'W' <|> char 'S' <|> char 'E'
+turn :: ReadP Turn
+turn = do
+  t' <- char 'L' <|> char 'R'
   return
-    (case c' of
-       'N' -> North
-       'E' -> East
-       'S' -> South
-       'W' -> West)
+    (case t' of
+       'L' -> TurnLeft
+       'R' -> TurnRight)
 
 digit :: ReadP Char
 digit = satisfy isDigit
