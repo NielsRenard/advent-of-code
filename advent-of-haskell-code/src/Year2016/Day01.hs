@@ -5,12 +5,10 @@ module Year2016.Day01 () where
 
 import           Data.Char
 import           Prelude                      (head, print, read)
-import           RIO                          hiding ((<|>))
+import           RIO
 import           RIO.List                     as L
 import           RIO.Text                     as T
 import           Text.ParserCombinators.ReadP
-
-
 
 main :: IO Text
 main = do
@@ -25,9 +23,12 @@ main = do
 data Step = Step { direction :: Char
                  , amount    :: Int } deriving Show
 
-compassDirection :: ReadP Char
-compassDirection = satisfy (\char ->
-              L.any (char ==) "NWSE")
 
-number :: ReadP Char
-number = satisfy isDigit
+digit :: ReadP Char
+digit = satisfy isDigit
+
+step :: ReadP (Char, Int)
+step = do
+  direction <- char 'N' <|> char 'W' <|> char 'S' <|> char 'E'
+  steps <- count 2 digit
+  return (direction, read steps)
