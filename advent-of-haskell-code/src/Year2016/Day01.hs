@@ -7,21 +7,16 @@ module Year2016.Day01
 import           Data.Char
 import           Data.Maybe
 import           Prelude                      (head, print, read)
-import           RIO
+import           RIO hiding (many)
 import           RIO.List                     as L
 import           RIO.Text                     as T
 import           Text.ParserCombinators.ReadP
 
-main :: IO [[(Move, String)]]
+main :: IO [(Move, String)]
 main = do
   contents <- readFileUtf8 "data/2016/input/input_2016_01_a.txt"
   let ws = L.map T.strip $ T.split (== ',') contents
-      f1 =
-        case (headMaybe ws) of
-          Just x  -> x
-          Nothing -> error "no"
-      all = L.map (readP_to_S move . T.unpack)  ws
-      m1 = head $ readP_to_S move $ T.unpack f1
+      all = L.map (head . readP_to_S move . T.unpack)  ws
   pure all
 
 data Move = Move
