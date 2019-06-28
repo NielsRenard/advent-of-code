@@ -1,4 +1,4 @@
-module Main where
+module Year2018.Day16 where
 
 main = print "hey"
 
