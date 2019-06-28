@@ -38,7 +38,7 @@ step :: ReadP Step
 step = do
   direction <- compass
   steps <- numbers
-  return Step {direction = direction, amount = steps}
+  return (Step direction steps)
 
 compass :: ReadP Compass
 compass = do
