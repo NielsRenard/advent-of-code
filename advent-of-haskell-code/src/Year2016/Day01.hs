@@ -15,9 +15,15 @@ import           Text.ParserCombinators.ReadP
 main :: IO [(Move, String)]
 main = do
   contents <- readFileUtf8 "data/2016/input/input_2016_01_a.txt"
-  let ws = L.map T.strip $ T.split (== ',') contents
-      all = L.map (head . readP_to_S move . T.unpack)  ws
+  let ws = splitCommaAndStrip contents
+      all = L.map (head . tryToParse move . T.unpack)  ws
+  print ws
   pure all
+
+splitCommaAndStrip :: Text -> [Text]
+splitCommaAndStrip = L.map T.strip . T.split (== ',')
+
+tryToParse parser = readP_to_S parser
 
 data Move = Move
   { direction :: Turn
