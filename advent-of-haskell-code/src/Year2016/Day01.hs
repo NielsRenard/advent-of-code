@@ -15,13 +15,19 @@ import           RIO.List                      as L
 import           RIO.Text                      as T
 import           Text.ParserCombinators.ReadP
 
-main :: IO [(Move, String)]
+main :: IO [Move]
 main = do
   contents <- readFileUtf8 "data/2016/input/input_2016_01_a.txt"
   let ws    = splitCommaAndStrip contents
-      all   = L.map (head . readP_to_S move . T.unpack) ws
+      all   = L.map (fst . head . readP_to_S move . T.unpack) ws
       three = L.take 5 all
-  pure three
+      endCoord = L.foldr walk [] three
+  print endCoord
+  pure all
+
+
+walk :: Move -> [(Move, Compass)] -> [(Move, Compass)]
+walk m ms = (m, North) : ms
 
 --  print ws
 data Move = Move
@@ -39,6 +45,7 @@ data Compass
   | East
   | South
   | West
+  deriving (Show)
 
 data Coordinate = Coordinate
   { x :: Int
