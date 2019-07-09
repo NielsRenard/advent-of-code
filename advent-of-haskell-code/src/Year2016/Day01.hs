@@ -18,16 +18,18 @@ import           Text.ParserCombinators.ReadP
 main :: IO [Move]
 main = do
   contents <- readFileUtf8 "data/2016/input/input_2016_01_a.txt"
-  let ws       = splitCommaAndStrip contents
-      all      = L.map (fst . head . readP_to_S move . T.unpack) ws
-      three    = L.take 5 all
-      endCoord = L.foldr walk [] three
+  let
+    ws    = splitCommaAndStrip contents
+    all   = L.map (fst . head . readP_to_S move . T.unpack) ws
+    first = head all
+    initPos =
+      Position { coordinate = Coordinate { x = 0, y = 0 }, facing = North }
+    endCoord = walk initPos all
   print endCoord
   pure all
 
 
-walk :: Move -> [(Move, Compass)] -> [(Move, Compass)]
-walk m ms = (m, North) : ms
+walk position (m:ms) = translate position m
 
 --  print ws
 data Move = Move
