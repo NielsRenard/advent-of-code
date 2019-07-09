@@ -25,21 +25,21 @@ main = do
     all = L.map (fst . last . readP_to_S move . T.unpack) ws
     initPos =
       Position { coordinate = Coordinate { x = 0, y = 0 }, facing = North }
-    endPos   = L.foldl walk initPos all
+    endPos   = L.foldl translate initPos all
     distance = taxicabDiff initPos endPos  -- {x = -173, y = -159} facing South
   pure distance
 
 
 taxicabDiff :: Position -> Position -> Int
 taxicabDiff p1 p2 =
-  let x1 = x $ coordinate p1
-      x2 = x $ coordinate p2
-      y1 = y $ coordinate p1
-      y2 = y $ coordinate p2
+  let x1 = xco p1
+      x2 = xco p2
+      y1 = yco p1
+      y2 = yco p2
   in  abs (x1 - x2) + abs (y1 - y2)
+  where xco p = x $ coordinate p
+        yco p = y $ coordinate p
 
-walk :: Position -> Move -> Position
-walk position m = translate position m
 
 data Move = Move
   { direction :: Turn
