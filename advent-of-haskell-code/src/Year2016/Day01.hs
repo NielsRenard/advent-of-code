@@ -19,9 +19,9 @@ main :: IO Int
 main = do
   contents <- readFileUtf8 "data/2016/input/input_2016_01_a.txt"
   let
---    exampleString = T.pack "R2, L10"               -- should give 12
---    ws    = splitCommaAndStrip exampleString       -- flip next two line comments
-    ws  = splitCommaAndStrip contents      -- to test with hardcoded string
+--    example = T.pack "R2, L10"                       -- should give 12
+--    ws            = splitCommaAndStrip example       -- uncomment to test with hardcoded input
+    ws  = splitCommaAndStrip contents
     all = L.map (fst . last . readP_to_S move . T.unpack) ws
     initPos =
       Position { coordinate = Coordinate { x = 0, y = 0 }, facing = North }
@@ -36,7 +36,7 @@ taxicabDiff p1 p2 =
       x2 = x $ coordinate p2
       y1 = y $ coordinate p1
       y2 = y $ coordinate p2
-  in  (abs (x1 - x2)) + (abs (y1 - y2))
+  in  abs (x1 - x2) + abs (y1 - y2)
 
 walk :: Position -> Move -> Position
 walk position m = translate position m
@@ -112,5 +112,6 @@ numbers = do
   n <- count 3 digit <|> count 2 digit <|> count 1 digit
   return (read n)
 
+-- cleaning function
 splitCommaAndStrip :: Text -> [Text]
 splitCommaAndStrip = L.map T.strip . T.split (== ',')
