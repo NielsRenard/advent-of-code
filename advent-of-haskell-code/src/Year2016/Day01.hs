@@ -37,8 +37,9 @@ taxicabDiff p1 p2 =
       y1 = yco p1
       y2 = yco p2
   in  abs (x1 - x2) + abs (y1 - y2)
-  where xco p = x $ coordinate p
-        yco p = y $ coordinate p
+ where
+  xco p = x $ coordinate p
+  yco p = y $ coordinate p
 
 
 data Move = Move
