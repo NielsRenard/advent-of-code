@@ -66,13 +66,13 @@ translate position move =
         TurnLeft -> case compass of
           North -> Position (Coordinate (x' - n) y') West
           East  -> Position (Coordinate x' (y' + n)) North
-          South -> Position (Coordinate (x' - n) y') East
+          South -> Position (Coordinate (x' + n) y') East
           West  -> Position (Coordinate x' (y' - n)) South
         TurnRight -> case compass of
-          North -> Position (Coordinate (x' + n) y') West
-          East  -> Position (Coordinate x' (y' + n)) South
-          South -> Position (Coordinate (x' + n) y') West
-          West  -> Position (Coordinate x' (y' + n)) North
+          North -> Position (Coordinate (x' - n) y') West
+          East  -> Position (Coordinate x' (y' + n)) North
+          South -> Position (Coordinate (x' + n) y') East
+          West  -> Position (Coordinate x' (y' - n)) South
 
 -- parser of Moves
 move :: ReadP Move
