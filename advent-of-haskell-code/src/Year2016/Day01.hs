@@ -15,23 +15,33 @@ import           RIO.List                      as L
 import           RIO.Text                      as T
 import           Text.ParserCombinators.ReadP
 
-main :: IO [Move]
+main :: IO Int
 main = do
   contents <- readFileUtf8 "data/2016/input/input_2016_01_a.txt"
   let
-    ws    = splitCommaAndStrip contents
+    exampleString = T.pack "R2, R2, R2"
+--    ws    = splitCommaAndStrip exampleString   -- flip next to line comments
+    ws    = splitCommaAndStrip contents      -- to test with hardcoded string
     all   = L.map (fst . head . readP_to_S move . T.unpack) ws
     first = head all
     initPos =
       Position { coordinate = Coordinate { x = 0, y = 0 }, facing = North }
-    endCoord = walk initPos all
-  print endCoord
-  pure all
+    endPos = L.foldl walk initPos all
+    distance = taxicabDiff initPos endPos  -- {x = 18, y = -17} facing South
+  pure distance
 
 
-walk position (m:ms) = translate position m
+taxicabDiff :: Position -> Position -> Int
+taxicabDiff p1 p2  = let x1 = x $ coordinate p1
+                         x2 = x $ coordinate p2
+                         y1 = y $ coordinate p1
+                         y2 = y $ coordinate p2
+                     in
+                       abs (x1 - x2) + abs (y1 - y2)
 
---  print ws
+walk :: Position -> Move -> Position
+walk position m = translate position m
+
 data Move = Move
   { direction :: Turn
   , steps :: Int
@@ -71,10 +81,10 @@ translate position move =
           South -> Position (Coordinate (x' + n) y') East
           West  -> Position (Coordinate x' (y' - n)) South
         TurnRight -> case compass of
-          North -> Position (Coordinate (x' - n) y') West
-          East  -> Position (Coordinate x' (y' + n)) North
-          South -> Position (Coordinate (x' + n) y') East
-          West  -> Position (Coordinate x' (y' - n)) South
+          North -> Position (Coordinate (x' + n) y') East
+          East  -> Position (Coordinate x' (y' - n)) South
+          South -> Position (Coordinate (x' - n) y') West
+          West  -> Position (Coordinate x' (y' + n)) North
 
 -- parser of Moves
 move :: ReadP Move
