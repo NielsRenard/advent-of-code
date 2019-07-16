@@ -25,25 +25,49 @@ part 2
 Read the assignment wrong initially, thinking it was looking for the first coordinate that it *lands* (and turns) on twice.
 --}
 
-main :: IO Int
+main :: IO (Int, Int)
 main = do
-  contents <- readFileUtf8 "data/2016/input/input_2016_01_a.txt"
+  input <- readFileUtf8 "data/2016/input/input_2016_01_a.txt"
   let
---      example = T.pack "R1, R1, R1, R1, R1, R1, R1"
---      ws            = splitCommaAndStrip example       -- uncomment to test with hardcoded input
-      ws      = splitCommaAndStrip contents
-      all     = L.map (fst . last . readP_to_S move . T.unpack) ws
-      initPos = Position { coordinate = Coordinate { x = 0, y = 0 }
-                         , facing     = North
-                         , visited    = []
-                         }
-      endPos   = L.foldl translate initPos all
-      distance = taxicabDiff initPos endPos
-      cs       = visitedTwice $ visited endPos
-  pure $ taxicabDiff initPos $ Position (last cs) North []
+--    input = T.pack "R1, R1, R1, R1, R1, R1, R1" -- uncomment to test with hardcoded string
+      moves         = parseString input
+      answerPartOne = solvePartOne initialPosition moves
+      answerPartTwo = solvePartTwo initialPosition moves
+  pure (answerPartOne, answerPartTwo)
+ where
+  initialPosition = Position { coordinate = Coordinate { x = 0, y = 0 }
+                             , facing     = North
+                             , visited    = []
+                             }
 
-visitedTwice :: [Coordinate] -> [Coordinate]
-visitedTwice cols =
+
+
+solvePartOne initPosition moves =
+  let endPosition = followPath initPos moves
+      distance    = taxicabDiff initPos endPosition
+  in  taxicabDiff initPosition endPosition
+
+
+solvePartTwo initPosition moves =
+  let endPosition = followPath initPosition moves
+      coordinates = passedMultipleTimes $ visited endPosition
+  in  taxicabDiff initPosition $ Position (last coordinates) North []
+
+
+parseString :: Text -> [Move]
+parseString =
+  L.map (fst . last . readP_to_S move . T.unpack) . splitCommaAndStrip
+
+followPath :: Position -> [Move] -> Position
+followPath = L.foldl translate
+
+initPos = Position { coordinate = Coordinate { x = 0, y = 0 }
+                   , facing     = North
+                   , visited    = []
+                   }
+
+passedMultipleTimes :: [Coordinate] -> [Coordinate]
+passedMultipleTimes cols =
   let uniqueCols = nub $ L.reverse cols
       diff       = cols \\ uniqueCols
   in  diff
