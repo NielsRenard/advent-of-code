@@ -1,7 +1,10 @@
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE FlexibleContexts          #-}
+{-# LANGUAGE TypeFamilies              #-}
 
 module Year2016.Day01
-  ()
+  (draw)
 where
 
 import           Data.Char
@@ -15,7 +18,8 @@ import           RIO.List                      as L
 import           RIO.List.Partial              as L'
 import           RIO.Text                      as T
 import           Text.ParserCombinators.ReadP
-
+import           Diagrams.Prelude               (crimson, square, Diagram, circle, square, regPoly, fc, (#), blue, atop, showOrigin, atPoints, trailVertices)
+import           Diagrams.Backend.SVG.CmdLine
 
 {--
 part 1
@@ -25,8 +29,19 @@ part 2
 Read the assignment wrong initially, thinking it was looking for the first coordinate that it *lands* (and turns) on twice.
 --}
 
-main :: IO (Int, Int)
-main = do
+myCircle :: Diagram B
+myCircle = circle 0.2 # fc blue # showOrigin
+
+mySquare :: Diagram B
+mySquare = square 1 # fc crimson
+
+myBeads :: Diagram B
+myBeads = atPoints (trailVertices $ regPoly 6 1) (repeat myCircle)
+
+draw = mainWith mySquare
+
+answers :: IO (Int, Int)
+answers = do
   input <- readFileUtf8 "data/2016/input/input_2016_01_a.txt"
   let
 --    input = T.pack "R1, R1, R1, R1, R1, R1, R1" -- uncomment to test with hardcoded string
@@ -39,8 +54,6 @@ main = do
                              , facing     = North
                              , visited    = []
                              }
-
-
 
 solvePartOne initPosition moves =
   let endPosition = followPath initPos moves
