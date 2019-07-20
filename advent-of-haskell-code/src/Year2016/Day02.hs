@@ -4,16 +4,9 @@ module Year2016.Day02
   ()
 where
 
-import           Data.Char
-import           Data.Maybe
-import           Prelude                        ( last
-                                                , print
-                                                , read
-                                                , toEnum
-                                                )
-import           RIO                     hiding ( many )
+import           Prelude                        ((!!), head, last )
+import           RIO
 import           RIO.List                      as L
-import           RIO.List.Partial              as L'
 import           RIO.Text                      as T
 import           Text.ParserCombinators.ReadP
 
