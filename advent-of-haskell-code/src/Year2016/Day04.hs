@@ -8,13 +8,10 @@ import           Prelude                        ( read
                                                 , head
                                                 )
 import qualified Data.List.Split               as Split
-import qualified Data.List.NonEmpty            as NE
 import           RIO
 import qualified RIO.Map                       as M
-import           RIO.Char
-import qualified RIO.Seq                       as Seq
+import           RIO.Char                       ( isDigit )
 import qualified RIO.List                      as L
-import           RIO.Text                      as T
 import           Text.ParserCombinators.ReadP
 
 data Room = Room { name :: String
