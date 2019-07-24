@@ -26,6 +26,7 @@ dependencies:
 - diagrams
 - diagrams-lib >= 1.4.2.3
 - diagrams-svg >= 1.4.2
+- split >= 0.2.3.3
 
 
 library:
