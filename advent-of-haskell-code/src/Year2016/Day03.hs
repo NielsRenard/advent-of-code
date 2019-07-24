@@ -8,7 +8,7 @@ import           Prelude                        ( (!!)
                                                 , head
                                                 , last
                                                 )
-import qualified Data.List.Split as Split
+import qualified Data.List.Split               as Split
 import           RIO
 import qualified RIO.Seq                       as Seq
 import qualified RIO.List                      as L
@@ -25,8 +25,7 @@ possible t =
     && ((t !! 1) + (t !! 2) > (t !! 0))
 
 answerTwo = L.length $ L.filter (== True) $ L.map possible chunkedVerticalInput
- where
-  chunkedVerticalInput = Split.chunksOf 3 input2
+  where chunkedVerticalInput = Split.chunksOf 3 input2
 
 input =
   [ [883, 357, 185]
