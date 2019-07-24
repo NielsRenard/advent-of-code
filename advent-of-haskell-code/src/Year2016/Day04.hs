@@ -6,6 +6,7 @@ where
 
 import           Prelude                        ( read
                                                 , head
+                                                , (!!)
                                                 )
 import qualified Data.List.Split               as Split
 import           RIO
@@ -18,10 +19,22 @@ data Room = Room { name :: String
                  , sector :: Int
                  , check :: String} deriving (Show)
 
-
 answerOne =
   let allRooms = L.map parseString input
   in  sum . L.map sector $ L.filter roomIsValid allRooms
+
+answerTwo =
+  let allRooms = L.map parseString input
+  in L.map (\r->
+              L.map (\c-> shiftCipher c (sector r))
+              (name r))
+     allRooms
+
+shiftCipher :: Char -> Int -> Char
+shiftCipher c n = if c == '-'
+                  then ' '
+                  else L.dropWhile (/= c) alphabetForever !! n
+  where alphabetForever = L.cycle ['a'..'z']
 
 roomIsValid :: Room -> Bool
 roomIsValid r = (== calculateChecksum r) $ check r
@@ -30,6 +43,7 @@ parseString :: String -> Room
 parseString = fst . head <$> readP_to_S room
 
 r1 = parseString "aaaaa-bbb-z-y-x-123[abxyz]"
+r2 = parseString "qzmt-zixmtkozy-ivhz-343[abcde]"
 
 calculateChecksum :: Room -> String
 calculateChecksum r =
