@@ -28,7 +28,7 @@ parseString = fst . head <$> readP_to_S room
 
 r1 = parseString "aaaaa-bbb-z-y-x-123[abxyz]"
 
-calculateChecksum :: Room -> [(Char, Int)]
+calculateChecksum :: Room -> String
 calculateChecksum r =
   let removeDashes = L.filter (/= '-')
       frequencies input = M.toList $ M.fromListWith (+) [(c, 1) | c <- input]
@@ -36,7 +36,7 @@ calculateChecksum r =
                                         then flip compare a b
                                         else compare x y)
   in
-    L.take 5 $  L.reverse . sort' . frequencies . removeDashes $ name r
+    L.take 5 . L.map fst . L.reverse . sort' . frequencies . removeDashes $ name r
 
 -- parser of Room e.g. aaaaa-bbb-z-y-x-123[abxyz]
 room :: ReadP Room
@@ -56,13 +56,23 @@ sectorId = fmap read . count 3 $ satisfy isDigit
 
 -- parser of checksum [abxyz]
 checksum :: ReadP String
-checksum =  munch isLowercaseLetter
+checksum =  do
+  open <- bracket'
+  letters <- munch isLcLetter
+  close <- bracket'
+  return letters
+
 
 isLetterOrDash :: Char -> Bool
 isLetterOrDash char = L.any (char ==) $ ['a'..'z'] ++ "-"
 
-isLowercaseLetter :: Char -> Bool
-isLowercaseLetter char = L.any (char ==) ['a'..'z']
+isLcLetter :: Char -> Bool
+isLcLetter char = L.any (char ==) ['a'..'z']
+
+bracket' = satisfy isBracket
+
+isBracket :: Char -> Bool
+isBracket char = L.any (char ==) ['[', ']']
 
 
 input=[
