@@ -26,14 +26,17 @@ rooms = L.map parseString input
 parseString :: String -> Room
 parseString = fst . head <$> readP_to_S room
 
-r1 = parseString $ head input
+r1 = parseString "aaaaa-bbb-z-y-x-123[abxyz]"
 
 calculateChecksum :: Room -> [(Char, Int)]
-calculateChecksum r = let removeDashes = L.filter (/= '-')
-                          frequencies input = M.toList $ M.fromListWith (+) [(c, 1) | c <- input]
-                          sort' = L.sortBy (\(_,a) (_,b) -> compare a b)
-                      in
-                        L.take 5 $  L.reverse . sort' . frequencies . removeDashes $ name r
+calculateChecksum r =
+  let removeDashes = L.filter (/= '-')
+      frequencies input = M.toList $ M.fromListWith (+) [(c, 1) | c <- input]
+      sort' = L.sortBy (\(a,x) (b,y) -> if x == y
+                                        then flip compare a b
+                                        else compare x y)
+  in
+    L.take 5 $  L.reverse . sort' . frequencies . removeDashes $ name r
 
 -- parser of Room e.g. aaaaa-bbb-z-y-x-123[abxyz]
 room :: ReadP Room
