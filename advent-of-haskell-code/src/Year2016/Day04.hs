@@ -14,7 +14,7 @@ import qualified RIO.Map                       as M
 import           RIO.Char                       ( isDigit )
 import qualified RIO.List                      as L
 import           Text.ParserCombinators.ReadP
-
+import qualified RIO.Text                      as T
 data Room = Room { name :: String
                  , sector :: Int
                  , check :: String} deriving (Show)
@@ -24,17 +24,21 @@ answerOne =
   in  sum . L.map sector $ L.filter roomIsValid allRooms
 
 answerTwo =
-  let allRooms = L.map parseString input
-  in L.map (\r->
-              L.map (\c-> shiftCipher c (sector r))
-              (name r))
-     allRooms
+  let
+    allRooms       = L.map parseString input
+    decryptedRooms = L.map
+      (\r ->
+        (sector r, T.pack $ L.map (\c -> shiftCipher c (sector r)) (name r))
+      )
+      allRooms
+  in
+    L.filter (T.isInfixOf (T.pack "northpole object") . snd) decryptedRooms
 
 shiftCipher :: Char -> Int -> Char
 shiftCipher c n = if c == '-'
-                  then ' '
-                  else L.dropWhile (/= c) alphabetForever !! n
-  where alphabetForever = L.cycle ['a'..'z']
+  then ' '
+  else L.dropWhile (/= c) alphabetForever !! n
+  where alphabetForever = L.cycle ['a' .. 'z']
 
 roomIsValid :: Room -> Bool
 roomIsValid r = (== calculateChecksum r) $ check r
