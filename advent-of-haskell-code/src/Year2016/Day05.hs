@@ -4,19 +4,16 @@ module Year2016.Day05
   ()
 where
 
-import           Prelude                        ( read
-                                                , head
-                                                , (!!)
-                                                )
-import qualified Data.List.Split               as Split
-import qualified RIO.Set               as S
-import           RIO
-import qualified RIO.Map                       as M
-import           RIO.Char                       ( isDigit )
-import qualified RIO.List                      as L
-import qualified RIO.Text.Lazy                 as TL
+import           Data.Digest.Pure.MD5
+import qualified Data.List.Split         as Split
 import           Data.Text.Lazy.Encoding as Enc
-import Data.Digest.Pure.MD5
+import           Prelude                 (head, read, (!!))
+import           RIO
+import           RIO.Char                (isDigit)
+import qualified RIO.List                as L
+import qualified RIO.Map                 as M
+import qualified RIO.Set                 as S
+import qualified RIO.Text.Lazy           as TL
 
 {--
 Felt like playing with RIO Text so a lot of clunky string conversion going on.
@@ -27,7 +24,6 @@ answerOne = getAnswer input [702868..12000000]
 -- takes long to run but eventually completes
 answerTwo = getAnswer input [702868..30000000]
 
--- "f12f9cc73009de6f75" -> "f2c730e5"
 getAnswer :: TL.Text -> [Int] -> String
 getAnswer inp nums =
   L.map (\n -> let hash' = concatHash inp n
