@@ -38,7 +38,7 @@ getAnswer inp nums =
   & map snd
 
 isFirstFiveZero :: TL.Text -> Bool
-isFirstFiveZero t = TL.take 5 t == TL.pack ([1..5] *> "0")
+isFirstFiveZero t = TL.all (== '0') (TL.take 5 t)
 
 -- Concats a number to a string of text and produces an md5 hash
 concatHash :: TL.Text -> Int -> TL.Text
