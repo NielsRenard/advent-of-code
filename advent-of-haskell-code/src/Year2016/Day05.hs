@@ -31,7 +31,7 @@ getAnswer inp nums =
   & L.filter ((== True) . (\(a,b,c) -> a))
   & L.filter (\(a,b,c) -> isValidPosition b)
   & L.map (\(a,b,c) -> (b,c))
-  & L.nubBy (\x y -> fst x == fst y ) -- "f12f9cc73009de6f75" -> "f2c730e5"
+  & L.nubBy (\x y -> fst x == fst y ) -- nubBy returns unique elements, retaining first occurence "f12f9cc73009de6f75" -> "f2c730e5"
   & L.sortBy (compare `on` fst)
   & L.map snd
 
