@@ -9,6 +9,7 @@ import           Prelude                        ( read
                                                 , (!!)
                                                 )
 import qualified Data.List.Split               as Split
+import qualified RIO.Set               as S
 import           RIO
 import qualified RIO.Map                       as M
 import           RIO.Char                       ( isDigit )
@@ -26,7 +27,6 @@ answerOne = getAnswer input [702868..12000000]
 -- takes long to run but eventually completes
 answerTwo = getAnswer input [702868..30000000]
 
--- TODO: Only use the first hit for any position
 -- "f12f9cc73009de6f75" -> "f2c730e5"
 getAnswer :: TL.Text -> [Int] -> String
 getAnswer inp nums =
@@ -34,8 +34,10 @@ getAnswer inp nums =
                in (isFirstFiveZero hash', TL.unpack hash' !! 5, TL.unpack hash' !! 6)) nums
   & L.filter ((== True) . (\(a,b,c) -> a))
   & L.filter (\(a,b,c) -> isValidPosition b)
-  & L.sortBy (compare `on` (\(a,b,c)->b))
-  & L.map (\(a,b,c) -> c)
+  & L.map (\(a,b,c) -> (b,c))
+  & L.nubBy (\x y -> fst x == fst y ) -- "f12f9cc73009de6f75" -> "f2c730e5"
+  & L.sortBy (compare `on` fst)
+  & L.map snd
 
 
 isValidPosition :: Char -> Bool
