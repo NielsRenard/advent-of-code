@@ -13,12 +13,24 @@ import           Prelude                        ( last
                                                 )
 import qualified RIO.Map                       as M
 import           RIO
-import Data.Char
-import Data.List.Index
-import qualified Data.ByteString.Char8 as B
+import           Data.Char
+import           Data.List.Index
+import qualified Data.ByteString.Char8         as B
 import qualified RIO.List                      as L
 import qualified RIO.Text                      as T
 
+
+slurper :: ByteString -> Bool
+slurper s = (B.length s > 3) && (isABBA (B.take 4 s) || slurper (B.drop 1 s))
+
+
+isABBA bs =
+  let w = B.unpack bs
+      firstChar = head w
+      notAllEqual x = not (L.all (== firstChar) x)
+  in  (notAllEqual w
+       && firstChar == (w !! 3)
+       && (w !! 1) == (w !! 2))
 
 
 
@@ -26,9 +38,11 @@ regularSeqs = L.filter (odd . fst)
 -- odds are hypernet sequences
 hypernetSeqs = L.filter (even . fst)
 
-
 splitIndexed = index' . B.splitWith (not . isLetter)
-index' = zip [1..]
+index' = zip [1 ..]
+
+--one segment of regularSeqs
+n1 = head $ L.map snd $ regularSeqs s2
 
 m1 = head input
 m2 = last $ take 2 input
@@ -45,7 +59,8 @@ s2 = splitIndexed m2
 
 
 
-input = L.map (T.encodeUtf8 . T.pack)
+input = L.map
+  (T.encodeUtf8 . T.pack)
   [ "xdsqxnovprgovwzkus[fmadbfsbqwzzrzrgdg]aeqornszgvbizdm"
   , "itgslvpxoqqakli[arktzcssgkxktejbno]wsgkbwwtbmfnddt[zblrboqsvezcgfmfvcz]iwyhyatqetsreeyhh"
   , "pyxuijrepsmyiacl[rskpebsqdfctoqg]hbwageeiufvcmuk[wfvdhxyzmfgmcphpfnc]aotmbcnntmdltjxuusn"
