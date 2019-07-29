@@ -4,13 +4,13 @@ module Year2016.Day04
   ()
 where
 
+import           qualified Utils as U
 import           Prelude                        ( read
                                                 , head
                                                 , (!!)
                                                 )
 import qualified Data.List.Split               as Split
 import           RIO
-import qualified RIO.Map                       as M
 import           RIO.Char                       ( isDigit )
 import qualified RIO.List                      as L
 import           Text.ParserCombinators.ReadP
@@ -53,11 +53,10 @@ calculateChecksum :: Room -> String
 calculateChecksum r =
   let
     removeDashes = L.filter (/= '-')
-    frequencies input = M.toList $ M.fromListWith (+) [ (c, 1) | c <- input ]
     sort' = L.sortBy
       (\(a, x) (b, y) -> if x == y then flip compare a b else compare x y)
   in
-    L.take 5 . L.map fst . L.reverse . sort' . frequencies . removeDashes $ name
+    L.take 5 . L.map fst . L.reverse . sort' . U.frequencies . removeDashes $ name
       r
 
 -- parser of Room e.g. aaaaa-bbb-z-y-x-123[abxyz]
