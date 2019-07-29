@@ -48,7 +48,9 @@ regularSeqs = L.map snd . L.filter (odd . fst)
 -- odds are hypernet sequences
 hypernetSeqs = L.map snd . L.filter (even . fst)
 
-okExample1 = B.pack "abba[mnop]qrst"
+okExample1 = B.pack "abba[mnop]qrst" -- supports TLS (abba outside square brackets)
+nokExample1 = B.pack "abcd[bddb]xyyx" -- does not support TLS (bddb within square brackets, even though xyyx is outside square brackets).
+nokExample2 = B.pack "aaaa[qwer]tyui" -- does not support TLS (aaaa is invalid; the interior characters must be different).
 
 input = L.map
   (T.encodeUtf8 . T.pack)
