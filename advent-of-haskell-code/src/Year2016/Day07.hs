@@ -23,6 +23,7 @@ import qualified RIO.Text                      as T
 
 answerOne = length . L.filter (== True) $ L.map checkOne input
 
+checkOne :: ByteString -> Bool
 checkOne ln = let segments = splitIndexed ln
                   regs = regularSeqs segments
                   hypes = hypernetSeqs segments
