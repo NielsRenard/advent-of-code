@@ -20,20 +20,19 @@ import qualified RIO.List                      as L
 import qualified RIO.Text                      as T
 
 
+answerOne :: Int
+answerOne = length . L.filter (== True) $ L.map checkOneLine input
 
-answerOne = length . L.filter (== True) $ L.map checkOne input
-
-checkOne :: ByteString -> Bool
-checkOne ln = let segments = splitIndexed ln
-                  regs = regularSeqs segments
-                  hypes = hypernetSeqs segments
-              in
-                L.any (== True) (L.map slurper regs)
-                && L.all (== False) (L.map slurper hypes)
+checkOneLine :: ByteString -> Bool
+checkOneLine ln = let segments = splitIndexed ln
+                      regs = regularSeqs segments
+                      hypes = hypernetSeqs segments
+                  in
+                    L.any (== True) (L.map slurper regs)
+                    && L.all (== False) (L.map slurper hypes)
 
 slurper :: ByteString -> Bool
 slurper s = (B.length s > 3) && (isABBA (B.take 4 s) || slurper (B.drop 1 s))
-
 
 isABBA bs =
   let w = B.unpack bs
@@ -43,33 +42,16 @@ isABBA bs =
        && firstChar == (w !! 3)
        && (w !! 1) == (w !! 2))
 
+-- split a line in segments, and asign index numbers
+splitIndexed = index' . B.splitWith (not . isLetter)
+  where index' = zip [1..]
 
-
+--evens are regular sequences
 regularSeqs = L.map snd . L.filter (odd . fst)
 -- odds are hypernet sequences
 hypernetSeqs = L.map snd . L.filter (even . fst)
 
-splitIndexed = index' . B.splitWith (not . isLetter)
-index' = zip [1 ..]
-
---one segment of regularSeqs
-n1 = head $ regularSeqs s2
-
-m1 = head input
-m2 = last $ take 2 input
-s2 = splitIndexed m2
-
 okExample1 = B.pack "abba[mnop]qrst"
-
-
-
-
-
-
-
-
-
-
 
 input = L.map
   (T.encodeUtf8 . T.pack)
