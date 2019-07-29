@@ -20,6 +20,14 @@ import qualified RIO.List                      as L
 import qualified RIO.Text                      as T
 
 
+
+checkOne ln = let segments = splitIndexed ln
+                  regs = regularSeqs segments
+                  hypes = hypernetSeqs segments
+              in
+                L.any (== True) (L.map slurper regs)
+                && L.all (== False) (L.map slurper hypes)
+
 slurper :: ByteString -> Bool
 slurper s = (B.length s > 3) && (isABBA (B.take 4 s) || slurper (B.drop 1 s))
 
@@ -34,20 +42,21 @@ isABBA bs =
 
 
 
-regularSeqs = L.filter (odd . fst)
+regularSeqs = L.map snd . L.filter (odd . fst)
 -- odds are hypernet sequences
-hypernetSeqs = L.filter (even . fst)
+hypernetSeqs = L.map snd . L.filter (even . fst)
 
 splitIndexed = index' . B.splitWith (not . isLetter)
 index' = zip [1 ..]
 
 --one segment of regularSeqs
-n1 = head $ L.map snd $ regularSeqs s2
+n1 = head $ regularSeqs s2
 
 m1 = head input
 m2 = last $ take 2 input
 s2 = splitIndexed m2
 
+okExample1 = B.pack "abba[mnop]qrst"
 
 
 
