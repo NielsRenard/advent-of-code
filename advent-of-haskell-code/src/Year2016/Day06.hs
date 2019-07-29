@@ -4,7 +4,7 @@ module Year2016.Day06
   ()
 where
 
-import qualified Utils as U
+import qualified Utils                         as U
 import qualified Data.List.Split               as Split
 import           Prelude                        ( last
                                                 , head
@@ -17,13 +17,15 @@ import qualified RIO.List                      as L
 import qualified RIO.Text                      as T
 
 
-answerOne  =
-  let mostFrequent xs = fst $ last $ L.sortBy (comparing snd) $ U.frequencies xs
+answerOne =
+  let mostFrequent xs =
+          fst $ last $ L.sortBy (comparing snd) $ U.frequencies xs
       nthChar n = mostFrequent $ L.map (T.take 1) $ L.map (T.drop n) input
   in  T.concat $ L.map nthChar [0 .. 7]
 
 answerTwo =
-  let leastFrequent xs = fst $ head $ L.sortBy (comparing snd) $ U.frequencies xs
+  let leastFrequent xs =
+          fst $ head $ L.sortBy (comparing snd) $ U.frequencies xs
       nthChar n = leastFrequent $ L.map (T.take 1) $ L.map (T.drop n) input
   in  T.concat $ L.map nthChar [0 .. 7]
 
