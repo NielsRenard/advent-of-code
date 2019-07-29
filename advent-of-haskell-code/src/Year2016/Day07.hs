@@ -24,27 +24,24 @@ answerOne :: Int
 answerOne = length . L.filter (== True) $ L.map checkOneLine input
 
 checkOneLine :: ByteString -> Bool
-checkOneLine ln = let segments = splitIndexed ln
-                      regs = regularSeqs segments
-                      hypes = hypernetSeqs segments
-                  in
-                    L.any (== True) (L.map slurper regs)
-                    && L.all (== False) (L.map slurper hypes)
+checkOneLine ln =
+  let segments = splitIndexed ln
+      regs     = regularSeqs segments
+      hypes    = hypernetSeqs segments
+  in  L.any (== True) (L.map slurper regs)
+        && L.all (== False) (L.map slurper hypes)
 
 slurper :: ByteString -> Bool
 slurper s = (B.length s > 3) && (isABBA (B.take 4 s) || slurper (B.drop 1 s))
 
 isABBA bs =
-  let w = B.unpack bs
+  let w         = B.unpack bs
       firstChar = head w
       notAllEqual x = not (L.all (== firstChar) x)
-  in  (notAllEqual w
-       && firstChar == (w !! 3)
-       && (w !! 1) == (w !! 2))
+  in  (notAllEqual w && firstChar == (w !! 3) && (w !! 1) == (w !! 2))
 
 -- split a line in segments, and asign index numbers
-splitIndexed = index' . B.splitWith (not . isLetter)
-  where index' = zip [1..]
+splitIndexed = index' . B.splitWith (not . isLetter) where index' = zip [1 ..]
 
 --evens are regular sequences
 regularSeqs = L.map snd . L.filter (odd . fst)
