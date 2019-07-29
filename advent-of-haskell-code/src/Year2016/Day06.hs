@@ -22,6 +22,12 @@ answerOne  =
       nthChar n = mostFrequent $ L.map (T.take 1) $ L.map (T.drop n) input
   in  T.concat $ L.map nthChar [0 .. 7]
 
+answerTwo =
+  let leastFrequent xs = fst $ head $ L.sortBy (comparing snd) $ U.frequencies xs
+      nthChar n = leastFrequent $ L.map (T.take 1) $ L.map (T.drop n) input
+  in  T.concat $ L.map nthChar [0 .. 7]
+
+
 input = L.map
   T.pack
   [ "drhqjkbv"
