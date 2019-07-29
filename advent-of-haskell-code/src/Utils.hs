@@ -1,8 +1,9 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
 module Utils
-(frequencies)
-  where
+  ( frequencies
+  )
+where
 
 import qualified RIO.Map                       as M
 import           RIO
