@@ -45,8 +45,8 @@ partTwoCheckOneLine ln =
   let segments = splitIndexed ln
       regs     = regularSeqs segments
       hypes    = hypernetSeqs segments
-      abbas = L.concat $ L.map (\r -> partTwoSlurper r []) regs
-  in L.any (== True) $ L.map (\a -> hasBAB a hypes) abbas
+      abbas    = L.concat $ L.map (\r -> partTwoSlurper r []) regs
+  in  L.any (== True) $ L.map (\a -> hasBAB a hypes) abbas
 
 slurper :: ByteString -> Bool
 slurper s = (B.length s > 3) && (isABBA (B.take 4 s) || slurper (B.drop 1 s))
@@ -54,24 +54,24 @@ slurper s = (B.length s > 3) && (isABBA (B.take 4 s) || slurper (B.drop 1 s))
 partTwoSlurper :: ByteString -> [ByteString] -> [ByteString]
 partTwoSlurper s ss =
   let seg = B.take 3 s
-  in if B.length s > 2
-     then if isABA seg
-          then partTwoSlurper (B.drop 1 s) $ seg:ss
+  in  if B.length s > 2
+        then if isABA seg
+          then partTwoSlurper (B.drop 1 s) $ seg : ss
           else partTwoSlurper (B.drop 1 s) ss
-     else ss
+        else ss
 
 isABA :: ByteString -> Bool
 isABA bs =
-  let w = B.unpack bs
+  let w         = B.unpack bs
       firstChar = head w
       notAllEqual x = not (L.all (== firstChar) x)
   in  (notAllEqual w && firstChar == (w !! 2))
 
 hasBAB :: ByteString -> [ByteString] -> Bool
 hasBAB aba bs =
-  let a = B.unpack aba
+  let a  = B.unpack aba
       a' = B.pack $ drop 1 a ++ [a !! 1]
-  in L.any (== True) $ L.map (\x -> a' `B.isInfixOf` x ) bs
+  in  L.any (== True) $ L.map (\x -> a' `B.isInfixOf` x) bs
 
 isABBA :: ByteString -> Bool
 isABBA bs =
@@ -92,14 +92,15 @@ okExample1 = B.pack "abba[mnop]qrst" -- supports TLS (abba outside square bracke
 nokExample1 = B.pack "abcd[bddb]xyyx" -- does not support TLS (bddb within square brackets, even though xyyx is outside square brackets).
 nokExample2 = B.pack "aaaa[qwer]tyui" -- does not support TLS (aaaa is invalid; the interior characters must be different).
 partTwoOkExample = B.pack "aba[bab]xyz" -- supports SSL (aba outside square brackets with corresponding bab within square brackets).A
-partTwoOkExample2 =B.pack "aaa[kek]eke" -- supports SSL (eke in supernet with corresponding kek in hypernet; the aaa sequence is not related, because the interior character must be different).
+partTwoOkExample2 = B.pack "aaa[kek]eke" -- supports SSL (eke in supernet with corresponding kek in hypernet; the aaa sequence is not related, because the interior character must be different).
 partTwoOkExample3 = B.pack "zazbz[bzb]cdb" -- supports SSL (zaz has no corresponding aza, but zbz has a corresponding bzb, even though zaz and zbz overlap).
 partTwoNokExample = B.pack "xyx[xyx]xyx" -- does not support SSL (xyx, but no corresponding yxy).
 
 
 
 
-input = L.map B.pack
+input = L.map
+  B.pack
   [ "xdsqxnovprgovwzkus[fmadbfsbqwzzrzrgdg]aeqornszgvbizdm"
   , "itgslvpxoqqakli[arktzcssgkxktejbno]wsgkbwwtbmfnddt[zblrboqsvezcgfmfvcz]iwyhyatqetsreeyhh"
   , "pyxuijrepsmyiacl[rskpebsqdfctoqg]hbwageeiufvcmuk[wfvdhxyzmfgmcphpfnc]aotmbcnntmdltjxuusn"
