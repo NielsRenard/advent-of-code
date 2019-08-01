@@ -20,10 +20,20 @@ import qualified RIO.List                      as L
 import qualified RIO.Text                      as T
 
 
+{-- Part one
+Happy with my slurper function. It checks substrings of 3 for a match, starting from every char, until it finds a match.
+--}
+
+{-- Part two
+Chasing ghosts because I defined an additional incorrect example:
+myWrongAssumption = B.pack "zazbz[bzb]cdb[aza]" -- does not support SSL, not all the ABA's have a BAB
+It's quite clear this example is faulty by reading:
+"zazbz[bzb]cdb" supports SSL (zaz has no corresponding aza, but zbz has a corresponding bzb, even though zaz and zbz overlap).
+--}
+
 answerOne :: Int
 answerOne = length . L.filter (== True) $ L.map checkOneLine input
 
---not 296
 answerTwo :: Int
 answerTwo = length . L.filter (== True) $ L.map partTwoCheckOneLine input
 
@@ -41,7 +51,7 @@ partTwoCheckOneLine ln =
       regs     = regularSeqs segments
       hypes    = hypernetSeqs segments
       abbas = L.concat $ L.map (\r -> partTwoSlurper r []) regs
-  in  L.any (== True) [isBAB a h | a <- abbas, h <- hypes]
+  in L.any (== True) $ L.map (\a -> hasBAB a hypes) abbas
 
 slurper :: ByteString -> Bool
 slurper s = (B.length s > 3) && (isABBA (B.take 4 s) || slurper (B.drop 1 s))
@@ -62,12 +72,11 @@ isABA bs =
       notAllEqual x = not (L.all (== firstChar) x)
   in  (notAllEqual w && firstChar == (w !! 2))
 
--- for now: assumes you pass a valid ABA
-isBAB :: ByteString -> ByteString -> Bool
-isBAB aba bs =
-  let w = B.unpack bs
-      w' = B.unpack aba
-  in  ((w /= w') && (head w == w' !! 1))
+hasBAB :: ByteString -> [ByteString] -> Bool
+hasBAB aba bs =
+  let a = B.unpack aba
+      a' = B.pack $ drop 1 a ++ [a !! 1]
+  in L.any (== True) $ L.map (\x -> a' `B.isInfixOf` x ) bs
 
 isABBA :: ByteString -> Bool
 isABBA bs =
@@ -91,6 +100,7 @@ partTwoOkExample = B.pack "aba[bab]xyz" -- supports SSL (aba outside square brac
 partTwoOkExample2 =B.pack "aaa[kek]eke" -- supports SSL (eke in supernet with corresponding kek in hypernet; the aaa sequence is not related, because the interior character must be different).
 partTwoOkExample3 = B.pack "zazbz[bzb]cdb" -- supports SSL (zaz has no corresponding aza, but zbz has a corresponding bzb, even though zaz and zbz overlap).
 partTwoNokExample = B.pack "xyx[xyx]xyx" -- does not support SSL (xyx, but no corresponding yxy).
+
 
 
 
