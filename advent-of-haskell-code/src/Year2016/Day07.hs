@@ -104,8 +104,7 @@ partTwoNokExample = B.pack "xyx[xyx]xyx" -- does not support SSL (xyx, but no co
 
 
 
-input = L.map
-  (T.encodeUtf8 . T.pack)
+input = L.map B.pack
   [ "xdsqxnovprgovwzkus[fmadbfsbqwzzrzrgdg]aeqornszgvbizdm"
   , "itgslvpxoqqakli[arktzcssgkxktejbno]wsgkbwwtbmfnddt[zblrboqsvezcgfmfvcz]iwyhyatqetsreeyhh"
   , "pyxuijrepsmyiacl[rskpebsqdfctoqg]hbwageeiufvcmuk[wfvdhxyzmfgmcphpfnc]aotmbcnntmdltjxuusn"
