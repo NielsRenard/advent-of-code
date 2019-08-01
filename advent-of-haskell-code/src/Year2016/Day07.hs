@@ -4,20 +4,15 @@ module Year2016.Day07
   ()
 where
 
-import qualified Utils                         as U
-import qualified Data.List.Split               as Split
 import           Prelude                        ( last
                                                 , head
                                                 , read
                                                 , (!!)
                                                 )
-import qualified RIO.Map                       as M
 import           RIO
 import           Data.Char
-import           Data.List.Index
 import qualified Data.ByteString.Char8         as B
 import qualified RIO.List                      as L
-import qualified RIO.Text                      as T
 
 
 {-- Part one
