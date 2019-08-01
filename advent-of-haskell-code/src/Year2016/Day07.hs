@@ -21,7 +21,7 @@ Happy with my slurper function. It checks substrings of 3 for a match, starting 
 
 {-- Part two
 Chasing ghosts because I defined an additional incorrect example:
-myWrongAssumption = B.pack "zazbz[bzb]cdb[aza]" -- does not support SSL, not all the ABA's have a BAB
+myWrongAssumption = B.pack "zazbz[bzb]cdb[xyz]" -- does not support SSL, not all the ABA's have a BAB
 It's quite clear this example is faulty by reading:
 "zazbz[bzb]cdb" supports SSL (zaz has no corresponding aza, but zbz has a corresponding bzb, even though zaz and zbz overlap).
 --}
