@@ -23,6 +23,9 @@ import qualified RIO.Text                      as T
 answerOne :: Int
 answerOne = length . L.filter (== True) $ L.map checkOneLine input
 
+answerTwo :: Int
+answerTwo = length . L.filter (== True) $ L.map partTwoCheckOneLine input
+
 checkOneLine :: ByteString -> Bool
 checkOneLine ln =
   let segments = splitIndexed ln
@@ -31,9 +34,37 @@ checkOneLine ln =
   in  L.any (== True) (L.map slurper regs)
         && L.all (== False) (L.map slurper hypes)
 
+partTwoCheckOneLine :: ByteString -> Bool
+partTwoCheckOneLine ln =
+  let segments = splitIndexed ln
+      regs     = regularSeqs segments
+      hypes    = hypernetSeqs segments
+      abbas = L.filter partTwoSlurper regs
+  in  L.any (== True) [isBAB a h | a <- abbas, h <- hypes]
+
 slurper :: ByteString -> Bool
 slurper s = (B.length s > 3) && (isABBA (B.take 4 s) || slurper (B.drop 1 s))
 
+partTwoSlurper :: ByteString -> Bool
+partTwoSlurper s =
+  let seg = B.take 3 s
+  in (B.length s > 2) && (isABA seg || partTwoSlurper (B.drop 1 s))
+
+isABA :: ByteString -> Bool
+isABA bs =
+  let w = B.unpack bs
+      firstChar = head w
+      notAllEqual x = not (L.all (== firstChar) x)
+  in  (notAllEqual w && firstChar == (w !! 2))
+
+-- for now: assumes you pass a valid ABA
+isBAB :: ByteString -> ByteString -> Bool
+isBAB aba bs =
+  let w = B.unpack bs
+      w' = B.unpack aba
+  in  ((w /= w') && (head w == w' !! 1))
+
+isABBA :: ByteString -> Bool
 isABBA bs =
   let w         = B.unpack bs
       firstChar = head w
@@ -51,6 +82,12 @@ hypernetSeqs = L.map snd . L.filter (even . fst)
 okExample1 = B.pack "abba[mnop]qrst" -- supports TLS (abba outside square brackets)
 nokExample1 = B.pack "abcd[bddb]xyyx" -- does not support TLS (bddb within square brackets, even though xyyx is outside square brackets).
 nokExample2 = B.pack "aaaa[qwer]tyui" -- does not support TLS (aaaa is invalid; the interior characters must be different).
+partTwoOkExample = B.pack "aba[bab]xyz" -- supports SSL (aba outside square brackets with corresponding bab within square brackets).A
+partTwoOkExample2 =B.pack "aaa[kek]eke" -- supports SSL (eke in supernet with corresponding kek in hypernet; the aaa sequence is not related, because the interior character must be different).
+partTwoOkExample3 = B.pack "zazbz[bzb]cdb" -- supports SSL (zaz has no corresponding aza, but zbz has a corresponding bzb, even though zaz and zbz overlap).
+partTwoNokExample = B.pack "xyx[xyx]xyx" -- does not support SSL (xyx, but no corresponding yxy).
+
+
 
 input = L.map
   (T.encodeUtf8 . T.pack)
