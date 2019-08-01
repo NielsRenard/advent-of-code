@@ -23,6 +23,7 @@ import qualified RIO.Text                      as T
 answerOne :: Int
 answerOne = length . L.filter (== True) $ L.map checkOneLine input
 
+--not 296
 answerTwo :: Int
 answerTwo = length . L.filter (== True) $ L.map partTwoCheckOneLine input
 
@@ -39,16 +40,20 @@ partTwoCheckOneLine ln =
   let segments = splitIndexed ln
       regs     = regularSeqs segments
       hypes    = hypernetSeqs segments
-      abbas = L.filter partTwoSlurper regs
+      abbas = L.concat $ L.map (\r -> partTwoSlurper r []) regs
   in  L.any (== True) [isBAB a h | a <- abbas, h <- hypes]
 
 slurper :: ByteString -> Bool
 slurper s = (B.length s > 3) && (isABBA (B.take 4 s) || slurper (B.drop 1 s))
 
-partTwoSlurper :: ByteString -> Bool
-partTwoSlurper s =
+partTwoSlurper :: ByteString -> [ByteString] -> [ByteString]
+partTwoSlurper s ss =
   let seg = B.take 3 s
-  in (B.length s > 2) && (isABA seg || partTwoSlurper (B.drop 1 s))
+  in if B.length s > 2
+     then if isABA seg
+          then partTwoSlurper (B.drop 1 s) $ seg:ss
+          else partTwoSlurper (B.drop 1 s) ss
+     else ss
 
 isABA :: ByteString -> Bool
 isABA bs =
