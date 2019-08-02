@@ -16,62 +16,16 @@ import qualified RIO.List                      as L
 
 
 {-- Part one
-Happy with my slurper function. It checks substrings of 3 for a match, starting from every char, until it finds a match.
+An IP always starts with a supernet sequence.
+Supernet and hypernet sequences always alternate
+So we can use the index to determine which is which.
+
+Happy with my supportsTLS function. It checks substrings of 3 for a match, starting from every char, until it finds a match.
 --}
 
-{-- Part two
-Chasing ghosts because I defined an additional incorrect example:
-myWrongAssumption = B.pack "zazbz[bzb]cdb[xyz]" -- does not support SSL, not all the ABA's have a BAB
-It's quite clear this example is faulty by reading:
-"zazbz[bzb]cdb" supports SSL (zaz has no corresponding aza, but zbz has a corresponding bzb, even though zaz and zbz overlap).
---}
 
 answerOne :: Int
 answerOne = length . L.filter (== True) $ L.map checkOneLine input
-
-answerTwo :: Int
-answerTwo = length . L.filter (== True) $ L.map partTwoCheckOneLine input
-
-checkOneLine :: ByteString -> Bool
-checkOneLine ln =
-  let segments = splitIndexed ln
-      supes     = supernetSeqs segments
-      hypes    = hypernetSeqs segments
-  in  L.any (== True) (L.map slurper supes)
-        && L.all (== False) (L.map slurper hypes)
-
-partTwoCheckOneLine :: ByteString -> Bool
-partTwoCheckOneLine ln =
-  let segments = splitIndexed ln
-      supes     = supernetSeqs segments
-      hypes    = hypernetSeqs segments
-      abbas    = L.concat $ L.map (\r -> partTwoSlurper r []) supes
-  in  L.any (== True) $ L.map (`hasBAB` hypes) abbas
-
-slurper :: ByteString -> Bool
-slurper s = (B.length s > 3) && (isABBA (B.take 4 s) || slurper (B.drop 1 s))
-
-partTwoSlurper :: ByteString -> [ByteString] -> [ByteString]
-partTwoSlurper s ss =
-  let seg = B.take 3 s
-  in  if B.length s > 2
-        then if isABA seg
-          then partTwoSlurper (B.drop 1 s) $ seg : ss
-          else partTwoSlurper (B.drop 1 s) ss
-        else ss
-
-isABA :: ByteString -> Bool
-isABA bs =
-  let w         = B.unpack bs
-      firstChar = head w
-      notAllEqual x = not (L.all (== firstChar) x)
-  in  (notAllEqual w && firstChar == (w !! 2))
-
-hasBAB :: ByteString -> [ByteString] -> Bool
-hasBAB aba bs =
-  let a  = B.unpack aba
-      a' = B.pack $ drop 1 a ++ [a !! 1]
-  in  L.any (== True) $ L.map (\x -> a' `B.isInfixOf` x) bs
 
 isABBA :: ByteString -> Bool
 isABBA bs =
@@ -80,13 +34,69 @@ isABBA bs =
       notAllEqual x = not (L.all (== firstChar) x)
   in  (notAllEqual w && firstChar == (w !! 3) && (w !! 1) == (w !! 2))
 
--- split a line in segments, and asign index numbers
+-- split a line in segments, and assign index numbers
 splitIndexed = index' . B.splitWith (not . isLetter) where index' = zip [1 ..]
 
 --evens are supernet sequences
 supernetSeqs = L.map snd . L.filter (odd . fst)
 -- odds are hypernet sequences
 hypernetSeqs = L.map snd . L.filter (even . fst)
+
+checkOneLine :: ByteString -> Bool
+checkOneLine ln =
+  let segments = splitIndexed ln
+      supes     = supernetSeqs segments
+      hypes    = hypernetSeqs segments
+  in  L.any (== True) (L.map supportsTLS supes)
+        && L.all (== False) (L.map supportsTLS hypes)
+
+-- takes an IP string and checks if there are any ABBA sequences
+supportsTLS :: ByteString -> Bool
+supportsTLS s = (B.length s > 3) && (isABBA (B.take 4 s) || supportsTLS (B.drop 1 s))
+
+{-- Part two
+Chasing ghosts because I defined an additional incorrect example:
+myWrongAssumption = B.pack "zazbz[bzb]cdb[xyz]" -- does not support SSL, not all the ABA's have a BAB
+It's quite clear this example is faulty by reading:
+"zazbz[bzb]cdb" supports SSL (zaz has no corresponding aza, but zbz has a corresponding bzb, even though zaz and zbz overlap).
+--}
+
+answerTwo :: Int
+answerTwo = length . L.filter (== True) $ L.map supportsSSL input
+
+supportsSSL :: ByteString -> Bool
+supportsSSL ln =
+  let segments = splitIndexed ln
+      supes     = supernetSeqs segments
+      hypes    = hypernetSeqs segments
+      abbas    = L.concat $ L.map (\r -> findABASequences r []) supes
+  in  L.any (== True) $ L.map (`hasBAB` hypes) abbas
+
+isABA :: ByteString -> Bool
+isABA bs =
+  let w         = B.unpack bs
+      firstChar = head w
+      notAllEqual x = not (L.all (== firstChar) x)
+  in  (notAllEqual w && firstChar == (w !! 2))
+
+-- takes an ABA and checks if there is a corresponding BAB in the list of hypernet sequences
+hasBAB :: ByteString -> [ByteString] -> Bool
+hasBAB aba bs =
+  let a  = B.unpack aba
+      a' = B.pack $ drop 1 a ++ [a !! 1]
+  in  L.any (== True) $ L.map (\x -> a' `B.isInfixOf` x) bs
+
+-- takes an IP string and an empty list, returns all the ABA sequences
+findABASequences :: ByteString -> [ByteString] -> [ByteString]
+findABASequences s ss =
+  let seg = B.take 3 s
+      next = B.drop 1 s
+  in  if B.length s > 2
+        then if isABA seg
+          then findABASequences next $ seg : ss
+          else findABASequences next ss
+        else ss
+
 
 okExample1 = B.pack "abba[mnop]qrst" -- supports TLS (abba outside square brackets)
 nokExample1 = B.pack "abcd[bddb]xyyx" -- does not support TLS (bddb within square brackets, even though xyyx is outside square brackets).
