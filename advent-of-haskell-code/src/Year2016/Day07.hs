@@ -45,14 +45,15 @@ hypernetSeqs = L.map snd . L.filter (even . fst)
 checkOneLine :: ByteString -> Bool
 checkOneLine ln =
   let segments = splitIndexed ln
-      supes     = supernetSeqs segments
+      supes    = supernetSeqs segments
       hypes    = hypernetSeqs segments
   in  L.any (== True) (L.map supportsTLS supes)
         && L.all (== False) (L.map supportsTLS hypes)
 
 -- takes an IP string and checks if there are any ABBA sequences
 supportsTLS :: ByteString -> Bool
-supportsTLS s = (B.length s > 3) && (isABBA (B.take 4 s) || supportsTLS (B.drop 1 s))
+supportsTLS s =
+  (B.length s > 3) && (isABBA (B.take 4 s) || supportsTLS (B.drop 1 s))
 
 {-- Part two
 Chasing ghosts because I defined an additional incorrect example:
@@ -67,7 +68,7 @@ answerTwo = length . L.filter (== True) $ L.map supportsSSL input
 supportsSSL :: ByteString -> Bool
 supportsSSL ln =
   let segments = splitIndexed ln
-      supes     = supernetSeqs segments
+      supes    = supernetSeqs segments
       hypes    = hypernetSeqs segments
       abbas    = L.concat $ L.map (\r -> findABASequences r []) supes
   in  L.any (== True) $ L.map (`hasBAB` hypes) abbas
@@ -89,7 +90,7 @@ hasBAB aba bs =
 -- takes an IP string and an empty list, returns all the ABA sequences
 findABASequences :: ByteString -> [ByteString] -> [ByteString]
 findABASequences s ss =
-  let seg = B.take 3 s
+  let seg  = B.take 3 s
       next = B.drop 1 s
   in  if B.length s > 2
         then if isABA seg
