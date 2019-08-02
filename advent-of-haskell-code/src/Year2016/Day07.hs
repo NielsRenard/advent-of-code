@@ -35,18 +35,18 @@ answerTwo = length . L.filter (== True) $ L.map partTwoCheckOneLine input
 checkOneLine :: ByteString -> Bool
 checkOneLine ln =
   let segments = splitIndexed ln
-      regs     = regularSeqs segments
+      supes     = supernetSeqs segments
       hypes    = hypernetSeqs segments
-  in  L.any (== True) (L.map slurper regs)
+  in  L.any (== True) (L.map slurper supes)
         && L.all (== False) (L.map slurper hypes)
 
 partTwoCheckOneLine :: ByteString -> Bool
 partTwoCheckOneLine ln =
   let segments = splitIndexed ln
-      regs     = regularSeqs segments
+      supes     = supernetSeqs segments
       hypes    = hypernetSeqs segments
-      abbas    = L.concat $ L.map (\r -> partTwoSlurper r []) regs
-  in  L.any (== True) $ L.map (\a -> hasBAB a hypes) abbas
+      abbas    = L.concat $ L.map (\r -> partTwoSlurper r []) supes
+  in  L.any (== True) $ L.map (`hasBAB` hypes) abbas
 
 slurper :: ByteString -> Bool
 slurper s = (B.length s > 3) && (isABBA (B.take 4 s) || slurper (B.drop 1 s))
@@ -83,8 +83,8 @@ isABBA bs =
 -- split a line in segments, and asign index numbers
 splitIndexed = index' . B.splitWith (not . isLetter) where index' = zip [1 ..]
 
---evens are regular sequences
-regularSeqs = L.map snd . L.filter (odd . fst)
+--evens are supernet sequences
+supernetSeqs = L.map snd . L.filter (odd . fst)
 -- odds are hypernet sequences
 hypernetSeqs = L.map snd . L.filter (even . fst)
 
