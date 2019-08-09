@@ -5,14 +5,18 @@ module Year2016.Day08
 where
 
 import           Prelude                        ( head
+                                                , last
+                                                , read
                                                 , (!!)
                                                 , putStrLn
                                                 )
+import           Data.Char (isDigit, digitToInt)
 import           RIO
 import qualified RIO.List                      as L
 import qualified RIO.List.Partial              as L'
 import qualified RIO.Set                       as Set
 import           Text.Pretty.Simple             ( pPrint )
+import           Text.ParserCombinators.ReadP
 
 {- TODO: refactor Screen to be a Set. I got tangled up changing from List to Set halfway -}
 
@@ -76,6 +80,34 @@ answerOne =
   let screen = initScreen 50 6
   in
     screen
+
+data Operation = Rect Width Height | RotateColumn Int Int | RotateRow Int Int deriving (Show)
+
+allOperations = L.map (fst . last . readP_to_S operationParser) input
+
+operationParser :: ReadP Operation
+operationParser = do
+  op <- string "rect " <|> string "rotate column x=" <|> string "rotate row y="
+  case op of
+    "rect " -> do
+      w <- count 2 digit <|> count 1 digit
+      x <- char 'x'
+      h <- digitToInt <$> digit
+      return $ Rect (read w) h
+    "rotate column x=" -> do
+      c <- count 2 digit <|> count 1 digit
+      by <- string " by "
+      offset <- count 2 digit <|> count 1 digit
+      return $ RotateColumn (read c) (read offset)
+    "rotate row y=" -> do
+      r <- count 2 digit <|> count 1 digit
+      by <- string " by "
+      offset <- count 2 digit <|> count 1 digit
+      return $ RotateRow (read r) (read offset)
+
+-- parser of digits
+digit :: ReadP Char
+digit = satisfy isDigit
 
 rect :: Width -> Height -> Screen -> Screen
 rect w h oldScreen =
