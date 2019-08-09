@@ -76,13 +76,31 @@ type Height = Int
 
 -}
 
-answerOne =
-  let screen = initScreen 50 6
+-- how many pixels should be lit?
+answerOne = L.length $ L.filter (== '#') $ render $ solvePartOne 50 6 allOperations
+
+solvePartOne screenWidth screenHeight operations =
+  let screen = initScreen screenWidth screenHeight
   in
-    screen
+    L.foldl' (\s x -> case x of
+                       (Rect w h) -> rect w h s
+                       (RotateColumn c o) -> rotateColumn c o s
+                       (RotateRow r o') -> rotateRow r o' s) screen operations
+
+{-
+  ####..##...##..###...##..###..#..#.#...#.##...##..
+  #....#..#.#..#.#..#.#..#.#..#.#..#.#...##..#.#..#.
+  ###..#..#.#..#.#..#.#....#..#.####..#.#.#..#.#..#.
+  #....#..#.####.###..#.##.###..#..#...#..####.#..#.
+  #....#..#.#..#.#.#..#..#.#....#..#...#..#..#.#..#.
+  ####..##..#..#.#..#..###.#....#..#...#..#..#..##..
+-}
+
+
 
 data Operation = Rect Width Height | RotateColumn Int Int | RotateRow Int Int deriving (Show)
 
+exampleOperations = L.map (fst . last . readP_to_S operationParser) exampleInput
 allOperations = L.map (fst . last . readP_to_S operationParser) input
 
 operationParser :: ReadP Operation
@@ -207,7 +225,14 @@ p1 = Pixel { lit = True, x = 0, y = 0 }
 
 -- puzzle input
 
-input=
+exampleInput =
+  [ "rect 3x2"
+  , "rotate column x=1 by 1"
+  , "rotate row y=0 by 4"
+  , "rotate column x=1 by 1"
+  ]
+
+input =
   [
     "rect 1x1"
   , "rotate row y=0 by 7"
