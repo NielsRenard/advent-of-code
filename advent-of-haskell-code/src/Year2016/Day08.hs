@@ -21,14 +21,14 @@ type Height = Int
 initScreen :: Width -> Height -> Screen
 initScreen w h = [ Pixel False x' y' | x' <- [0 .. w], y' <- [0 .. h] ]
 
-renderScreen :: Screen -> String
-renderScreen s =
+render :: [Pixel] -> String
+render s =
   let maxHeight = y $ L'.maximumBy (comparing y) s
       allRows   = [ getRow s y' | y' <- [0 .. maxHeight] ]
   in  unlines $ L.map (L.map renderPixel) allRows
 
-printScreen :: Screen -> IO ()
-printScreen = putStrLn . renderScreen
+print :: Screen -> IO ()
+print = putStrLn . render
 
 getRow pxs rowNum = L.filter (\p -> y p == rowNum) pxs
 
