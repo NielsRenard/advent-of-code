@@ -10,7 +10,9 @@ import           Prelude                        ( head
                                                 , (!!)
                                                 , putStrLn
                                                 )
-import           Data.Char (isDigit, digitToInt)
+import           Data.Char                      ( isDigit
+                                                , digitToInt
+                                                )
 import           RIO
 import qualified RIO.List                      as L
 import qualified RIO.List.Partial              as L'
@@ -77,15 +79,19 @@ type Height = Int
 -}
 
 -- how many pixels should be lit?
-answerOne = L.length $ L.filter (== '#') $ render $ solvePartOne 50 6 allOperations
+answerOne =
+  L.length $ L.filter (== '#') $ render $ solvePartOne 50 6 allOperations
 
 solvePartOne screenWidth screenHeight operations =
   let screen = initScreen screenWidth screenHeight
-  in
-    L.foldl' (\s x -> case x of
-                       (Rect w h) -> rect w h s
-                       (RotateColumn c o) -> rotateColumn c o s
-                       (RotateRow r o') -> rotateRow r o' s) screen operations
+  in  L.foldl'
+        (\s x -> case x of
+          (Rect         w h ) -> rect w h s
+          (RotateColumn c o ) -> rotateColumn c o s
+          (RotateRow    r o') -> rotateRow r o' s
+        )
+        screen
+        operations
 
 {-
   ####..##...##..###...##..###..#..#.#...#.##...##..
@@ -96,11 +102,10 @@ solvePartOne screenWidth screenHeight operations =
   ####..##..#..#.#..#..###.#....#..#...#..#..#..##..
 -}
 
-
-
 data Operation = Rect Width Height | RotateColumn Int Int | RotateRow Int Int deriving (Show)
 
-exampleOperations = L.map (fst . last . readP_to_S operationParser) exampleInput
+exampleOperations =
+  L.map (fst . last . readP_to_S operationParser) exampleInput
 allOperations = L.map (fst . last . readP_to_S operationParser) input
 
 operationParser :: ReadP Operation
@@ -113,13 +118,13 @@ operationParser = do
       h <- digitToInt <$> digit
       return $ Rect (read w) h
     "rotate column x=" -> do
-      c <- count 2 digit <|> count 1 digit
-      by <- string " by "
+      c      <- count 2 digit <|> count 1 digit
+      by     <- string " by "
       offset <- count 2 digit <|> count 1 digit
       return $ RotateColumn (read c) (read offset)
     "rotate row y=" -> do
-      r <- count 2 digit <|> count 1 digit
-      by <- string " by "
+      r      <- count 2 digit <|> count 1 digit
+      by     <- string " by "
       offset <- count 2 digit <|> count 1 digit
       return $ RotateRow (read r) (read offset)
 
@@ -137,46 +142,46 @@ rotateColumn :: Int -> Int -> Screen -> Screen
 rotateColumn x by scr =
   let oldCol = getColumn scr x
       newCol = Set.fromList $ rotateColumn' oldCol by
-      scr' = Set.fromList scr
-  in Set.toList $
-     Set.union newCol scr'
+      scr'   = Set.fromList scr
+  in  Set.toList $ Set.union newCol scr'
 
 -- duplicate first, generify later
 rotateRow :: Int -> Int -> Screen -> Screen
 rotateRow x by scr =
   let oldRow = getRow scr x
       newRow = Set.fromList $ rotateRow' oldRow by
-      scr' = Set.fromList scr
-  in Set.toList $
-     Set.union newRow scr'
+      scr'   = Set.fromList scr
+  in  Set.toList $ Set.union newRow scr'
 
 -- duplicate first, generify later
 rotateRow' :: [Pixel] -> Int -> [Pixel]
 rotateRow' ps n =
-  let
-    length = L.length  ps
-  in L.map (\p ->
-               let currentX = x p
-                   nextX = (x p + n)
-               in Pixel { lit = lit p
-                        , x = if nextX >= length
-                              then nextX `mod` length
-                              else nextX
-                        , y = y p}) ps
+  let length = L.length ps
+  in  L.map
+        (\p ->
+          let currentX = x p
+              nextX    = (x p + n)
+          in  Pixel { lit = lit p
+                    , x = if nextX >= length then nextX `mod` length else nextX
+                    , y = y p
+                    }
+        )
+        ps
 
 
 rotateColumn' :: [Pixel] -> Int -> [Pixel]
 rotateColumn' ps n =
-  let
-    length = L.length  ps
-  in L.map (\p ->
-               let currentY = y p
-                   nextY = (y p + n)
-               in Pixel { lit = lit p
-                        , x = x p
-                        , y = if nextY >= length
-                              then nextY `mod` length
-                              else nextY}) ps
+  let length = L.length ps
+  in  L.map
+        (\p ->
+          let currentY = y p
+              nextY    = (y p + n)
+          in  Pixel { lit = lit p
+                    , x = x p
+                    , y = if nextY >= length then nextY `mod` length else nextY
+                    }
+        )
+        ps
 
 
 initScreen :: Width -> Height -> Screen
@@ -233,8 +238,7 @@ exampleInput =
   ]
 
 input =
-  [
-    "rect 1x1"
+  [ "rect 1x1"
   , "rotate row y=0 by 7"
   , "rect 1x1"
   , "rotate row y=0 by 5"
