@@ -46,13 +46,14 @@ rotateColumn :: [Pixel] -> Int -> [Pixel]
 rotateColumn ps n =
   let
     length = L.length  ps
-  in L.map (\p -> Pixel { lit = lit p
+  in L.map (\p ->
+               let currentY = y p
+                   nextY = (y p + n)
+               in Pixel { lit = lit p
                         , x = x p
-                        , y = if (y p + 1) == length
-                              then 0
-                              else y p + 1}) ps
-
-
+                        , y = if nextY >= length
+                              then nextY `mod` length
+                              else nextY}) ps
 
 initScreen :: Width -> Height -> Screen
 initScreen w h = [ Pixel False x' y' | x' <- [0 .. w - 1], y' <- [0 .. h - 1] ]
