@@ -43,9 +43,15 @@ rect w h oldScreen =
   in  Set.toList $ Set.union newRect oldScreen'
 
 rotateColumn :: [Pixel] -> Int -> [Pixel]
-rotateColumn column offset = let length = L.length column
-                             in
-                               take length $ L.drop (length - offset) $ L.cycle column
+rotateColumn ps n =
+  let
+    length = L.length  ps
+  in L.map (\p -> Pixel { lit = lit p
+                        , x = x p
+                        , y = if (y p + 1) == length
+                              then 0
+                              else y p + 1}) ps
+
 
 
 initScreen :: Width -> Height -> Screen
