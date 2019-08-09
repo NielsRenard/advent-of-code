@@ -5,36 +5,30 @@ module Year2016.Day08
   ()
 where
 
-import qualified Data.List.Split               as Split
-import           Data.Text.Lazy.Encoding       as Enc
 import           Prelude                        ( head
-                                                , read
                                                 , (!!)
-                                                , putStr
+                                                , putStrLn
                                                 )
 import           RIO
-import           RIO.Char                       ( isDigit )
 import qualified RIO.List                      as L
 import qualified RIO.List.Partial              as L'
-import qualified RIO.Map                       as M
-import qualified RIO.Set                       as S
-import qualified RIO.Text.Lazy                 as TL
 
 data Pixel = Pixel { lit :: Bool, x :: Int, y :: Int } deriving (Show)
 type Screen = [Pixel]
 type Width = Int
 type Height = Int
-type F = False
-type T = True
 
 initScreen :: Width -> Height -> Screen
 initScreen w h = [ Pixel False x' y' | x' <- [0 .. w], y' <- [0 .. h] ]
 
-renderScreen :: Screen -> IO ()
+renderScreen :: Screen -> String
 renderScreen s =
   let maxHeight = y $ L'.maximumBy (comparing y) s
       allRows   = [ getRow s y' | y' <- [0 .. maxHeight] ]
-  in  putStr $ unlines $ L.map (L.map renderPixel) allRows
+  in  unlines $ L.map (L.map renderPixel) allRows
+
+printScreen :: Screen -> IO ()
+printScreen = putStrLn . renderScreen
 
 getRow pxs rowNum = L.filter (\p -> y p == rowNum) pxs
 
