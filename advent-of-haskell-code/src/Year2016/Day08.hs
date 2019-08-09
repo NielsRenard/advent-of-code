@@ -34,8 +34,12 @@ type Screen = [Pixel]
 type Width = Int
 type Height = Int
 
-{-
-  try out the puzzle example:
+{- Example
+
+  skip ahead:
+  λ print $ rotateColumn 1 1 $ rotateRow 0 4 $ rotateColumn 1 1 $ rect 3 2 $ initScreen 7 3
+
+  step by step:
   λ s0 = initScreen 7 3
   λ print s0
   .......
@@ -54,6 +58,18 @@ type Height = Int
   ###....
   .#.....
 
+  λ s3 = rotateRow 0 4 s2
+  λ print s3
+  ....#.#
+  ###....
+  .#.....
+
+  λ s4 = rotateColumn 1 1 s3
+  λ print s4
+  .#..#.#
+  #.#....
+  .#.....
+
 -}
 rect :: Width -> Height -> Screen -> Screen
 rect w h oldScreen =
@@ -69,6 +85,30 @@ rotateColumn x by scr =
   in Set.toList $
      Set.union newCol scr'
 
+-- duplicate first, generify later
+rotateRow :: Int -> Int -> Screen -> Screen
+rotateRow x by scr =
+  let oldRow = getRow scr x
+      newRow = Set.fromList $ rotateRow' oldRow by
+      scr' = Set.fromList scr
+  in Set.toList $
+     Set.union newRow scr'
+
+-- duplicate first, generify later
+rotateRow' :: [Pixel] -> Int -> [Pixel]
+rotateRow' ps n =
+  let
+    length = L.length  ps
+  in L.map (\p ->
+               let currentX = x p
+                   nextX = (x p + n)
+               in Pixel { lit = lit p
+                        , x = if nextX >= length
+                              then nextX `mod` length
+                              else nextX
+                        , y = y p}) ps
+
+
 rotateColumn' :: [Pixel] -> Int -> [Pixel]
 rotateColumn' ps n =
   let
@@ -81,6 +121,7 @@ rotateColumn' ps n =
                         , y = if nextY >= length
                               then nextY `mod` length
                               else nextY}) ps
+
 
 initScreen :: Width -> Height -> Screen
 initScreen w h = [ Pixel False x' y' | x' <- [0 .. w - 1], y' <- [0 .. h - 1] ]
