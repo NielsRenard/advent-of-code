@@ -21,6 +21,7 @@ data Pixel = Pixel { lit :: Bool, x :: Int, y :: Int } deriving (Show)
 instance Eq Pixel where
   p1 == p2 = x p1 == x p2 && y p1 == y p2
 
+-- custom comparator that ignores if pixel is 'lit'
 instance Ord Pixel where
   compare (Pixel _ x1 y1) (Pixel _ x2 y2) = if xComparison == EQ
     then yComparison
