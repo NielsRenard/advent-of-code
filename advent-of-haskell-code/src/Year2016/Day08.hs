@@ -1,4 +1,3 @@
-{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
 module Year2016.Day08
@@ -15,13 +14,9 @@ import qualified RIO.List.Partial              as L'
 import qualified RIO.Set                       as Set
 import Text.Pretty.Simple (pPrint)
 
-
-
 {- TODO: refactor Screen to be a Set. I got tangled up changing from List to Set halfway -}
 
 data Pixel = Pixel { lit :: Bool, x :: Int, y :: Int } deriving (Show)
-
---deriving instance Ord Pixel
 
 instance Eq Pixel where
   p1 == p2 = x p1 == x p2 && y p1 == y p2
