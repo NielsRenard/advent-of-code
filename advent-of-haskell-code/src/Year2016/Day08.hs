@@ -80,7 +80,7 @@ answerOne =
 rect :: Width -> Height -> Screen -> Screen
 rect w h oldScreen =
   let oldScreen' = Set.fromList oldScreen
-      newRect    = Set.fromList $ createRect 3 2
+      newRect    = Set.fromList $ createRect w h
   in  Set.toList $ Set.union newRect oldScreen'
 
 rotateColumn :: Int -> Int -> Screen -> Screen
