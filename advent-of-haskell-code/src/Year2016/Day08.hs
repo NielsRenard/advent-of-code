@@ -42,6 +42,12 @@ rect w h oldScreen =
       newRect    = Set.fromList $ createRect 3 2
   in  Set.toList $ Set.union newRect oldScreen'
 
+rotateColumn :: [Pixel] -> Int -> [Pixel]
+rotateColumn column offset = let length = L.length column
+                             in
+                               take length $ L.drop (length - offset) $ L.cycle column
+
+
 initScreen :: Width -> Height -> Screen
 initScreen w h = [ Pixel False x' y' | x' <- [0 .. w - 1], y' <- [0 .. h - 1] ]
 
@@ -78,6 +84,9 @@ scr0 =
   , Pixel False 0 1 , Pixel True  1 1 , Pixel True  2 1 , Pixel False 3 1 , Pixel True  4 1
   , Pixel True  0 2 , Pixel True  1 2 , Pixel True  2 2 , Pixel False 3 2 , Pixel False 4 2
   ]
-
+c1 = getColumn scr0 0
+c2 = getColumn scr0 2
+r1 = getRow scr0 1
+r2 = getRow scr0 2
 p0 = Pixel { lit = False, x = 0, y = 0 }
 p1 = Pixel { lit = True, x = 0, y = 0 }
