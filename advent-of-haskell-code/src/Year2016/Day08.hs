@@ -1,4 +1,4 @@
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
 module Year2016.Day08
@@ -12,18 +12,45 @@ import           Prelude                        ( head
 import           RIO
 import qualified RIO.List                      as L
 import qualified RIO.List.Partial              as L'
+import qualified RIO.Set                       as Set
+import Text.Pretty.Simple (pPrint)
+
+
+
+{- TODO: refactor Screen to be a Set. I got tangled up changing from List to Set halfway -}
 
 data Pixel = Pixel { lit :: Bool, x :: Int, y :: Int } deriving (Show)
+
+--deriving instance Ord Pixel
+
+instance Eq Pixel where
+  p1 == p2 = x p1 == x p2 && y p1 == y p2
+
+instance Ord Pixel where
+  compare (Pixel _ x1 y1) (Pixel _ x2 y2) =
+    if xComparison == EQ
+    then yComparison
+    else xComparison
+    where xComparison = compare x1 x2
+          yComparison = compare y1 y2
+
 type Screen = [Pixel]
 type Width = Int
 type Height = Int
 
+-- try out the puzzle example:
+-- λ rect 3 2 (initScreen 7 3)
 rect :: Width -> Height -> Screen -> Screen
-rect w h scr = scr
-
+rect w h oldScreen = let oldScreen' = Set.fromList oldScreen
+                         newRect = Set.fromList $ createRect 3 2
+                     in  Set.toList $
+                         Set.foldl (\acc p -> Set.insert p acc) oldScreen' newRect
 
 initScreen :: Width -> Height -> Screen
-initScreen w h = [ Pixel False x' y' | x' <- [0 .. w], y' <- [0 .. h] ]
+initScreen w h = [ Pixel False x' y' | x' <- [0 .. w-1], y' <- [0 .. h-1] ]
+
+createRect :: Width -> Height -> Screen
+createRect w h = [ Pixel True x' y' | x' <- [0 .. w-1], y' <- [0 .. h-1] ]
 
 -- renders an unordered list of pixels of arbitrary size
 render :: [Pixel] -> String
@@ -41,6 +68,8 @@ getColumn pxs colNum = L.filter (\p -> x p == colNum) pxs
 
 renderPixel :: Pixel -> Char
 renderPixel p = if lit p then '#' else '.'
+
+-- some example values below
 
 {-
       .##.#
