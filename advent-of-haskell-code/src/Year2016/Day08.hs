@@ -46,12 +46,8 @@ renderPixel p = if lit p then '#' else '.'
 -}
 scr0 :: Screen
 scr0 =
-  [ Pixel False 0 0
-  , Pixel True  1 0
-  , Pixel True  2 0
-  , Pixel False 0 1
-  , Pixel True  1 1
-  , Pixel True  2 1
+  [ Pixel False 0 0 , Pixel True  1 0 , Pixel True  2 0
+  , Pixel False 0 1 , Pixel True  1 1 , Pixel True  2 1
   ]
 
 p0 = Pixel { lit = False, x = 0, y = 0 }
