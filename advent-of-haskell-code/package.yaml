@@ -32,6 +32,7 @@ dependencies:
 - hex
 - bytestring >= 0.10.8.2
 - ilist
+- pretty-simple
 
 library:
   source-dirs: src
