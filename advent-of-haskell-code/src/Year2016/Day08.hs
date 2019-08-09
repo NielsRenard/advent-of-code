@@ -34,16 +34,43 @@ type Screen = [Pixel]
 type Width = Int
 type Height = Int
 
--- try out the puzzle example:
--- λ rect 3 2 (initScreen 7 3)
+{-
+  try out the puzzle example:
+  λ s0 = initScreen 7 3
+  λ print s0
+  .......
+  .......
+  .......
+
+  λ s1 = rect 3 2 s0
+  λ print s1
+  ###....
+  ###....
+  .......
+
+  λ s2 = rotateColumn 1 1 s1
+  λ print s2
+  #.#....
+  ###....
+  .#.....
+
+-}
 rect :: Width -> Height -> Screen -> Screen
 rect w h oldScreen =
   let oldScreen' = Set.fromList oldScreen
       newRect    = Set.fromList $ createRect 3 2
   in  Set.toList $ Set.union newRect oldScreen'
 
-rotateColumn :: [Pixel] -> Int -> [Pixel]
-rotateColumn ps n =
+rotateColumn :: Int -> Int -> Screen -> Screen
+rotateColumn x by scr =
+  let oldCol = getColumn scr x
+      newCol = Set.fromList $ rotateColumn' oldCol by
+      scr' = Set.fromList scr
+  in Set.toList $
+     Set.union newCol scr'
+
+rotateColumn' :: [Pixel] -> Int -> [Pixel]
+rotateColumn' ps n =
   let
     length = L.length  ps
   in L.map (\p ->
@@ -73,6 +100,7 @@ print = putStrLn . render
 
 getRow :: [Pixel] -> Int -> [Pixel]
 getRow pxs rowNum = L.filter (\p -> y p == rowNum) pxs
+getColumn :: [Pixel] -> Int -> [Pixel]
 getColumn pxs colNum = L.filter (\p -> x p == colNum) pxs
 
 renderPixel :: Pixel -> Char
