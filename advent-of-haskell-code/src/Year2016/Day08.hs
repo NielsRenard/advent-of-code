@@ -12,7 +12,7 @@ import           RIO
 import qualified RIO.List                      as L
 import qualified RIO.List.Partial              as L'
 import qualified RIO.Set                       as Set
-import Text.Pretty.Simple (pPrint)
+import           Text.Pretty.Simple             ( pPrint )
 
 {- TODO: refactor Screen to be a Set. I got tangled up changing from List to Set halfway -}
 
@@ -22,12 +22,12 @@ instance Eq Pixel where
   p1 == p2 = x p1 == x p2 && y p1 == y p2
 
 instance Ord Pixel where
-  compare (Pixel _ x1 y1) (Pixel _ x2 y2) =
-    if xComparison == EQ
+  compare (Pixel _ x1 y1) (Pixel _ x2 y2) = if xComparison == EQ
     then yComparison
     else xComparison
-    where xComparison = compare x1 x2
-          yComparison = compare y1 y2
+   where
+    xComparison = compare x1 x2
+    yComparison = compare y1 y2
 
 type Screen = [Pixel]
 type Width = Int
@@ -36,16 +36,16 @@ type Height = Int
 -- try out the puzzle example:
 -- λ rect 3 2 (initScreen 7 3)
 rect :: Width -> Height -> Screen -> Screen
-rect w h oldScreen = let oldScreen' = Set.fromList oldScreen
-                         newRect = Set.fromList $ createRect 3 2
-                     in  Set.toList $
-                         Set.foldl (\acc p -> Set.insert p acc) oldScreen' newRect
+rect w h oldScreen =
+  let oldScreen' = Set.fromList oldScreen
+      newRect    = Set.fromList $ createRect 3 2
+  in  Set.toList $ Set.union newRect oldScreen'
 
 initScreen :: Width -> Height -> Screen
-initScreen w h = [ Pixel False x' y' | x' <- [0 .. w-1], y' <- [0 .. h-1] ]
+initScreen w h = [ Pixel False x' y' | x' <- [0 .. w - 1], y' <- [0 .. h - 1] ]
 
 createRect :: Width -> Height -> Screen
-createRect w h = [ Pixel True x' y' | x' <- [0 .. w-1], y' <- [0 .. h-1] ]
+createRect w h = [ Pixel True x' y' | x' <- [0 .. w - 1], y' <- [0 .. h - 1] ]
 
 -- renders an unordered list of pixels of arbitrary size
 render :: [Pixel] -> String
@@ -73,9 +73,9 @@ renderPixel p = if lit p then '#' else '.'
 -}
 scr0 :: Screen
 scr0 =
-  [ Pixel False 0 0, Pixel True  1 0, Pixel True  2 0, Pixel False  3 0, Pixel True  4 0
-  , Pixel False 0 1 , Pixel True  1 1 , Pixel True  2 1, Pixel False  3 1, Pixel True  4 1
-  , Pixel True 0 2 , Pixel True  1 2 , Pixel True  2 2, Pixel False  3 2, Pixel False  4 2
+  [ Pixel False 0 0 , Pixel True  1 0 , Pixel True  2 0 , Pixel False 3 0 , Pixel True  4 0
+  , Pixel False 0 1 , Pixel True  1 1 , Pixel True  2 1 , Pixel False 3 1 , Pixel True  4 1
+  , Pixel True  0 2 , Pixel True  1 2 , Pixel True  2 2 , Pixel False 3 2 , Pixel False 4 2
   ]
 
 p0 = Pixel { lit = False, x = 0, y = 0 }
