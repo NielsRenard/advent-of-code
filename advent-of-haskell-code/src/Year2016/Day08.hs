@@ -18,7 +18,7 @@ import qualified RIO.List                      as L
 import qualified RIO.List.Partial              as L'
 import qualified RIO.Set                       as Set
 import           Text.Pretty.Simple             ( pPrint )
-import           Text.ParserCombinators.ReadP
+import            Text.ParserCombinators.ReadP hiding (get)
 
 {- TODO: refactor Screen to be a Set. I got tangled up changing from List to Set halfway -}
 
@@ -146,8 +146,8 @@ type Offset = Int
 rotate :: Axis -> Index -> Offset -> Screen -> Screen
 rotate axis index by scr =
   let oldAxis = case axis of
-        "column" -> getColumn scr index
-        "row" -> getRow scr index
+        "column" -> get scr "column" index
+        "row" -> get scr "row" index
       newAxis = Set.fromList $ rotate' axis oldAxis by
       scr'   = Set.fromList scr
   in  Set.toList $ Set.union newAxis scr'
@@ -182,22 +182,16 @@ createRect w h = [ Pixel True x' y' | x' <- [0 .. w - 1], y' <- [0 .. h - 1] ]
 
 -- renders an unordered list of pixels of arbitrary size
 render :: [Pixel] -> String
-render s =
-  let maxHeight = y $ L'.maximumBy (comparing y) s
-      allRows   = [ getRow s y' | y' <- [0 .. maxHeight] ]
+render screen =
+  let maxHeight = y $ L'.maximumBy (comparing y) screen
+      allRows   = [ get screen "row" y' | y' <- [0 .. maxHeight] ]
   in  unlines $ L.map (L.map renderPixel) (L.map (L.sortOn x) allRows)
 
 print :: Screen -> IO ()
 print = putStrLn . render
 
-getRow :: [Pixel] -> Index -> [Pixel]
-getRow screen index = get' screen "row" index
-
-getColumn :: [Pixel] -> Index -> [Pixel]
-getColumn screen index = get' screen "column" index
-
-get' :: [Pixel] -> Axis -> Index -> [Pixel]
-get' pixels axis index = let
+get :: [Pixel] -> Axis -> Index -> [Pixel]
+get pixels axis index = let
   getter = case axis of
     "column" -> x
     "row" -> y
@@ -219,10 +213,10 @@ scr0 =
   , Pixel False 0 1 , Pixel True  1 1 , Pixel True  2 1 , Pixel False 3 1 , Pixel True  4 1
   , Pixel True  0 2 , Pixel True  1 2 , Pixel True  2 2 , Pixel False 3 2 , Pixel False 4 2
   ]
-c1 = getColumn scr0 0
-c2 = getColumn scr0 2
-r1 = getRow scr0 1
-r2 = getRow scr0 2
+c1 = get scr0 "column" 0
+c2 = get scr0 "column" 2
+r1 = get scr0 "row" 1
+r2 = get scr0 "row" 2
 p0 = Pixel { lit = False, x = 0, y = 0 }
 p1 = Pixel { lit = True, x = 0, y = 0 }
 
