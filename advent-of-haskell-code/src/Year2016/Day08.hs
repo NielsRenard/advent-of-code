@@ -79,10 +79,11 @@ type Height = Int
 -}
 
 -- how many pixels should be lit?
+-- (first part can also be solved by filtering 'rect' operations
 answerOne =
-  L.length $ L.filter (== '#') $ render $ solvePartOne 50 6 allOperations
+  L.length $ L.filter (== '#') $ render $ showEndState 50 6 allOperations
 
-solvePartOne screenWidth screenHeight operations =
+showEndState screenWidth screenHeight operations =
   let screen = initScreen screenWidth screenHeight
   in  L.foldl'
         (\s x -> case x of
