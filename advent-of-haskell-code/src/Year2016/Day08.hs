@@ -169,23 +169,21 @@ rotate axis index by scr =
 rotate' :: Axis -> [Pixel] -> Int -> [Pixel]
 rotate' axis pixels offset =
   let length = L.length pixels
-      getter = case axis of
-        "column" -> y
-        "row"    -> x
+      getter = case axis of "column" -> y; "row" -> x
   in  L.map
         (\p ->
           let current = getter p
               next    = (getter p + offset)
+              loops = next >= length
+              calcNext = if next >= length then next `mod` length else next
           in  Pixel
                 { lit = lit p
                 , x   = case axis of
                           "column" -> x p
-                          "row" ->
-                            if next >= length then next `mod` length else next
+                          "row" -> if loops then calcNext else next
                 , y   = case axis of
-                          "column" ->
-                            if next >= length then next `mod` length else next
-                          "row" -> y p
+                          "row" -> y p;
+                          "column" -> if loops then calcNext else next
                 }
         )
         pixels
