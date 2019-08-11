@@ -18,7 +18,8 @@ import           RIO.Text                      as T
 import qualified RIO.List                      as L
 import qualified RIO.List.Partial              as L'
 import qualified RIO.Set                       as Set
-import            Text.ParserCombinators.ReadP hiding (get)
+import           Text.ParserCombinators.ReadP
+                                         hiding ( get )
 
 {- TODO: refactor Screen to be a Set. I got tangled up changing from List to Set halfway -}
 
@@ -87,7 +88,7 @@ showEndState screenWidth screenHeight operations =
   in  L.foldl'
         (\s x -> case x of
           (Rect         w h ) -> rect w h s
-          (RotateColumn c o ) -> rotate "column"  c o s
+          (RotateColumn c o ) -> rotate "column" c o s
           (RotateRow    r o') -> rotate "row" r o' s
         )
         screen
@@ -105,14 +106,12 @@ showEndState screenWidth screenHeight operations =
 -- first part can also be solved by counting and evaluating 'rect' operations
 quickAndDirtyOne =
   L.map T.pack input
-  & L.filter (T.isInfixOf $ T.pack "rect")          -- ["rect 3x2"]
-  & L.map (T.drop 5)                                -- ["3x2"]
-  & L.map (T.split (== 'x'))                        -- [["3", "2"]]
-  & L.map (L.map T.unpack)
-  & L.map (\pair -> (read (head pair):: Int)
-                     *
-                     (read (last pair) :: Int))    -- [3, 2]
-  & sum                                            -- 6
+    & L.filter (T.isInfixOf $ T.pack "rect")          -- ["rect 3x2"]
+    & L.map (T.drop 5)                                -- ["3x2"]
+    & L.map (T.split (== 'x'))                        -- [["3", "2"]]
+    & L.map (L.map T.unpack)
+    & L.map (\pair -> (read (head pair) :: Int) * (read (last pair) :: Int))    -- [3, 2]
+    & sum                                            -- 6
 
 
 
@@ -162,29 +161,32 @@ rotate :: Axis -> Index -> Offset -> Screen -> Screen
 rotate axis index by scr =
   let oldAxis = case axis of
         "column" -> get scr "column" index
-        "row" -> get scr "row" index
+        "row"    -> get scr "row" index
       newAxis = Set.fromList $ rotate' axis oldAxis by
-      scr'   = Set.fromList scr
+      scr'    = Set.fromList scr
   in  Set.toList $ Set.union newAxis scr'
 
-rotate' :: Axis -> [Pixel] ->  Int -> [Pixel]
-rotate' axis pixels offset  =
+rotate' :: Axis -> [Pixel] -> Int -> [Pixel]
+rotate' axis pixels offset =
   let length = L.length pixels
       getter = case axis of
         "column" -> y
-        "row" -> x
+        "row"    -> x
   in  L.map
         (\p ->
           let current = getter p
               next    = (getter p + offset)
-          in  Pixel { lit = lit p
-                    , x = case axis of
-                        "column" -> x p
-                        "row" -> if next >= length then next `mod` length else next
-                    , y = case axis of
-                        "column" -> if next >= length then next `mod` length else next
-                        "row" -> y p
-                    }
+          in  Pixel
+                { lit = lit p
+                , x   = case axis of
+                          "column" -> x p
+                          "row" ->
+                            if next >= length then next `mod` length else next
+                , y   = case axis of
+                          "column" ->
+                            if next >= length then next `mod` length else next
+                          "row" -> y p
+                }
         )
         pixels
 
@@ -206,11 +208,11 @@ print :: Screen -> IO ()
 print = putStrLn . render
 
 get :: [Pixel] -> Axis -> Index -> [Pixel]
-get pixels axis index = let
-  getter = case axis of
-    "column" -> x
-    "row" -> y
-  in L.filter (\p -> getter p == index) pixels
+get pixels axis index =
+  let getter = case axis of
+        "column" -> x
+        "row"    -> y
+  in  L.filter (\p -> getter p == index) pixels
 
 renderPixel :: Pixel -> Char
 renderPixel p = if lit p then '#' else '.'
