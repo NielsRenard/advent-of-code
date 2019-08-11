@@ -14,6 +14,7 @@ import           Data.Char                      ( isDigit
                                                 , digitToInt
                                                 )
 import           RIO
+import           RIO.Text                      as T
 import qualified RIO.List                      as L
 import qualified RIO.List.Partial              as L'
 import qualified RIO.Set                       as Set
@@ -78,7 +79,6 @@ type Height = Int
 -}
 
 -- how many pixels should be lit?
--- (first part can also be solved by filtering 'rect' operations
 answerOne =
   L.length $ L.filter (== '#') $ render $ showEndState 50 6 allOperations
 
@@ -101,6 +101,21 @@ showEndState screenWidth screenHeight operations =
   #....#..#.#..#.#.#..#..#.#....#..#...#..#..#.#..#.
   ####..##..#..#.#..#..###.#....#..#...#..#..#..##..
 -}
+
+-- first part can also be solved by counting and evaluating 'rect' operations
+quickAndDirtyOne =
+  L.map T.pack input
+  & L.filter (T.isInfixOf $ T.pack "rect")          -- ["rect 3x2"]
+  & L.map (T.drop 5)                                -- ["3x2"]
+  & L.map (T.split (== 'x'))                        -- [["3", "2"]]
+  & L.map (L.map T.unpack)
+  & L.map (\pair -> (read (head pair):: Int)
+                     *
+                     (read (last pair) :: Int))    -- [3, 2]
+  & sum                                            -- 6
+
+
+
 
 data Operation = Rect Width Height | RotateColumn Int Int | RotateRow Int Int deriving (Show)
 
@@ -185,7 +200,7 @@ render :: [Pixel] -> String
 render screen =
   let maxHeight = y $ L'.maximumBy (comparing y) screen
       allRows   = [ get screen "row" y' | y' <- [0 .. maxHeight] ]
-  in  unlines $ L.map (L.map renderPixel) (L.map (L.sortOn x) allRows)
+  in  L.unlines $ L.map (L.map renderPixel) (L.map (L.sortOn x) allRows)
 
 print :: Screen -> IO ()
 print = putStrLn . render
