@@ -7,7 +7,6 @@ where
 import           Prelude                        ( head
                                                 , last
                                                 , read
-                                                , (!!)
                                                 , putStrLn
                                                 )
 import           Data.Char                      ( isDigit
@@ -112,9 +111,6 @@ quickAndDirtyOne =
     & L.map (L.map T.unpack)
     & L.map (\pair -> (read (head pair) :: Int) * (read (last pair) :: Int))    -- [3, 2]
     & sum                                            -- 6
-
-
-
 
 data Operation = Rect Width Height | RotateColumn Int Int | RotateRow Int Int deriving (Show)
 
