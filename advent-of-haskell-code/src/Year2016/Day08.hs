@@ -17,7 +17,6 @@ import           RIO
 import qualified RIO.List                      as L
 import qualified RIO.List.Partial              as L'
 import qualified RIO.Set                       as Set
-import           Text.Pretty.Simple             ( pPrint )
 import            Text.ParserCombinators.ReadP hiding (get)
 
 {- TODO: refactor Screen to be a Set. I got tangled up changing from List to Set halfway -}
