@@ -87,8 +87,8 @@ solvePartOne screenWidth screenHeight operations =
   in  L.foldl'
         (\s x -> case x of
           (Rect         w h ) -> rect w h s
-          (RotateColumn c o ) -> rotateColumn c o s
-          (RotateRow    r o') -> rotateRow r o' s
+          (RotateColumn c o ) -> rotate "column"  c o s
+          (RotateRow    r o') -> rotate "row" r o' s
         )
         screen
         operations
@@ -138,50 +138,40 @@ rect w h oldScreen =
       newRect    = Set.fromList $ createRect w h
   in  Set.toList $ Set.union newRect oldScreen'
 
-rotateColumn :: Int -> Int -> Screen -> Screen
-rotateColumn x by scr =
-  let oldCol = getColumn scr x
-      newCol = Set.fromList $ rotateColumn' oldCol by
-      scr'   = Set.fromList scr
-  in  Set.toList $ Set.union newCol scr'
+type Axis = String
+type Index = Int
+type Offset = Int
 
--- duplicate first, generify later
-rotateRow :: Int -> Int -> Screen -> Screen
-rotateRow x by scr =
-  let oldRow = getRow scr x
-      newRow = Set.fromList $ rotateRow' oldRow by
+--rotate column/row at index
+rotate :: Axis -> Index -> Offset -> Screen -> Screen
+rotate axis index by scr =
+  let oldAxis = case axis of
+        "column" -> getColumn scr index
+        "row" -> getRow scr index
+      newAxis = Set.fromList $ rotate' axis oldAxis by
       scr'   = Set.fromList scr
-  in  Set.toList $ Set.union newRow scr'
+  in  Set.toList $ Set.union newAxis scr'
 
--- duplicate first, generify later
-rotateRow' :: [Pixel] -> Int -> [Pixel]
-rotateRow' ps n =
-  let length = L.length ps
+rotate' :: Axis -> [Pixel] ->  Int -> [Pixel]
+rotate' axis pixels offset  =
+  let length = L.length pixels
+      getter = case axis of
+        "column" -> y
+        "row" -> x
   in  L.map
         (\p ->
-          let currentX = x p
-              nextX    = (x p + n)
+          let current = getter p
+              next    = (getter p + offset)
           in  Pixel { lit = lit p
-                    , x = if nextX >= length then nextX `mod` length else nextX
-                    , y = y p
+                    , x = case axis of
+                        "column" -> x p
+                        "row" -> if next >= length then next `mod` length else next
+                    , y = case axis of
+                        "column" -> if next >= length then next `mod` length else next
+                        "row" -> y p
                     }
         )
-        ps
-
-
-rotateColumn' :: [Pixel] -> Int -> [Pixel]
-rotateColumn' ps n =
-  let length = L.length ps
-  in  L.map
-        (\p ->
-          let currentY = y p
-              nextY    = (y p + n)
-          in  Pixel { lit = lit p
-                    , x = x p
-                    , y = if nextY >= length then nextY `mod` length else nextY
-                    }
-        )
-        ps
+        pixels
 
 
 initScreen :: Width -> Height -> Screen
@@ -200,10 +190,18 @@ render s =
 print :: Screen -> IO ()
 print = putStrLn . render
 
-getRow :: [Pixel] -> Int -> [Pixel]
-getRow pxs rowNum = L.filter (\p -> y p == rowNum) pxs
-getColumn :: [Pixel] -> Int -> [Pixel]
-getColumn pxs colNum = L.filter (\p -> x p == colNum) pxs
+getRow :: [Pixel] -> Index -> [Pixel]
+getRow screen index = get' screen "row" index
+
+getColumn :: [Pixel] -> Index -> [Pixel]
+getColumn screen index = get' screen "column" index
+
+get' :: [Pixel] -> Axis -> Index -> [Pixel]
+get' pixels axis index = let
+  getter = case axis of
+    "column" -> x
+    "row" -> y
+  in L.filter (\p -> getter p == index) pixels
 
 renderPixel :: Pixel -> Char
 renderPixel p = if lit p then '#' else '.'
