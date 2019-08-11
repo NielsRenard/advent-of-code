@@ -142,6 +142,7 @@ operationParser = do
 digit :: ReadP Char
 digit = satisfy isDigit
 
+-- turns on all of the pixels in a rectangle at the top-left of the screen which is A wide and B tall.
 rect :: Width -> Height -> Screen -> Screen
 rect w h oldScreen =
   let oldScreen' = Set.fromList oldScreen
