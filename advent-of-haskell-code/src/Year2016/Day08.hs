@@ -169,22 +169,25 @@ rotate axis index by scr =
 rotate' :: Axis -> [Pixel] -> Int -> [Pixel]
 rotate' axis pixels offset =
   let length = L.length pixels
-      getter = case axis of "column" -> y; "row" -> x
+      getter = case axis of
+        "column" -> y
+        "row"    -> x
   in  L.map
         (\p ->
-          let current = getter p
-              next    = (getter p + offset)
-              loops = next >= length
+          let current  = getter p
+              next     = (getter p + offset)
+              loops    = next >= length
               calcNext = if next >= length then next `mod` length else next
           in  Pixel
-                { lit = lit p
-                , x   = case axis of
-                          "column" -> x p
-                          "row" -> if loops then calcNext else next
-                , y   = case axis of
-                          "row" -> y p;
-                          "column" -> if loops then calcNext else next
-                }
+                (lit p)
+                (case axis of
+                  "column" -> x p
+                  "row"    -> if loops then calcNext else next
+                )
+                (case axis of
+                  "row"    -> y p
+                  "column" -> if loops then calcNext else next
+                )
         )
         pixels
 
@@ -224,9 +227,21 @@ renderPixel p = if lit p then '#' else '.'
 -}
 scr0 :: Screen
 scr0 =
-  [ Pixel False 0 0 , Pixel True  1 0 , Pixel True  2 0 , Pixel False 3 0 , Pixel True  4 0
-  , Pixel False 0 1 , Pixel True  1 1 , Pixel True  2 1 , Pixel False 3 1 , Pixel True  4 1
-  , Pixel True  0 2 , Pixel True  1 2 , Pixel True  2 2 , Pixel False 3 2 , Pixel False 4 2
+  [ Pixel False 0 0
+  , Pixel True  1 0
+  , Pixel True  2 0
+  , Pixel False 3 0
+  , Pixel True  4 0
+  , Pixel False 0 1
+  , Pixel True  1 1
+  , Pixel True  2 1
+  , Pixel False 3 1
+  , Pixel True  4 1
+  , Pixel True  0 2
+  , Pixel True  1 2
+  , Pixel True  2 2
+  , Pixel False 3 2
+  , Pixel False 4 2
   ]
 c1 = get scr0 "column" 0
 c2 = get scr0 "column" 2
