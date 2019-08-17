@@ -20,17 +20,39 @@ import           Data.Char                      ( isDigit
 
 type Marker = (Int, Int)
 
-process :: String -> Text
+process :: Text -> Text
 process t =
   let
-    currentForm = readP_to_S dataOrMarker t
-    isMarker = ("(" == (T.take 1 . fst $ last currentForm))
+    currentParse = readP_to_S dataOrMarker $ T.unpack t
+    currentForm = parsedResult currentParse -- get readP_to_S result
+    remainder = T.pack (parsedRemainder currentParse) -- get readP_to_S remainder
+    isMarker = "(" == T.take 1 currentForm
   in
-    if isMarker
-    then T.pack "marker"
-    else T.pack "data"
+    if T.length (currentForm <> remainder) >= 5
+    then
+      if isMarker
+      then
+        let marker@(numChars,repeater) = getMarker currentForm
+            expandable = T.take numChars remainder
+        in expand' marker expandable <> process (T.drop numChars remainder)
+      else currentForm <> process remainder
+    else currentForm <> remainder
 
 
+-- A(1x5)BC repeats B a total of 5 times, becoming ABBBBBC
+ex1 = T.pack "A(1x5)BC"
+-- A(2x2)BCD(2x2)EFG doubles BC and EF, becoming ABCBCDEFEFG
+ex2 = T.pack "A(2x2)BCD(2x2)EFG"
+-- (6x1)(1x3)A becomes (1x3)A, the 'marker' is within data section of another marker
+ex3 = T.pack "(6x1)(1x3)A"
+-- X(8x2)(3x3)ABCY becomes X(3x3)ABC(3x3)ABCY
+ex4 = T.pack "X(8x2)(3x3)ABCY"
+
+expand' :: Marker -> Text -> Text
+expand' m@(numOfChars, repeatTimes) t =
+  let expandee  = T.take numOfChars t
+      expansion = T.replicate repeatTimes expandee
+  in  expansion <> T.drop (fst m) t
 
 dataOrMarker :: ReadP Text
 dataOrMarker = markerParser <|> dataParser
@@ -47,19 +69,6 @@ dataOrMarker = markerParser <|> dataParser
 --       otherWise -> regularText <> expanded <> slurp rest
 --
 
---example one
-ex1 = "A(1x5)BC"
-ex2 = "A(2x2)BCD(2x2)EFG"
-
--- A(1x5)BC repeats B a total of 5 times, becoming ABBBBBC
--- A(2x2)BCD(2x2)EFG doubles BC and EF, becoming ABCBCDEFEFG
-expand' :: Marker -> Text -> Text
-expand' m@(numOfChars, repeatTimes) t =
-  let expandee  = T.take numOfChars t
-      expansion = T.replicate repeatTimes expandee
-  in  expansion <> T.drop (fst m) t
-
-
 -- parser of digits
 digit :: ReadP Char
 digit = satisfy isDigit
@@ -68,16 +77,26 @@ digit = satisfy isDigit
 letter :: ReadP Char
 letter = satisfy isLetter
 
---getMarker :: Text -> Marker
---getMarker t = let parser = readP_to_S markerParser $ T.unpack t
---              in case parser of
---                   [] -> (0,0)
---                   otherwise -> fst . head $ parser
+getMarker :: Text -> Marker
+getMarker t =  parsedResult . readP_to_S parseMarker $ T.unpack t
+
+-- ReadP specific helper fn to get the result
+parsedResult = fst . last
+parsedRemainder = snd . last
 
 dataParser :: ReadP Text
 dataParser = do
   chars <- many letter
   return $ T.pack chars
+
+parseMarker :: ReadP Marker
+parseMarker = do
+  openingBracket <- char '('
+  numOfChars     <- many1 digit
+  separator      <- char 'x'
+  repeatTimes    <- many1 digit
+  closingBracket <- char ')'
+  return (read numOfChars, read repeatTimes)
 
 markerParser :: ReadP Text
 markerParser = do
