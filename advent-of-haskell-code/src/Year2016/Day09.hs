@@ -18,17 +18,34 @@ import           Data.Char                      ( isDigit
 
 type Marker = (Int, Int)
 
+slurp :: Text -> Text
+slurp t =
+  let regularText = T.takeWhile (/= '(') t
+      aMarker = getMarker $ T.takeWhile (/= ')') (T.dropWhile (/= '(') t ) <> T.pack ")"
+      rest = T.drop 1 $ T.dropWhile (/= ')') t
+      expanded = expand' aMarker rest
+  in case T.length t of
+       0 -> t
+       otherWise -> regularText <> expanded <> slurp rest
+
 -- A(1x5)BC repeats B a total of 5 times, becoming ABBBBBC
-expand :: Marker -> Text -> Text
-expand m@(numOfChars, repeatTimes) s =
-  let expandee  = T.take numOfChars s
+-- A(2x2)BCD(2x2)EFG doubles BC and EF, becoming ABCBCDEFEFG
+expand' :: Marker -> Text -> Text
+expand' m@(numOfChars, repeatTimes) t =
+  let expandee  = T.take numOfChars t
       expansion = T.replicate repeatTimes expandee
-  in  expansion <> T.drop (fst m) s
+  in  expansion <> T.drop (fst m) t
 
 
 -- parser of digits
 digit :: ReadP Char
 digit = satisfy isDigit
+
+getMarker :: Text -> Marker
+getMarker t = let parser = readP_to_S markerParser $ T.unpack t
+              in case parser of
+                   [] -> (0,0)
+                   otherwise -> fst . head $ parser
 
 markerParser :: ReadP Marker
 markerParser = do
@@ -38,10 +55,6 @@ markerParser = do
   repeatTimes    <- many1 digit
   closingBracket <- char ')'
   return (read numOfChars, read repeatTimes)
-
-
-
-
 
 
 
