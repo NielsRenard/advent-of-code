@@ -21,22 +21,25 @@ type Marker = (Int, Int)
 
 answerOne = T.length $ process input
 
--- TODO: do something about this hadouken code https://www.google.com/search?q=hadouken+code&tbm=isch
 process :: Text -> Text
-process t =
-  let currentParse = readP_to_S dataOrMarker $ T.unpack t
-      currentForm  = parsedResult currentParse -- get readP_to_S result
-      remainder    = T.pack (parsedRemainder currentParse) -- get readP_to_S remainder
-      isMarker     = "(" == T.take 1 currentForm
-  in  if T.length (currentForm <> remainder) >= 5
-        then if isMarker
-          then
-            let marker@(numChars, repeater) = getMarker currentForm
-                expandable                  = T.take numChars remainder
-            in  expand' marker expandable <> process (T.drop numChars remainder)
-          else currentForm <> process remainder
-        else currentForm <> remainder
+process text =
+  if notYetLastForm
+  then if formIsMarker
+       then let marker@(numOfChars,_) = getMarker currentForm
+            in processMarker marker remainder <> process (T.drop numOfChars remainder)
+       else currentForm <> process remainder
+  else currentForm <> remainder
+  where
+    notYetLastForm = T.length (currentForm <> remainder) >= 5 -- 5 is the shortest possible marker (1x1)
+    formIsMarker = T.take 1 currentForm == "("
+    currentParse = readP_to_S dataOrMarker $ T.unpack text
+    currentForm  = parsedResult currentParse
+    remainder    = T.pack (parsedRemainder currentParse)
 
+processMarker :: Marker -> Text -> Text
+processMarker marker@(numChars, repeater) remainder =
+  let expandable = T.take numChars remainder
+  in expand' marker expandable
 
 -- A(1x5)BC repeats B a total of 5 times, becoming ABBBBBC
 ex1 = T.pack "A(1x5)BC"
@@ -69,6 +72,7 @@ getMarker t = parsedResult . readP_to_S parseMarker $ T.unpack t
 
 -- ReadP specific helper fn to get the result
 parsedResult = fst . last
+-- ReadP specific helper fn to get the remainder
 parsedRemainder = snd . last
 
 dataParser :: ReadP Text
