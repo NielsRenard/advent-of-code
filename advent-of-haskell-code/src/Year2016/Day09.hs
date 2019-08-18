@@ -1,22 +1,17 @@
 {-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE OverloadedStrings #-}
 
 module Year2016.Day09
   ()
 where
-import           Data.Char                      ( digitToInt
-                                                , isDigit
+import           Data.Char                      ( isDigit
                                                 , isLetter
                                                 )
-import           Data.List.Extra                ( stripInfix
-                                                , splitOn
-                                                )
+import           Data.List.Extra                ( stripInfix )
 import           Prelude                        ( head
                                                 , last
                                                 , read
                                                 , repeat
                                                 )
-import           Data.Maybe                     ( fromJust )
 import           RIO                     hiding ( many )
 import           RIO.List                      as L
 import           RIO.Text                      as T
@@ -38,25 +33,24 @@ process text = if notYetLastForm
   else currentForm <> remainder
  where
   notYetLastForm = T.length (currentForm <> remainder) >= 5 -- 5 is the shortest possible marker (1x1)
-  formIsMarker   = T.take 1 currentForm == "("
+  formIsMarker   = T.take 1 currentForm == T.pack "("
   currentParse   = readP_to_S dataOrMarker $ T.unpack text
   currentForm    = parsedResult currentParse
   remainder      = T.pack (parsedRemainder currentParse)
 
--- count all data chars, multiply by what the repeater in marker says
+-- recursively count all data chars, multiply by what the repeater in marker says
 processV2 :: String -> Int
 processV2 inp
   | ('(' : xs) <- inp
   = let (form      , remainder) = last $ readP_to_S markerParser inp
         (numOfChars, repeater ) = getMarker form
         expandable              = L.take numOfChars remainder
-    in  repeater * processV2 expandable
-        + processV2 (L.drop numOfChars remainder)
+    in  repeater * processV2 expandable + processV2
+          (L.drop numOfChars remainder)
   | (x : xs) <- inp
   = 1 + processV2 xs
   | [] <- inp
   = 0
-
 
 
 -- this is an alternative solution to 1 that only returns the length
@@ -71,7 +65,7 @@ processLength text = if notYetLastForm
   else T.length currentForm + T.length remainder
  where
   notYetLastForm = T.length (currentForm <> remainder) >= 5 -- 5 is the shortest possible marker (1x1)
-  formIsMarker   = T.take 1 currentForm == "("
+  formIsMarker   = T.take 1 currentForm == T.pack "("
   currentParse   = readP_to_S dataOrMarker $ T.unpack text
   currentForm    = parsedResult currentParse
   remainder      = T.pack (parsedRemainder currentParse)
