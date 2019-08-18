@@ -43,17 +43,23 @@ process text = if notYetLastForm
   currentForm    = parsedResult currentParse
   remainder      = T.pack (parsedRemainder currentParse)
 
+-- count all data chars, multiply by what the repeater in marker says
 processV2 :: String -> Int
-processV2 inp@('(' : xs) =
-  let (form      , remainder) = last $ readP_to_S markerParser inp
-      (numOfChars, repeater ) = getMarker form
-      expandable              = L.take numOfChars remainder
-  in  repeater * processV2 expandable + processV2 (L.drop numOfChars remainder)
-processV2 (x : xs) = 1 + processV2 xs
-processV2 []       = 0
+processV2 inp
+  | ('(' : xs) <- inp
+  = let (form      , remainder) = last $ readP_to_S markerParser inp
+        (numOfChars, repeater ) = getMarker form
+        expandable              = L.take numOfChars remainder
+    in  repeater * processV2 expandable
+        + processV2 (L.drop numOfChars remainder)
+  | (x : xs) <- inp
+  = 1 + processV2 xs
+  | [] <- inp
+  = 0
 
 
--- this one only returns the length
+
+-- this is an alternative solution to 1 that only returns the length
 processLength :: Text -> Int
 processLength text = if notYetLastForm
   then if formIsMarker
