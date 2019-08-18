@@ -21,6 +21,10 @@ type Marker = (Int, Int)
 
 answerOne = T.length $ process input
 
+-- answerTwo
+-- not 404514 (too low)
+-- not 5411150 (too low)
+
 process :: Text -> Text
 process text =
   if notYetLastForm
@@ -41,6 +45,15 @@ processMarker marker@(numChars, repeater) remainder =
   let expandable = T.take numChars remainder
   in expand' marker expandable
 
+expand' :: Marker -> Text -> Text
+expand' m@(numOfChars, repeatTimes) t =
+  let expandee  = T.take numOfChars t
+      expansion = T.replicate repeatTimes expandee
+  in  expansion <> T.drop (fst m) t
+
+
+{- examples -}
+
 -- A(1x5)BC repeats B a total of 5 times, becoming ABBBBBC
 ex1 = T.pack "A(1x5)BC"
 -- A(2x2)BCD(2x2)EFG doubles BC and EF, becoming ABCBCDEFEFG
@@ -50,11 +63,13 @@ ex3 = T.pack "(6x1)(1x3)A"
 -- X(8x2)(3x3)ABCY becomes X(3x3)ABC(3x3)ABCY
 ex4 = T.pack "X(8x2)(3x3)ABCY"
 
-expand' :: Marker -> Text -> Text
-expand' m@(numOfChars, repeatTimes) t =
-  let expandee  = T.take numOfChars t
-      expansion = T.replicate repeatTimes expandee
-  in  expansion <> T.drop (fst m) t
+-- becomes XABCABCABCABCABCABCY 20 chars
+bex1 = T.pack "X(8x2)(3x3)ABCY"
+-- length of 241920
+bex2 = T.pack "(27x12)(20x12)(13x14)(7x10)(1x12)A"
+
+
+{- parsing functions-}
 
 dataOrMarker :: ReadP Text
 dataOrMarker = markerParser <|> dataParser
@@ -69,6 +84,9 @@ letter = satisfy isLetter
 
 getMarker :: Text -> Marker
 getMarker t = parsedResult . readP_to_S parseMarker $ T.unpack t
+
+fromMarker :: Marker -> Text
+fromMarker m@(n,r) = T.pack $ "(" <> show n <> "x" <> show r <> ")"
 
 -- ReadP specific helper fn to get the result
 parsedResult = fst . last
