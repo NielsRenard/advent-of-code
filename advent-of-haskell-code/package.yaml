@@ -33,6 +33,7 @@ dependencies:
 - bytestring >= 0.10.8.2
 - ilist
 - pretty-simple
+- extra
 
 library:
   source-dirs: src
