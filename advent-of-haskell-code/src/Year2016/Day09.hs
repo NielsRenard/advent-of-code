@@ -8,11 +8,15 @@ import           Data.Char                      ( digitToInt
                                                 , isDigit
                                                 , isLetter
                                                 )
+import           Data.List.Extra                ( stripInfix
+                                                , splitOn
+                                                )
 import           Prelude                        ( head
                                                 , last
                                                 , read
                                                 , repeat
                                                 )
+import           Data.Maybe                     ( fromJust )
 import           RIO                     hiding ( many )
 import           RIO.List                      as L
 import           RIO.Text                      as T
@@ -20,37 +24,61 @@ import           Text.ParserCombinators.ReadP
 type Marker = (Int, Int)
 
 answerOne = T.length $ process input
+answerTwo = processV2 $ T.unpack input
 
--- answerTwo
--- not 404514 (too low)
--- not 5411150 (too low)
-
+-- this returns the decompressed string
 process :: Text -> Text
-process text =
-  if notYetLastForm
+process text = if notYetLastForm
   then if formIsMarker
-       then let marker@(numOfChars,_) = getMarker currentForm
-            in processMarker marker remainder <> process (T.drop numOfChars remainder)
-       else currentForm <> process remainder
+    then
+      let marker@(numOfChars, _) = getMarker currentForm
+      in  processMarker marker remainder
+            <> process (T.drop numOfChars remainder)
+    else currentForm <> process remainder
   else currentForm <> remainder
-  where
-    notYetLastForm = T.length (currentForm <> remainder) >= 5 -- 5 is the shortest possible marker (1x1)
-    formIsMarker = T.take 1 currentForm == "("
-    currentParse = readP_to_S dataOrMarker $ T.unpack text
-    currentForm  = parsedResult currentParse
-    remainder    = T.pack (parsedRemainder currentParse)
+ where
+  notYetLastForm = T.length (currentForm <> remainder) >= 5 -- 5 is the shortest possible marker (1x1)
+  formIsMarker   = T.take 1 currentForm == "("
+  currentParse   = readP_to_S dataOrMarker $ T.unpack text
+  currentForm    = parsedResult currentParse
+  remainder      = T.pack (parsedRemainder currentParse)
+
+processV2 :: String -> Int
+processV2 inp@('(' : xs) =
+  let (form      , remainder) = last $ readP_to_S markerParser inp
+      (numOfChars, repeater ) = getMarker form
+      expandable              = L.take numOfChars remainder
+  in  repeater * processV2 expandable + processV2 (L.drop numOfChars remainder)
+processV2 (x : xs) = 1 + processV2 xs
+processV2 []       = 0
+
+
+-- this one only returns the length
+processLength :: Text -> Int
+processLength text = if notYetLastForm
+  then if formIsMarker
+    then
+      let marker@(numOfChars, _) = getMarker currentForm
+      in  T.length (processMarker marker remainder)
+            + processLength (T.drop numOfChars remainder)
+    else T.length currentForm + processLength remainder
+  else T.length currentForm + T.length remainder
+ where
+  notYetLastForm = T.length (currentForm <> remainder) >= 5 -- 5 is the shortest possible marker (1x1)
+  formIsMarker   = T.take 1 currentForm == "("
+  currentParse   = readP_to_S dataOrMarker $ T.unpack text
+  currentForm    = parsedResult currentParse
+  remainder      = T.pack (parsedRemainder currentParse)
 
 processMarker :: Marker -> Text -> Text
 processMarker marker@(numChars, repeater) remainder =
-  let expandable = T.take numChars remainder
-  in expand' marker expandable
+  let expandable = T.take numChars remainder in expand' marker expandable
 
 expand' :: Marker -> Text -> Text
 expand' m@(numOfChars, repeatTimes) t =
   let expandee  = T.take numOfChars t
       expansion = T.replicate repeatTimes expandee
-  in  expansion <> T.drop (fst m) t
-
+  in  expansion <> T.drop numOfChars t
 
 {- examples -}
 
@@ -67,6 +95,8 @@ ex4 = T.pack "X(8x2)(3x3)ABCY"
 bex1 = T.pack "X(8x2)(3x3)ABCY"
 -- length of 241920
 bex2 = T.pack "(27x12)(20x12)(13x14)(7x10)(1x12)A"
+-- becomes 445 long
+bex3 = T.pack "(25x3)(3x3)ABC(2x3)XY(5x2)PQRSTX(18x9)(3x2)TWO(5x7)SEVEN"
 
 
 {- parsing functions-}
@@ -86,7 +116,7 @@ getMarker :: Text -> Marker
 getMarker t = parsedResult . readP_to_S parseMarker $ T.unpack t
 
 fromMarker :: Marker -> Text
-fromMarker m@(n,r) = T.pack $ "(" <> show n <> "x" <> show r <> ")"
+fromMarker m@(n, r) = T.pack $ "(" <> show n <> "x" <> show r <> ")"
 
 -- ReadP specific helper fn to get the result
 parsedResult = fst . last
@@ -108,7 +138,7 @@ parseMarker = do
   closingBracket <- char ')'
   return (read numOfChars, read repeatTimes)
 
--- TODO: this can be replaced with a check of first char == '('
+-- TODO: this can be replaced with a check of first char == "("
 markerParser :: ReadP Text
 markerParser = do
   openingBracket <- char '('
