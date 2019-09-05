@@ -22,7 +22,6 @@ description:         Please see the README on GitHub at <https://github.com/gith
 dependencies:
 - base >= 4.7 && < 5
 - rio
-- parsec
 - diagrams
 - diagrams-lib >= 1.4.2.3
 - diagrams-svg >= 1.4.2
@@ -34,6 +33,7 @@ dependencies:
 - ilist
 - pretty-simple
 - extra
+- megaparsec >= 7.0.5
 
 library:
   source-dirs: src
