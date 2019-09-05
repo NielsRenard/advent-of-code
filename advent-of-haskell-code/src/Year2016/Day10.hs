@@ -1,4 +1,5 @@
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Year2016.Day10
   ()
@@ -9,12 +10,26 @@ import           Prelude                        ( head
                                                 , read
                                                 , repeat
                                                 )
+import           Text.Megaparsec
+import           Text.Megaparsec.Char
 import           RIO
 import qualified RIO.List                      as L
 import qualified RIO.Text                      as T
 
+data Bot = Bot { id :: Int,
+                 giveLowTo :: Bot,
+                 giveHighTo :: Bot }
+
+type Parser = Parsec Void Text
+
+botParser :: Parser Text
+botParser = string "bot"
 
 
+{- repl
+   parseTest botParser $ T.pack "bot 88"
+   parseTest (satisfy (== 'bot') :: botParser) $ T.pack "ba-"
+-}
 
 input = L.map
   T.pack
