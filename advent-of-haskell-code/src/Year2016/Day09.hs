@@ -1,74 +1,84 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
 module Year2016.Day09
-  ()
+  (
+  )
 where
-import           Data.Char                      ( isDigit
-                                                , isLetter
-                                                )
-import           Data.List.Extra                ( stripInfix )
-import           Prelude                        ( head
-                                                , last
-                                                , read
-                                                , repeat
-                                                )
-import           RIO                     hiding ( many )
-import           RIO.List                      as L
-import           RIO.Text                      as T
-import           Text.ParserCombinators.ReadP
+
+import Data.Char
+  ( isDigit,
+    isLetter,
+  )
+import Data.List.Extra (stripInfix)
+import RIO hiding (many)
+import RIO.List as L
+import RIO.Text as T
+import Text.ParserCombinators.ReadP
+import Prelude
+  ( head,
+    last,
+    read,
+    repeat,
+  )
+
 type Marker = (Int, Int)
 
 answerOne = T.length $ process input
+
 answerTwo = processV2 $ T.unpack input
 
 -- this returns the decompressed string
 process :: Text -> Text
-process text = if notYetLastForm
-  then if formIsMarker
+process text =
+  if notYetLastForm
     then
-      let marker@(numOfChars, _) = getMarker currentForm
-      in  processMarker marker remainder
-            <> process (T.drop numOfChars remainder)
-    else currentForm <> process remainder
-  else currentForm <> remainder
- where
-  notYetLastForm = T.length (currentForm <> remainder) >= 5 -- 5 is the shortest possible marker (1x1)
-  formIsMarker   = T.take 1 currentForm == T.pack "("
-  currentParse   = readP_to_S dataOrMarker $ T.unpack text
-  currentForm    = parsedResult currentParse
-  remainder      = T.pack (parsedRemainder currentParse)
+      if formIsMarker
+        then
+          let marker@(numOfChars, _) = getMarker currentForm
+           in processMarker marker remainder
+                <> process (T.drop numOfChars remainder)
+        else currentForm <> process remainder
+    else currentForm <> remainder
+  where
+    notYetLastForm = T.length (currentForm <> remainder) >= 5 -- 5 is the shortest possible marker (1x1)
+    formIsMarker = T.take 1 currentForm == T.pack "("
+    currentParse = readP_to_S dataOrMarker $ T.unpack text
+    currentForm = parsedResult currentParse
+    remainder = T.pack (parsedRemainder currentParse)
 
 -- recursively count all data chars, multiply by what the repeater in marker says
 processV2 :: String -> Int
 processV2 inp
-  | ('(' : xs) <- inp
-  = let (form      , remainder) = last $ readP_to_S markerParser inp
-        (numOfChars, repeater ) = getMarker form
-        expandable              = L.take numOfChars remainder
-    in  repeater * processV2 expandable + processV2
-          (L.drop numOfChars remainder)
-  | (x : xs) <- inp
-  = 1 + processV2 xs
-  | [] <- inp
-  = 0
-
+  | ('(' : xs) <- inp =
+    let (form, remainder) = last $ readP_to_S markerParser inp
+        (numOfChars, repeater) = getMarker form
+        expandable = L.take numOfChars remainder
+     in repeater * processV2 expandable
+          + processV2
+            (L.drop numOfChars remainder)
+  | (x : xs) <- inp =
+    1 + processV2 xs
+  | [] <- inp =
+    0
 
 -- this is an alternative solution to 1 that only returns the length
 processLength :: Text -> Int
-processLength text = if notYetLastForm
-  then if formIsMarker
+processLength text =
+  if notYetLastForm
     then
-      let marker@(numOfChars, _) = getMarker currentForm
-      in  T.length (processMarker marker remainder)
-            + processLength (T.drop numOfChars remainder)
-    else T.length currentForm + processLength remainder
-  else T.length currentForm + T.length remainder
- where
-  notYetLastForm = T.length (currentForm <> remainder) >= 5 -- 5 is the shortest possible marker (1x1)
-  formIsMarker   = T.take 1 currentForm == T.pack "("
-  currentParse   = readP_to_S dataOrMarker $ T.unpack text
-  currentForm    = parsedResult currentParse
-  remainder      = T.pack (parsedRemainder currentParse)
+      if formIsMarker
+        then
+          let marker@(numOfChars, _) = getMarker currentForm
+           in T.length (processMarker marker remainder)
+                + processLength (T.drop numOfChars remainder)
+        else T.length currentForm + processLength remainder
+    else T.length currentForm + T.length remainder
+  where
+    notYetLastForm = T.length (currentForm <> remainder) >= 5 -- 5 is the shortest possible marker (1x1)
+    formIsMarker = T.take 1 currentForm == T.pack "("
+    currentParse = readP_to_S dataOrMarker $ T.unpack text
+    currentForm = parsedResult currentParse
+    remainder = T.pack (parsedRemainder currentParse)
 
 processMarker :: Marker -> Text -> Text
 processMarker marker@(numChars, repeater) remainder =
@@ -76,28 +86,32 @@ processMarker marker@(numChars, repeater) remainder =
 
 expand' :: Marker -> Text -> Text
 expand' m@(numOfChars, repeatTimes) t =
-  let expandee  = T.take numOfChars t
+  let expandee = T.take numOfChars t
       expansion = T.replicate repeatTimes expandee
-  in  expansion <> T.drop numOfChars t
+   in expansion <> T.drop numOfChars t
 
 {- examples -}
 
 -- A(1x5)BC repeats B a total of 5 times, becoming ABBBBBC
 ex1 = T.pack "A(1x5)BC"
+
 -- A(2x2)BCD(2x2)EFG doubles BC and EF, becoming ABCBCDEFEFG
 ex2 = T.pack "A(2x2)BCD(2x2)EFG"
+
 -- (6x1)(1x3)A becomes (1x3)A, the 'marker' is within data section of another marker
 ex3 = T.pack "(6x1)(1x3)A"
+
 -- X(8x2)(3x3)ABCY becomes X(3x3)ABC(3x3)ABCY
 ex4 = T.pack "X(8x2)(3x3)ABCY"
 
 -- becomes XABCABCABCABCABCABCY 20 chars
 bex1 = T.pack "X(8x2)(3x3)ABCY"
+
 -- length of 241920
 bex2 = T.pack "(27x12)(20x12)(13x14)(7x10)(1x12)A"
+
 -- becomes 445 long
 bex3 = T.pack "(25x3)(3x3)ABC(2x3)XY(5x2)PQRSTX(18x9)(3x2)TWO(5x7)SEVEN"
-
 
 {- parsing functions-}
 
@@ -120,6 +134,7 @@ fromMarker m@(n, r) = T.pack $ "(" <> show n <> "x" <> show r <> ")"
 
 -- ReadP specific helper fn to get the result
 parsedResult = fst . last
+
 -- ReadP specific helper fn to get the remainder
 parsedRemainder = snd . last
 
@@ -128,13 +143,12 @@ dataParser = do
   chars <- many letter
   return $ T.pack chars
 
-
 parseMarker :: ReadP Marker
 parseMarker = do
   openingBracket <- char '('
-  numOfChars     <- many1 digit
-  separator      <- char 'x'
-  repeatTimes    <- many1 digit
+  numOfChars <- many1 digit
+  separator <- char 'x'
+  repeatTimes <- many1 digit
   closingBracket <- char ')'
   return (read numOfChars, read repeatTimes)
 
@@ -142,17 +156,18 @@ parseMarker = do
 markerParser :: ReadP Text
 markerParser = do
   openingBracket <- char '('
-  numOfChars     <- many1 digit
-  separator      <- char 'x'
-  repeatTimes    <- many1 digit
+  numOfChars <- many1 digit
+  separator <- char 'x'
+  repeatTimes <- many1 digit
   closingBracket <- char ')'
-  return $ T.concat
-    [ T.singleton openingBracket
-    , T.pack numOfChars
-    , T.singleton separator
-    , T.pack repeatTimes
-    , T.singleton closingBracket
-    ]
+  return $
+    T.concat
+      [ T.singleton openingBracket,
+        T.pack numOfChars,
+        T.singleton separator,
+        T.pack repeatTimes,
+        T.singleton closingBracket
+      ]
 
 input =
   T.pack
