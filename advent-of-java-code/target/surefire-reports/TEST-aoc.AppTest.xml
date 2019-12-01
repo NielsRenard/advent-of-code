@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite tests="1" failures="0" name="aoc.AppTest" time="0.002" errors="0" skipped="0">
+  <properties>
+    <property name="java.vendor" value="Eclipse OpenJ9"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="os.name" value="Linux"/>
+    <property name="sun.boot.class.path" value="/home/coob/.sdkman/candidates/java/8.0.232.j9-adpt/jre/lib/amd64/compressedrefs/jclSC180/vm.jar:/home/coob/.sdkman/candidates/java/8.0.232.j9-adpt/jre/lib/se-service.jar:/home/coob/.sdkman/candidates/java/8.0.232.j9-adpt/jre/lib/rt.jar:/home/coob/.sdkman/candidates/java/8.0.232.j9-adpt/jre/lib/resources.jar:/home/coob/.sdkman/candidates/java/8.0.232.j9-adpt/jre/lib/jsse.jar:/home/coob/.sdkman/candidates/java/8.0.232.j9-adpt/jre/lib/charsets.jar:/home/coob/.sdkman/candidates/java/8.0.232.j9-adpt/jre/lib/jce.jar"/>
+    <property name="sun.desktop" value="gnome"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.runtime.version" value="1.8.0_232-b09"/>
+    <property name="user.name" value="coob"/>
+    <property name="java.compiler" value="j9jit29"/>
+    <property name="os.encoding" value="UTF-8"/>
+    <property name="guice.disable.misplaced.annotation.check" value="true"/>
+    <property name="com.ibm.util.extralibs.properties" value=""/>
+    <property name="com.ibm.jcl.checkClassPath" value=""/>
+    <property name="user.language" value="en"/>
+    <property name="com.ibm.oti.vm.bootstrap.library.path" value="/home/coob/.sdkman/candidates/java/8.0.232.j9-adpt/jre/lib/amd64/compressedrefs:/home/coob/.sdkman/candidates/java/8.0.232.j9-adpt/jre/lib/amd64"/>
+    <property name="sun.boot.library.path" value="/home/coob/.sdkman/candidates/java/8.0.232.j9-adpt/jre/lib/amd64/compressedrefs:/home/coob/.sdkman/candidates/java/8.0.232.j9-adpt/jre/lib/amd64"/>
+    <property name="classworlds.conf" value="/home/coob/.sdkman/candidates/maven/current/bin/m2.conf"/>
+    <property name="jdk.extensions.version" value="8.0.232.0"/>
+    <property name="java.version" value="1.8.0_232"/>
+    <property name="user.timezone" value="Europe/Amsterdam"/>
+    <property name="com.ibm.system.agent.path" value="/home/coob/.sdkman/candidates/java/8.0.232.j9-adpt/jre/lib/amd64"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="com.ibm.zero.version" value="2"/>
+    <property name="java.endorsed.dirs" value="/home/coob/.sdkman/candidates/java/8.0.232.j9-adpt/jre/lib/endorsed"/>
+    <property name="com.ibm.oti.vm.library.version" value="29"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="file.encoding.pkg" value="sun.io"/>
+    <property name="file.separator" value="/"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="maven.conf" value="/home/coob/.sdkman/candidates/maven/current/conf"/>
+    <property name="java.class.version" value="52.0"/>
+    <property name="user.country" value="US"/>
+    <property name="securerandom.source" value="file:/dev/./urandom"/>
+    <property name="java.home" value="/home/coob/.sdkman/candidates/java/8.0.232.j9-adpt/jre"/>
+    <property name="java.vm.info" value="JRE 1.8.0 Linux amd64-64-Bit Compressed References 20191017_442 (JIT enabled, AOT enabled)
+OpenJ9   - 77c1cf708
+OMR      - 20db4fbc
+JCL      - 97b5ec8f383 based on jdk8u232-b09"/>
+    <property name="os.version" value="4.15.0-70-generic"/>
+    <property name="java.awt.fonts" value=""/>
+    <property name="path.separator" value=":"/>
+    <property name="java.vm.version" value="openj9-0.17.0"/>
+    <property name="user.variant" value=""/>
+    <property name="java.awt.printerjob" value="sun.print.PSPrinterJob"/>
+    <property name="jdk.extensions.name" value="Extensions for OpenJDK for Eclipse OpenJ9"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="awt.toolkit" value="sun.awt.X11.XToolkit"/>
+    <property name="ibm.signalhandling.sigint" value="true"/>
+    <property name="user.home" value="/home/coob"/>
+    <property name="com.ibm.cpu.endian" value="little"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="ibm.signalhandling.sigchain" value="true"/>
+    <property name="library.jansi.path" value="/home/coob/.sdkman/candidates/maven/current/lib/jansi-native"/>
+    <property name="java.library.path" value="/home/coob/.sdkman/candidates/java/8.0.232.j9-adpt/jre/lib/amd64/compressedrefs:/home/coob/.sdkman/candidates/java/8.0.232.j9-adpt/jre/lib/amd64:/usr/lib64:/usr/lib"/>
+    <property name="java.vendor.url" value="http://www.eclipse.org/openj9"/>
+    <property name="java.vm.vendor" value="Eclipse OpenJ9"/>
+    <property name="java.fullversion" value="1.8.0_232-b09
+JRE 1.8.0 Linux amd64-64-Bit Compressed References 20191017_442 (JIT enabled, AOT enabled)
+OpenJ9   - 77c1cf708
+OMR      - 20db4fbc
+JCL      - 97b5ec8f383 based on jdk8u232-b09"/>
+    <property name="maven.home" value="/home/coob/.sdkman/candidates/maven/current"/>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher clean install"/>
+    <property name="java.class.path" value="/home/coob/.sdkman/candidates/maven/current/boot/plexus-classworlds-2.6.0.jar"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="sun.java.launcher.pid" value="5498"/>
+    <property name="java.vm.specification.version" value="1.8"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="java.io.tmpdir" value="/tmp"/>
+    <property name="maven.multiModuleProjectDirectory" value="/home/coob/code/adventofcode/advent-of-java-code"/>
+    <property name="ibm.system.encoding" value="UTF-8"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment"/>
+    <property name="ibm.signalhandling.rs" value="false"/>
+    <property name="java.ext.dirs" value="/home/coob/.sdkman/candidates/java/8.0.232.j9-adpt/jre/lib/ext"/>
+    <property name="user.dir" value="/home/coob/code/adventofcode/advent-of-java-code"/>
+    <property name="line.separator" value="
+"/>
+    <property name="java.vm.name" value="Eclipse OpenJ9 VM"/>
+    <property name="com.ibm.oti.shared.enabled" value="false"/>
+    <property name="com.ibm.vm.bitmode" value="64"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="com.ibm.oti.configuration" value="scar"/>
+    <property name="java.specification.version" value="1.8"/>
+  </properties>
+  <testcase classname="aoc.AppTest" name="shouldAnswerWithTrue" time="0.002"/>
+</testsuite>
