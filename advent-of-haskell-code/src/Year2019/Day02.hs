@@ -10,30 +10,26 @@ solvePartOne = head $ slurp (twelveOTwo input) 0
 
 solvePartTwo = head $ bruteForcePermutations input 19690720
 
--- this is the function doing most of the work
-slurp :: [Int] -> Int -> [Int]
-slurp xs index =
-  let instruction = nextInstruction $ drop index xs
-      nextIndex = (index + 4)
-      xs' = determineInstruction instruction xs
-   in if not (null xs)
-        then
-          if index > length xs
-            then xs
-            else slurp xs' nextIndex
-        else xs
-  where
-    nextInstruction xs =
-      if length xs > 3
-        then (head xs, xs !! 1, xs !! 2, xs !! 3)
-        else (0, 0, 0, 0)
+newtype Instruction = Instruction (Int, Int, Int, Int)
 
--- bit weird but it returns an instruction
-determineInstruction :: (Int, Int, Int, Int) -> ([Int] -> [Int])
-determineInstruction (1, b, c, d) = plusCode (b, c, d)
-determineInstruction (2, b, c, d) = multCode (b, c, d)
-determineInstruction (99, b, c, d) = id
-determineInstruction _ = id
+-- this function does all the work
+slurp :: [Int] -> Int -> [Int]
+slurp [] index = []
+slurp xs index =
+  if index > length xs
+    then xs
+    else slurp xs' index'
+  where
+    index' = (index + 4)
+    -- clean this up, instructionFn is a bit weird
+    instructionInput = getInstruction $ drop index xs
+    getInstruction xs = (head xs, xs !! 1, xs !! 2, xs !! 3)
+    xs' = instructionFn instructionInput xs
+    instructionFn :: (Int, Int, Int, Int) -> ([Int] -> [Int])
+    instructionFn (1, b, c, d) = plusCode (b, c, d)
+    instructionFn (2, b, c, d) = multCode (b, c, d)
+    instructionFn (99, b, c, d) = id
+    instructionFn _ = id
 
 plusCode (n1, n2, index) xs = setAt index (xs !! n1 + xs !! n2) xs
 
