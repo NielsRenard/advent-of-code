@@ -10,6 +10,7 @@ solvePartOne = head $ slurp (twelveOTwo input) 0
 
 solvePartTwo = head $ bruteForcePermutations input 19690720
 
+-- this is the function doing most of the work
 slurp :: [Int] -> Int -> [Int]
 slurp xs index =
   let instruction = getFourCharOpcodeSafe $ drop index xs
@@ -38,9 +39,9 @@ plusCode (n1, n2, index) xs = setAt index (xs !! n1 + xs !! n2) xs
 
 multCode (n1, n2, index) xs = setAt index (xs !! n1 * xs !! n2) xs
 
--- What is 100 * noun + verb?
-
 insertNounAndVerb n v = setAt 1 n . setAt 2 v
+
+-- thought this would run slow, but runs in 0.66 seconds
 
 bruteForcePermutations input desiredOutput =
   let index = 0
@@ -51,6 +52,7 @@ bruteForcePermutations input desiredOutput =
           | n <- [0 .. 99],
             v <- [0 .. 99]
         ]
+--(example) input below---------------------------------------------------------
 
 exInput :: [Int]
 exInput = [1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50]
