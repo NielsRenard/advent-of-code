@@ -55,9 +55,20 @@ determineCode _ = id
 plusCode (n1, n2, index) xs = setAt index (xs !! n1 + xs !! n2) xs
 multCode (n1, n2, index) xs = setAt index (xs !! n1 * xs !! n2) xs
 
-changeAtPos :: [Int] -> Int -> Int -> [Int]
-changeAtPos xs pos newchar =
-  let start = take pos xs
-      end = drop pos xs
-      in
-    start ++ [newchar] ++ end
+-- value placed in address 1 is called the noun,
+-- value placed in address 2 is called the verb.
+-- each of the two input values will be between 0 and 99, inclusive.
+-- What is 100 * noun + verb?
+-- (For example, if noun=12 and verb=2, the answer would be 1202.)
+
+nounAndVerb n v = (setAt 1 n . setAt 2 v)
+
+bruteForcePermutations inp =
+  let index = 0 in
+    (filter (/= 0)) $
+    [if (6327510 == head (slurp (nounAndVerb n v inp) index))
+     then 100 * n + v
+     else 0
+    | n <- [12], v <- [2]]
+
+
