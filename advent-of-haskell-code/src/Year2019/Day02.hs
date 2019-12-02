@@ -13,20 +13,20 @@ solvePartTwo = head $ bruteForcePermutations input 19690720
 -- this is the function doing most of the work
 slurp :: [Int] -> Int -> [Int]
 slurp xs index =
-  let instruction = getFourCharOpcodeSafe $ drop index xs
-      newXs = determineInstruction instruction xs
+  let instruction = nextInstruction $ drop index xs
+      nextIndex = (index + 4)
+      xs' = determineInstruction instruction xs
    in if not (null xs)
         then
-          if (index - 1) > length xs
+          if index > length xs
             then xs
-            else slurp newXs (index + 4)
+            else slurp xs' nextIndex
         else xs
-
-getFourCharOpcodeSafe :: [Int] -> (Int, Int, Int, Int)
-getFourCharOpcodeSafe xs =
-  if length xs > 3
-    then (head xs, xs !! 1, xs !! 2, xs !! 3)
-    else (0, 0, 0, 0)
+  where
+    nextInstruction xs =
+      if length xs > 3
+        then (head xs, xs !! 1, xs !! 2, xs !! 3)
+        else (0, 0, 0, 0)
 
 -- bit weird but it returns an instruction
 determineInstruction :: (Int, Int, Int, Int) -> ([Int] -> [Int])
