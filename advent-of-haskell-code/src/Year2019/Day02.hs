@@ -45,13 +45,15 @@ insertNounAndVerb n v = setAt 1 n . setAt 2 v
 
 bruteForcePermutations input desiredOutput =
   let index = 0
-   in filter (/= 0) $
+   in filter
+        (/= 0)
         [ if desiredOutput == head (slurp (insertNounAndVerb n v input) index)
             then 100 * n + v
             else 0
           | n <- [0 .. 99],
             v <- [0 .. 99]
         ]
+
 --(example) input below---------------------------------------------------------
 
 exInput :: [Int]
