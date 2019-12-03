@@ -1,5 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE OverloadedStrings #-} 
+{-# HLINT ignore "Eta reduce" #-}
+--{-# LANGUAGE OverloadedStrings #-} 
 module Year2019.Day03 where
 
 import Utils (frequencies)
@@ -17,74 +18,55 @@ center = Coordinate { x = 0, y = 0}
 --U98,R91,D20,R16,D67,R40,U7,R15,U6,R7]
 data Line
   = Line
-      { direction :: Char,
+      { 
         coordinates :: [Coordinate]
       }
   deriving (Show, Eq)
 
 data Coordinate
   = Coordinate
-      { x :: Int,
+      {
+        x :: Int,
         y :: Int
       }
   deriving (Show, Eq)
 
 
 --takes 1 segment like "R75" and one direction like "N" and an origin Coordinate, returns a Line
-makeLine :: String -> Char -> Coordinate -> Line
-makeLine segment facing origin =
+makeLine :: String -> Coordinate -> Line
+makeLine segment origin =
   let
     direction :: Char = head segment
-    distance :: Int = read $ drop 1 segment
-      in
-    case facing of
-      'N' -> case direction of
-        'R' -> Line 'E' [Coordinate {x = x', y = y'} |
-                         x' <- [x origin + 1..distance],
-                         y' <- [y origin]]
-        'L' -> Line 'W' [Coordinate {x = x', y = y'} |
-                         x' <- [(x origin)..distance],
-                         y' <- [y origin]]
-      'E' -> case direction of
-        'R' -> Line 'S' [Coordinate {x = x', y = y'} |
-                         x' <- [x origin],
-                         y' <- [y origin..distance]]
-        'L' -> Line 'N' [Coordinate {x = x', y = y'} |
-                         x' <- [x origin],
-                         y' <- [y origin..distance]]
-      'S' -> case direction of
-        'R' -> Line 'W' [Coordinate {x = x', y = y'} |
-                         x' <- [(x origin)..distance],
-                         y' <- [y origin]]
-        'L' -> Line 'E' [Coordinate {x = x', y = y'} |
-                         x' <- [x origin + 1..distance],
-                         y' <- [y origin]]
-      'W' -> case direction of
-        'R' -> Line 'N' [Coordinate {x = x', y = y'} |
-                         x' <- [x origin],
-                         y' <- [y origin..distance]]
-        'L' -> Line 'S' [Coordinate {x = x', y = y'} |
-                         x' <- [x origin],
-                         y' <- [y origin..distance]]                              
+    distance :: Int = read $ drop 1 segment :: Int
+    oldX = (x origin)
+    oldY = (y origin)
+  in
+    case direction of
+        'R' -> Line [Coordinate {x = x', y = y'} |
+                     x' <- [oldX..(oldX+distance)],
+                     y' <- [oldY]]
+        'L' -> Line [Coordinate {x = x', y = y'} |
+                     x' <- [(oldX-distance)..oldX],
+                     y' <- [oldY]]
+        'U' -> Line [Coordinate {x = x', y = y'} |
+                     y' <- [oldY..(oldY+distance)],
+                     x' <- [oldX]
+                     ]
+        'D' -> Line [Coordinate {x = x', y = y'} |
+                      y' <- [(oldY-distance)..oldY],
+                      x' <- [oldX]]                 
 
-
-calcCoordinates :: [String] -> [Coordinate]
-calcCoordinates wire = let center = Coordinate { x = 0, y = 0}
-                           firstLine = makeLine (head wire) 'N' center
-                           coords = concatMap coordinates [firstLine]
-                       in
-                         center : coords
 
 foldWire :: [String] -> [Line]
-foldWire wireInput = foldl' (\acc seg
-                              -> let lastLine = head acc
-                                     lastCoord = (last $ coordinates lastLine)
-                                     newLine = makeLine seg 
-                                       (direction lastLine)
-                                       lastCoord
-                     in
-                                   newLine : acc )
-                     [Line 'N' [Coordinate 0 0]] wireInput
+foldWire wireInput = foldl'
+  (\acc seg
+    -> let lastLine = head acc
+           lastCoord = (last $ coordinates lastLine)
+           newLine = makeLine seg lastCoord
+       in
+         newLine : acc )
+  [Line {coordinates = [center]}]
+  wireInput
 
 
 
