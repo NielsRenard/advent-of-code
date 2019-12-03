@@ -57,7 +57,7 @@ makeLine segment origin =
         'R' ->
           Line
             [ Coordinate {x = x', y = y'}
-              | x' <- reverse [oldX .. (oldX + distance)],
+              | x' <- reverse [succ oldX .. (oldX + distance)],
                 y' <- [oldY]
             ]
         'L' ->
@@ -69,7 +69,7 @@ makeLine segment origin =
         'U' ->
           Line
             [ Coordinate {x = x', y = y'}
-              | y' <- reverse [oldY .. (oldY + distance)],
+              | y' <- reverse [succ oldY .. (oldY + distance)],
                 x' <- [oldX]
             ]
         'D' ->
