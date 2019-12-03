@@ -9,14 +9,22 @@ import qualified Data.Set as S
 import qualified RIO.Text as T
 import Utils (frequencies)
 
+stepsToCoordinate :: Coordinate -> Int
+stepsToCoordinate c = undefined
+
+allIntersections =
+  let
+    coords1 :: S.Set Coordinate = S.fromList $ concatMap coordinates $ foldWire wire1
+    coords2 :: S.Set Coordinate = S.fromList $ concatMap coordinates $ foldWire wire2
+   in S.intersection coords1 coords2
+
 solvePartOne =
-  let lineset1 = S.fromList $ concatMap coordinates $ foldWire wire1
-      lineset2 = S.fromList $ concatMap coordinates $ foldWire wire2
-      biglist = S.intersection lineset1 lineset2
+  let coords1 = S.fromList $ concatMap coordinates $ foldWire wire1
+      coords2 = S.fromList $ concatMap coordinates $ foldWire wire2
+      biglist = S.intersection coords1 coords2
    in S.findMin $ S.drop 1 $ S.map (\it -> distanceFromPort (x it) (y it)) biglist
 
--- 159
-exInput1 = ["R75", "D30", "R83", "U83", "L12", "D49", "R71", "U7", "L72", "U62", "R66", "U55", "R34", "D71", "R55", "D58", "R83"]
+exInput1 = ["R8","U5","L5","D3"]
 
 center = Coordinate {x = 0, y = 0}
 
@@ -46,25 +54,25 @@ makeLine segment origin =
         'R' ->
           Line
             [ Coordinate {x = x', y = y'}
-              | x' <- [oldX .. (oldX + distance)],
+              | x' <- reverse [oldX .. (oldX + distance)],
                 y' <- [oldY]
             ]
         'L' ->
           Line
             [ Coordinate {x = x', y = y'}
-              | x' <- reverse [(oldX - distance) .. oldX],
+              | x' <- [(oldX - distance) .. oldX],
                 y' <- [oldY]
             ]
         'U' ->
           Line
             [ Coordinate {x = x', y = y'}
-              | y' <- [oldY .. (oldY + distance)],
+              | y' <- reverse [oldY .. (oldY + distance)],
                 x' <- [oldX]
             ]
         'D' ->
           Line
             [ Coordinate {x = x', y = y'}
-              | y' <- reverse [(oldY - distance) .. oldY],
+              | y' <- [(oldY - distance) .. oldY],
                 x' <- [oldX]
             ]
 
@@ -78,9 +86,9 @@ foldWire wireInput =
   foldl'
     ( \acc seg ->
         let lastLine = head acc
-            lastCoord = (last $ coordinates lastLine)
-            newLine = makeLine seg lastCoord
-         in newLine : acc
+            lastCoord = (head $ coordinates lastLine)
+            newLine :: Line = makeLine seg lastCoord
+         in newLine : (acc :: [Line])
     )
     [Line {coordinates = [center]}]
     wireInput
