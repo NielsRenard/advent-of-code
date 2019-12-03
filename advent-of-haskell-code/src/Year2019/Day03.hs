@@ -30,7 +30,7 @@ data Coordinate
   deriving (Show, Eq)
 
 
---takes 1 segment like "R75"
+--takes 1 segment like "R75" and one direction like "N" and an origin Coordinate, returns a Line
 makeLine :: String -> Char -> Coordinate -> Line
 makeLine segment facing origin =
   let
@@ -74,6 +74,18 @@ calcCoordinates wire = let center = Coordinate { x = 0, y = 0}
                            coords = concatMap coordinates [firstLine]
                        in
                          center : coords
+
+foldWire :: [String] -> [Line]
+foldWire wireInput = foldl' (\acc seg
+                              -> let lastLine = head acc
+                                     lastCoord = (last $ coordinates lastLine)
+                                     newLine = makeLine seg 
+                                       (direction lastLine)
+                                       lastCoord
+                     in
+                                   newLine : acc )
+                     [Line 'N' [Coordinate 0 0]] wireInput
+
 
 
 calcFuel :: Int -> Int
