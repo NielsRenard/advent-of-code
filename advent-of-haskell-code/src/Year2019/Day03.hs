@@ -1,21 +1,24 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE OverloadedStrings #-} 
 module Year2019.Day03 where
 
 import Utils (frequencies)
 import Data.List
 import Data.List.Index
-import qualified Data.Text as Text
 
   
 -- 159
 exInput1 = ["R75","D30","R83","U83","L12","D49","R71","U7","L72", "U62","R66","U55","R34","D71","R55","D58","R83"] 
+
+center = Coordinate { x = 0, y = 0}
 
 -- 135
 --[R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51
 --U98,R91,D20,R16,D67,R40,U7,R15,U6,R7]
 data Line
   = Line
-      { coordinate :: [Coordinate]
+      { direction :: Char,
+        coordinates :: [Coordinate]
       }
   deriving (Show, Eq)
 
@@ -26,13 +29,51 @@ data Coordinate
       }
   deriving (Show, Eq)
 
-makeLine :: Text.Text -> Coordinate -> [Coordinate]
-makeLine l origin = undefined
 
-calcCoordinates :: [Text.Text] -> [Coordinate]
+--takes 1 segment like "R75"
+makeLine :: String -> Char -> Coordinate -> Line
+makeLine segment facing origin =
+  let
+    direction :: Char = head segment
+    distance :: Int = read $ drop 1 segment
+      in
+    case facing of
+      'N' -> case direction of
+        'R' -> Line 'E' [Coordinate {x = x', y = y'} |
+                         x' <- [x origin + 1..distance],
+                         y' <- [y origin]]
+        'L' -> Line 'W' [Coordinate {x = x', y = y'} |
+                         x' <- [(x origin)..distance],
+                         y' <- [y origin]]
+      'E' -> case direction of
+        'R' -> Line 'S' [Coordinate {x = x', y = y'} |
+                         x' <- [x origin],
+                         y' <- [y origin..distance]]
+        'L' -> Line 'N' [Coordinate {x = x', y = y'} |
+                         x' <- [x origin],
+                         y' <- [y origin..distance]]
+      'S' -> case direction of
+        'R' -> Line 'W' [Coordinate {x = x', y = y'} |
+                         x' <- [(x origin)..distance],
+                         y' <- [y origin]]
+        'L' -> Line 'E' [Coordinate {x = x', y = y'} |
+                         x' <- [x origin + 1..distance],
+                         y' <- [y origin]]
+      'W' -> case direction of
+        'R' -> Line 'N' [Coordinate {x = x', y = y'} |
+                         x' <- [x origin],
+                         y' <- [y origin..distance]]
+        'L' -> Line 'S' [Coordinate {x = x', y = y'} |
+                         x' <- [x origin],
+                         y' <- [y origin..distance]]                              
+
+
+calcCoordinates :: [String] -> [Coordinate]
 calcCoordinates wire = let center = Coordinate { x = 0, y = 0}
+                           firstLine = makeLine (head wire) 'N' center
+                           coords = concatMap coordinates [firstLine]
                        in
-                         makeLine (head wire) center
+                         center : coords
 
 
 calcFuel :: Int -> Int
