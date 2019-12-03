@@ -9,8 +9,11 @@ import qualified Data.Set as S
 import qualified RIO.Text as T
 import Utils (frequencies)
 
-stepsToCoordinate :: Coordinate -> Int
-stepsToCoordinate c = undefined
+--stepsToCoordinate :: [String] -> Coordinate -- > Int
+stepsToCoordinate wire coord =
+  let lines = foldWire wire in
+    elemIndex coord $ reverse $ concatMap coordinates $ lines
+    
 
 allIntersections =
   let
