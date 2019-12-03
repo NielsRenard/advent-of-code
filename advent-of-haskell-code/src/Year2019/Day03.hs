@@ -31,6 +31,7 @@ data Coordinate
       }
   deriving (Show, Eq)
 
+cartDiff x1 x2 y1 y2 = abs (x1 - x2) + abs (y1 - y2)
 
 --takes 1 segment like "R75" and one direction like "N" and an origin Coordinate, returns a Line
 makeLine :: String -> Coordinate -> Line
@@ -46,15 +47,20 @@ makeLine segment origin =
                      x' <- [oldX..(oldX+distance)],
                      y' <- [oldY]]
         'L' -> Line [Coordinate {x = x', y = y'} |
-                     x' <- [(oldX-distance)..oldX],
+                     x' <- reverse [(oldX-distance)..oldX],
                      y' <- [oldY]]
         'U' -> Line [Coordinate {x = x', y = y'} |
                      y' <- [oldY..(oldY+distance)],
                      x' <- [oldX]
                      ]
         'D' -> Line [Coordinate {x = x', y = y'} |
-                      y' <- [(oldY-distance)..oldY],
+                      y' <- reverse [(oldY-distance)..oldY],
                       x' <- [oldX]]                 
+
+
+distanceFromPort x y =
+  cartDiff 0 x 0 y
+  where cartDiff x1 x2 y1 y2 = abs (x1 - x2) + abs (y1 - y2)
 
 
 foldWire :: [String] -> [Line]
@@ -85,6 +91,7 @@ calcFuelRecursive x =
 
 two :: [Int] -> Int
 two xs = foldl' (+) 0 $ map calcFuelRecursive xs
+
 
 
 input =
