@@ -35,6 +35,8 @@ dependencies:
 - extra
 - megaparsec >= 7.0.5
 - containers
+- digits
+- utility-ht
 
 library:
   source-dirs: src
