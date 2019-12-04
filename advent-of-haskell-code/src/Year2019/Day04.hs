@@ -31,7 +31,7 @@ hasDoubleOrHigher x = any (\it -> length it >= 2) $ group $ show x
 
 solvePartTwo =
   let range = [lowerBound .. upperBound]
-   in length . (filter validatePartTwo) $ range
+   in length . filter validatePartTwo $ range
 
 validatePartTwo :: Integer -> Bool
 validatePartTwo it =
