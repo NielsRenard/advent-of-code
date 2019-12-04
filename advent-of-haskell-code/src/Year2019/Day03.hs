@@ -1,4 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables #-}
+
 {-# HLINT ignore "Eta reduce" #-}
 module Year2019.Day03 where
 
@@ -10,13 +11,17 @@ import Utils (frequencies)
 
 stepsToCoordinate :: [String] -> Coordinate -> Maybe Int
 stepsToCoordinate wire coord =
-  let lines = foldWire wire in
-    elemIndex coord $ reverse $ concatMap coordinates $ lines
+  let lines = foldWire wire
+   in elemIndex coord $ reverse $ concatMap coordinates $ lines
 
-exo1a = ["R8","U5","L5","D3"]
-exo1b = ["U7","R6","D4","L4"]
-exy1a = ["R75","D30","R83","U83","L12","D49","R71","U7","L72"]
-exy1b = ["U62","R66","U55","R34","D71","R55","D58","R83"]
+exo1a = ["R8", "U5", "L5", "D3"]
+
+exo1b = ["U7", "R6", "D4", "L4"]
+
+exy1a = ["R75", "D30", "R83", "U83", "L12", "D49", "R71", "U7", "L72"]
+
+exy1b = ["U62", "R66", "U55", "R34", "D71", "R55", "D58", "R83"]
+
 exy2 = ["R98", "U47", "R26", "D63", "R33", "U87", "L62", "D20", "R33", "U53", "R5", "U98", "R91", "D20", "R16", "D6", "R40", "U7", "R15", "U6", "R7"]
 
 -- S.map (stepsToCoordinate exo1a) $ allIntersections exo1a exo1b
@@ -29,28 +34,25 @@ exy2 = ["R98", "U47", "R26", "D63", "R33", "U87", "L62", "D20", "R33", "U53", "R
 -- not 84613 too many guess
 -- not 7134 (even lower than first guess)
 
-allIntersectionsList w1 w2=
-  let
-    coords1 :: [Coordinate] = concatMap coordinates $ foldWire w1
-    coords2 :: [Coordinate] = concatMap coordinates $ foldWire w2
-  in intersect coords1 coords2
+allIntersectionsList w1 w2 =
+  let coords1 :: [Coordinate] = concatMap coordinates $ foldWire w1
+      coords2 :: [Coordinate] = concatMap coordinates $ foldWire w2
+   in intersect coords1 coords2
 
-allIntersections w1 w2=
-  let
-    coords1 :: S.Set Coordinate = S.fromList $ concatMap coordinates $ foldWire w1
-    coords2 :: S.Set Coordinate = S.fromList $ concatMap coordinates $ foldWire w2
+allIntersections w1 w2 =
+  let coords1 :: S.Set Coordinate = S.fromList $ concatMap coordinates $ foldWire w1
+      coords2 :: S.Set Coordinate = S.fromList $ concatMap coordinates $ foldWire w2
    in S.intersection coords1 coords2
 
-closetIntersection list=
+closetIntersection list =
   S.findMin $ S.drop 1 $ S.map (\it -> distanceFromPort (x it) (y it)) list
 
-closetIntersectionCoord list=
+closetIntersectionCoord list =
   S.map (\it -> (distanceFromPort (x it) (y it), it)) list
 
 --shortestIntersectionCoord :: [String] -> [Coordinate]
-shortestIntersectionCoord w list=
+shortestIntersectionCoord w list =
   S.map (\it -> (stepsToCoordinate w it)) list
-
 
 solvePartOne =
   let coords1 = S.fromList $ concatMap coordinates $ foldWire wire1
@@ -58,16 +60,19 @@ solvePartOne =
       biglist = S.intersection coords1 coords2
    in S.findMin $ S.drop 1 $ S.map (\it -> distanceFromPort (x it) (y it)) biglist
 
-exInput1 = ["R8","U5","L5","D3"]
-exInput2 = ["U7","R6","D4","L3"]
+exInput1 = ["R8", "U5", "L5", "D3"]
+
+exInput2 = ["U7", "R6", "D4", "L3"]
+
 -- good test where second intersection is closer
 secondCloser = allIntersections ["U1", "R1", "D1", "D2"] ["D2", "R2", "U1", "L2"]
+
 center = Coordinate {x = 0, y = 0}
 
-data Line = Line { coordinates :: [Coordinate]}
+data Line = Line {coordinates :: [Coordinate]}
   deriving (Show, Eq, Ord)
 
-data Coordinate = Coordinate { x :: Int, y :: Int}
+data Coordinate = Coordinate {x :: Int, y :: Int}
   deriving (Show, Eq, Ord)
 
 cartDiff x1 x2 y1 y2 = abs (x1 - x2) + abs (y1 - y2)
@@ -82,30 +87,40 @@ makeLine segment origin =
    in case direction of
         'R' ->
           Line
-            (reverse $ drop 1 $ reverse [ Coordinate {x = x', y = y'}
-              | x' <- reverse [oldX .. (oldX + distance)],
-                y' <- [oldY]
-            ])
+            ( reverse $ drop 1 $
+                reverse
+                  [ Coordinate {x = x', y = y'}
+                    | x' <- reverse [oldX .. (oldX + distance)],
+                      y' <- [oldY]
+                  ]
+            )
         'L' ->
           Line
-            (reverse $ drop 1 $ reverse[ Coordinate {x = x', y = y'}
-              | x' <- [(oldX - distance) .. oldX],
-                y' <- [oldY]
-            ])
+            ( reverse $ drop 1 $
+                reverse
+                  [ Coordinate {x = x', y = y'}
+                    | x' <- [(oldX - distance) .. oldX],
+                      y' <- [oldY]
+                  ]
+            )
         'U' ->
           Line
-          (reverse $ drop 1 $ reverse
-            [ Coordinate {x = x', y = y'}
-              | y' <- reverse [oldY .. (oldY + distance)],
-                x' <- [oldX]
-            ])
+            ( reverse $ drop 1 $
+                reverse
+                  [ Coordinate {x = x', y = y'}
+                    | y' <- reverse [oldY .. (oldY + distance)],
+                      x' <- [oldX]
+                  ]
+            )
         'D' ->
           Line
-          (reverse $ drop 1 $ reverse
-            [ Coordinate {x = x', y = y'}
-              | y' <- [(oldY - distance) .. oldY],
-                x' <- [oldX]
-            ])
+            ( reverse $ drop 1 $
+                reverse
+                  [ Coordinate {x = x', y = y'}
+                    | y' <- [(oldY - distance) .. oldY],
+                      x' <- [oldX]
+                  ]
+            )
 
 distanceFromPort x y =
   cartDiff 0 x 0 y
