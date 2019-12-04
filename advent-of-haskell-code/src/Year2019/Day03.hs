@@ -13,13 +13,36 @@ import Utils (frequencies)
 stepsToCoordinate wire coord =
   let lines = foldWire wire in
     elemIndex coord $ reverse $ concatMap coordinates $ lines
-    
 
-allIntersections =
+exo1a = ["R8","U5","L5","D3"]
+exo1b = ["U7","R6","D4","L4"]
+exy1a = ["R75","D30","R83","U83","L12","D49","R71","U7","L72"]
+exy1b = ["U62","R66","U55","R34","D71","R55","D58","R83"]
+exy2 = ["R98", "U47", "R26", "D63", "R33", "U87", "L62", "D20", "R33", "U53", "R5", "U98", "R91", "D20", "R16", "D6", "R40", "U7", "R15", "U6", "R7"]
+
+-- S.map (stepsToCoordinate exo1a) $ allIntersections exo1a exo1b
+--fromList [Just 0,Just 16,Just 22]
+--S.map (stepsToCoordinate exo1b) $ allIntersections exo1a exo1b
+--fromList [Just 0,Just 16,Just 22]
+
+-- not 7140 too low
+-- not 120836 too high
+-- not 84613 too many guess
+
+allIntersectionsList w1 w2=
   let
-    coords1 :: S.Set Coordinate = S.fromList $ concatMap coordinates $ foldWire wire1
-    coords2 :: S.Set Coordinate = S.fromList $ concatMap coordinates $ foldWire wire2
+    coords1 :: [Coordinate] = concatMap coordinates $ foldWire w1
+    coords2 :: [Coordinate] = concatMap coordinates $ foldWire w2
+  in intersect coords1 coords2
+
+allIntersections w1 w2=
+  let
+    coords1 :: S.Set Coordinate = S.fromList $ concatMap coordinates $ foldWire w1
+    coords2 :: S.Set Coordinate = S.fromList $ concatMap coordinates $ foldWire w2
    in S.intersection coords1 coords2
+
+closetIntersection list=
+  S.findMin $ S.drop 1 $ S.map (\it -> distanceFromPort (x it) (y it)) list
 
 solvePartOne =
   let coords1 = S.fromList $ concatMap coordinates $ foldWire wire1
@@ -28,6 +51,7 @@ solvePartOne =
    in S.findMin $ S.drop 1 $ S.map (\it -> distanceFromPort (x it) (y it)) biglist
 
 exInput1 = ["R8","U5","L5","D3"]
+exInput2 = ["U7","R6","D4","L3"]
 
 center = Coordinate {x = 0, y = 0}
 
@@ -56,28 +80,30 @@ makeLine segment origin =
    in case direction of
         'R' ->
           Line
-            [ Coordinate {x = x', y = y'}
-              | x' <- reverse [succ oldX .. (oldX + distance)],
+            (reverse $ drop 1 $ reverse [ Coordinate {x = x', y = y'}
+              | x' <- reverse [oldX .. (oldX + distance)],
                 y' <- [oldY]
-            ]
+            ])
         'L' ->
           Line
-            [ Coordinate {x = x', y = y'}
+            (reverse $ drop 1 $ reverse[ Coordinate {x = x', y = y'}
               | x' <- [(oldX - distance) .. oldX],
                 y' <- [oldY]
-            ]
+            ])
         'U' ->
           Line
+          (reverse $ drop 1 $ reverse
             [ Coordinate {x = x', y = y'}
-              | y' <- reverse [succ oldY .. (oldY + distance)],
+              | y' <- reverse [oldY .. (oldY + distance)],
                 x' <- [oldX]
-            ]
+            ])
         'D' ->
           Line
+          (reverse $ drop 1 $ reverse
             [ Coordinate {x = x', y = y'}
               | y' <- [(oldY - distance) .. oldY],
                 x' <- [oldX]
-            ]
+            ])
 
 distanceFromPort x y =
   cartDiff 0 x 0 y
