@@ -1,5 +1,4 @@
 {-# LANGUAGE ScopedTypeVariables #-}
-
 {-# HLINT ignore "Eta reduce" #-}
 module Year2019.Day03 where
 
@@ -9,7 +8,7 @@ import qualified Data.Set as S
 import qualified RIO.Text as T
 import Utils (frequencies)
 
---stepsToCoordinate :: [String] -> Coordinate -- > Int
+stepsToCoordinate :: [String] -> Coordinate -> Maybe Int
 stepsToCoordinate wire coord =
   let lines = foldWire wire in
     elemIndex coord $ reverse $ concatMap coordinates $ lines
@@ -28,6 +27,7 @@ exy2 = ["R98", "U47", "R26", "D63", "R33", "U87", "L62", "D20", "R33", "U53", "R
 -- not 7140 too low
 -- not 120836 too high
 -- not 84613 too many guess
+-- not 7134 (even lower than first guess)
 
 allIntersectionsList w1 w2=
   let
@@ -44,6 +44,14 @@ allIntersections w1 w2=
 closetIntersection list=
   S.findMin $ S.drop 1 $ S.map (\it -> distanceFromPort (x it) (y it)) list
 
+closetIntersectionCoord list=
+  S.map (\it -> (distanceFromPort (x it) (y it), it)) list
+
+--shortestIntersectionCoord :: [String] -> [Coordinate]
+shortestIntersectionCoord w list=
+  S.map (\it -> (stepsToCoordinate w it)) list
+
+
 solvePartOne =
   let coords1 = S.fromList $ concatMap coordinates $ foldWire wire1
       coords2 = S.fromList $ concatMap coordinates $ foldWire wire2
@@ -52,20 +60,14 @@ solvePartOne =
 
 exInput1 = ["R8","U5","L5","D3"]
 exInput2 = ["U7","R6","D4","L3"]
-
+-- good test where second intersection is closer
+secondCloser = allIntersections ["U1", "R1", "D1", "D2"] ["D2", "R2", "U1", "L2"]
 center = Coordinate {x = 0, y = 0}
 
-data Line
-  = Line
-      { coordinates :: [Coordinate]
-      }
+data Line = Line { coordinates :: [Coordinate]}
   deriving (Show, Eq, Ord)
 
-data Coordinate
-  = Coordinate
-      { x :: Int,
-        y :: Int
-      }
+data Coordinate = Coordinate { x :: Int, y :: Int}
   deriving (Show, Eq, Ord)
 
 cartDiff x1 x2 y1 y2 = abs (x1 - x2) + abs (y1 - y2)
