@@ -21,21 +21,25 @@ inAndOut :: [Int]
 inAndOut = [3,0,4,0,99]
 
 -- this function does all the work (based on Day02)
-slurp :: [Int] -> Int -> [Int]
-slurp [] index = []
-slurp xs index =
+slurp :: [Int] -> Int -> [Int]-> ([Int], [Int])
+slurp [] index acc = ([], acc)
+slurp xs index acc =
   if index >= length xs -- maybe eq? (or opCode outOfBounds)
-    then xs
-    else slurp xs index'
+    then (xs, acc)
+    else slurp xs index' acc'
   where
-    opCode = xs !! succ index
+    opCode = xs !! index
     index' | opCode `elem` [1,2] = index + 4
            | opCode `elem` [3,4] = index + 2
-           | otherwise = length xs            
+           | otherwise = length xs
+    xs' = xs
+    acc' | opCode == 4 =
+           acc ++ [xs !! (xs !! succ index)]  -- position mode first arg
+         | otherwise = acc
     -- getInstruction xs = (head xs, xs !! 1, xs !! 2, xs !! 3)
 
 
-systemToTest programID xs = setAt (xs !! 1) programID xs
+systemToTest programID xs = setAt 1 programID xs
 
 plusInstr (n1, n2, index) xs = setAt index (xs !! n1 + xs !! n2) xs
 
