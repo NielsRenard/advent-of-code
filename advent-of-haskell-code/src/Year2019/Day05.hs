@@ -14,7 +14,7 @@ import Data.Function ((&))
 
 -- The program will request an  ID of the system to test.
 -- Provide it with 1, the ID for the ship's air conditioner unit.
-readyInput = systemToTest 1 input
+readyInput = provideInput 1 input
 
 -- The program  outputs whatever it gets as input, then halts.
 inAndOut :: [Int]
@@ -39,7 +39,7 @@ slurp xs index acc =
     -- getInstruction xs = (head xs, xs !! 1, xs !! 2, xs !! 3)
 
 
-systemToTest programID xs = setAt 1 programID xs
+provideInput programID xs = setAt (xs !! 1) programID xs
 
 plusInstr (n1, n2, index) xs = setAt index (xs !! n1 + xs !! n2) xs
 
