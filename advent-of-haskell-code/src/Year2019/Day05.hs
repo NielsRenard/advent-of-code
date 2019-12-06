@@ -35,7 +35,8 @@ slurp xs index acc =
     opCode = xs !! index
     firstArgPos = xs !! (xs !! (index + 1))
     secondArgPos = xs !! (xs !! (index + 2))
-    thirdArg = xs !! (index + 3)
+    thirdArg = xs !! (xs !! (index + 3))
+    thirdArgImmediate = xs !! (index + 3)    
     firstArgImmediate = xs !! (index + 1)
     secondArgImmediate = xs !! (index + 2)
     args = case digits opCode of
@@ -50,13 +51,26 @@ slurp xs index acc =
     index' | opCode `elem` [1,2] = index + 4
            | opCode `elem` [3,4] = index + 2
            | otherwise = length xs
-    xs'  | opCode == 1 = setAt thirdArg args xs
-         | opCode == 2 = setAt thirdArg args xs
-         | opCode == 99 = xs
-         | opCode > 999 && opCode < 10000  = xs -- catches everything, now rebuild the whole thing to support "mode parameters"
+    xs' = case digits opCode of
+      [1,_,_,_,_] -> setAt thirdArgImmediate args xs
+      [0,_,_,_,_] -> setAt thirdArgImmediate args xs
+      [1] -> setAt thirdArg args xs
+      [2] -> setAt thirdArg args xs
+      [1,1,0,0] -> xs -- what it his case?
+      [0,0,0,1] -> setAt thirdArg args xs
+      [0,1,0,1] -> setAt thirdArg args xs
+      [1,1,0,1] -> setAt thirdArg args xs
+      [0,0,0,2] -> setAt thirdArg args xs
+      [0,1,0,2] -> setAt thirdArg args xs
+      [1,1,0,2] -> setAt thirdArg args xs
+--    xs'  | opCode == 1 = setAt thirdArg args xs
+--         | opCode == 2 = setAt thirdArg args xs
+--         | opCode == 99 = xs
+--         | length (digits opCode) 
+--         | opCode > 999 && opCode < 10000  = xs -- catches everything, now rebuild the whole thing to support "mode parameters"
     acc' | opCode == 4 =
            acc ++ [xs !! (xs !! succ index)]  -- position mode first arg
-         | otherwise = acc
+         | otherwise = 1: acc
 
 
 provideInput programID xs = setAt (xs !! 1) programID xs
