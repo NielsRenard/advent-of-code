@@ -28,16 +28,45 @@ slurp xs index acc =
   where
     opCode = xs !! index
     firstArgPos = xs !! (xs !! (index + 1))
+    firstArgImmediate = xs !! (index + 1)    
     secondArgPos = xs !! (xs !! (index + 2))
+    secondArgImmediate = xs !! (index + 2)    
     thirdArg = xs !! (index + 3)
-    firstArgImmediate = xs !! (index + 1)
-    secondArgImmediate = xs !! (index + 2)
-    --    thirdArgImmediate = xs !! (index + 3)
     args = case digits opCode of
       [1] -> firstArgPos + secondArgPos
       [2] -> firstArgPos * secondArgPos
+--    [3] -- this does not occur in our test input
       [4] -> firstArgPos
       [1, 0, 4] -> firstArgImmediate
+
+      -- if the first parameter is non-zero, it sets the instruction pointer to the value from the second parameter.
+      -- Otherwise, it does nothing.      
+      [5] -> if firstArgPos /= 0 then secondArgPos else index + 3
+      [1,0,5] -> if firstArgImmediate /= 0 then secondArgPos else index + 3
+      [1,0,0,5] -> if firstArgImmediate /= 0 then secondArgImmediate else index + 3      
+      [1,1,0,5] -> if firstArgImmediate /= 0 then secondArgImmediate else index + 3
+
+      -- if the first parameter is zero, it sets the instruction pointer to the value from the second parameter.
+      -- Otherwise, it does nothing.
+      [6] -> if firstArgPos == 0 then secondArgPos else index + 3
+      [1,0,6] -> if firstArgImmediate == 0 then secondArgPos else index + 3
+      [1,0,0,6] -> if firstArgPos /= 0 then secondArgImmediate else index + 3
+      [1,1,0,6] -> if firstArgImmediate == 0 then secondArgImmediate else index + 3
+
+      -- if the first parameter is less than the second parameter,
+      -- it stores 1 in the position given by the third parameter.--  Otherwise, it stores 0.
+      [7] -> if firstArgPos < secondArgPos then 1 else 0
+      [1,0,7] -> if firstArgImmediate < secondArgPos then 1 else 0
+      [1,0,0,7] -> if firstArgPos < secondArgImmediate then 1 else 0            
+      [1,1,0,7] -> if firstArgImmediate < secondArgImmediate then 1 else 0      
+
+      -- if the first parameter is equal to the second parameter,
+      -- it stores 1 in the position given by the third parameter. Otherwise, it stores 0.
+      [8] -> if firstArgPos == secondArgPos then 1 else 0
+      [1,0,8] -> if firstArgImmediate == secondArgPos then 1 else 0
+      [1,0,0,8] -> if firstArgPos == secondArgImmediate then 1 else 0            
+      [1,1,0,8] -> if firstArgImmediate == secondArgImmediate then 1 else 0      
+
       [1, 1, 0, 1] -> firstArgImmediate + secondArgImmediate
       [1, 0, 0, 1] -> firstArgPos + secondArgImmediate
       [1, 0, 1] -> firstArgImmediate + secondArgPos
@@ -46,22 +75,47 @@ slurp xs index acc =
       [1, 0, 0, 2] -> firstArgPos * secondArgImmediate
       [99] -> 0
     index'
-      | opCode `elem` [1, 2] = index + 4
-      | opCode `elem` [1100, 1101, 1001, 1002, 1102, 102, 101] = index + 4
+      | opCode `elem` [1, 2, 7, 8] = index + 4                               --   could be one line
+      | opCode `elem` [1100, 1101, 1001, 1002, 1102, 102, 101] = index + 4   -- ⤶
       | opCode `elem` [3, 4, 104] = index + 2
+      -- jump-if-true
+      | opCode `elem` [5, 105, 1005, 1105] = args
+      -- jump-if-false
+      | opCode `elem` [6, 106, 1006, 1106] = args
       | otherwise = length xs
     xs' = case digits opCode of
       [1] -> setAt thirdArg args xs
-      [2] -> setAt thirdArg args xs
-      [4] -> xs
-      [9, 9] -> xs
       [1, 0, 1] -> setAt thirdArg args xs
-      [1, 0, 2] -> setAt thirdArg args xs
-      [1, 0, 4] -> xs
-      [1, 1, 0, 1] -> setAt thirdArg args xs
+      [1, 1, 0, 1] -> setAt thirdArg args xs      
       [1, 0, 0, 1] -> setAt thirdArg args xs
+      
+      [2] -> setAt thirdArg args xs
+      [1, 0, 2] -> setAt thirdArg args xs
       [1, 0, 0, 2] -> setAt thirdArg args xs
       [1, 1, 0, 2] -> setAt thirdArg args xs
+
+      [4] -> xs
+      [1, 0, 4] -> xs
+
+      [5] -> xs
+      [1,0,5] -> xs
+      [1,0,0,5] -> xs      
+      [1,1,0,5] -> xs
+
+      [6] -> xs
+      [1,0,6] -> xs
+      [1,0,0,6] -> xs      
+      [1,1,0,6] -> xs
+
+      [7] -> setAt thirdArg args xs
+      [1,0,7] -> setAt thirdArg args xs
+      [1,1,0,7] -> setAt thirdArg args xs
+
+      [8] -> setAt thirdArg args xs
+      [1,0,8] -> setAt thirdArg args xs
+      [1,1,0,8] -> setAt thirdArg args xs
+
+      [9, 9] -> xs
     acc'
       | opCode == 4 =
         acc ++ [xs !! (xs !! succ index)] -- position mode first arg
