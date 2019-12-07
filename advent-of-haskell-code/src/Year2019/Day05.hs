@@ -43,14 +43,14 @@ slurp xs index acc =
       -- Otherwise, it does nothing.      
       [5] -> if firstArgPos /= 0 then secondArgPos else index + 3
       [1,0,5] -> if firstArgImmediate /= 0 then secondArgPos else index + 3
-      [1,0,0,5] -> if firstArgImmediate /= 0 then secondArgImmediate else index + 3      
+      [1,0,0,5] -> if firstArgPos /= 0 then secondArgImmediate else index + 3      
       [1,1,0,5] -> if firstArgImmediate /= 0 then secondArgImmediate else index + 3
 
       -- if the first parameter is zero, it sets the instruction pointer to the value from the second parameter.
       -- Otherwise, it does nothing.
       [6] -> if firstArgPos == 0 then secondArgPos else index + 3
       [1,0,6] -> if firstArgImmediate == 0 then secondArgPos else index + 3
-      [1,0,0,6] -> if firstArgPos /= 0 then secondArgImmediate else index + 3
+      [1,0,0,6] -> if firstArgPos == 0 then secondArgImmediate else index + 3
       [1,1,0,6] -> if firstArgImmediate == 0 then secondArgImmediate else index + 3
 
       -- if the first parameter is less than the second parameter,
@@ -73,16 +73,17 @@ slurp xs index acc =
       [1, 0, 2] -> firstArgImmediate * secondArgPos
       [1, 1, 0, 2] -> firstArgImmediate * secondArgImmediate
       [1, 0, 0, 2] -> firstArgPos * secondArgImmediate
-      [99] -> 0
+--      [99] -> 0
     index'
       | opCode `elem` [1, 2, 7, 8] = index + 4                               --   could be one line
-      | opCode `elem` [1100, 1101, 1001, 1002, 1102, 102, 101] = index + 4   -- ⤶
+      | opCode `elem` [1100, 1101, 1001, 1002, 1102, 102, 101, 107, 108, 1107, 1108, 1007, 1008] = index + 4   -- ⤶
       | opCode `elem` [3, 4, 104] = index + 2
       -- jump-if-true
       | opCode `elem` [5, 105, 1005, 1105] = args
       -- jump-if-false
       | opCode `elem` [6, 106, 1006, 1106] = args
       | otherwise = length xs
+--      | opCode `elem` [99] = length xs
     xs' = case digits opCode of
       [1] -> setAt thirdArg args xs
       [1, 0, 1] -> setAt thirdArg args xs
@@ -109,10 +110,12 @@ slurp xs index acc =
 
       [7] -> setAt thirdArg args xs
       [1,0,7] -> setAt thirdArg args xs
+      [1,0,0,7] -> setAt thirdArg args xs      
       [1,1,0,7] -> setAt thirdArg args xs
 
       [8] -> setAt thirdArg args xs
       [1,0,8] -> setAt thirdArg args xs
+      [1,0,0,8] -> setAt thirdArg args xs      
       [1,1,0,8] -> setAt thirdArg args xs
 
       [9, 9] -> xs
