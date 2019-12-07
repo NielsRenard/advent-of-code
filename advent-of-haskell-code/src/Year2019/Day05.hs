@@ -7,11 +7,6 @@ import Data.List
 import Data.List.Index
 import Utils
 
--- (...) it will run an output instruction indicating how far the result  was from the expected value
--- 0 means the test was successful. Non-zero outputs mean that a function is not working correctly;
--- FINALLY it will output a diagnostic code and immediately halt. An output followed immediately by a halt means the program finished.
--- If all outputs were zero except the diagnostic code, the diagnostic program ran successfully.
-
 -- The program will request an  ID of the system to test.
 -- Provide it with 1, the ID for the ship's air conditioner unit.
 solvePartOne :: Int
@@ -87,9 +82,13 @@ type Index = Int
 getFinalProgram :: Result -> Output
 getFinalProgram (Result (_, age)) = age
 
+-- (...) it will run an output instruction indicating how far the result  was from the expected value
+-- 0 means the test was successful. Non-zero outputs mean that a function is not working correctly;
+-- If all outputs were zero except the diagnostic code, the diagnostic program ran successfully.
 getOutput :: Result -> Output
 getOutput (Result (_, age)) = age
 
+-- FINALLY it will output a diagnostic code and immediately halt. An output followed immediately by a halt means the program finished.
 getDiagnosticCode :: Output -> Int
 getDiagnosticCode = last
 
