@@ -17,6 +17,10 @@ import Data.Function ((&))
 -- Provide it with 1, the ID for the ship's air conditioner unit.
 readyInput = provideInput 1 input
 
+exampleInput :: [Int]
+exampleInput =
+  [2, 0, 102,    0, 7,  7,   4, 1101, 99]
+-- 0  1   2    3   4   5   6  7  ,  8
 -- The program  outputs whatever it gets as input, then halts.
 inAndOut :: [Int]
 inAndOut = [3,0,4,0,99]
@@ -35,44 +39,58 @@ slurp xs index acc =
     opCode = xs !! index
     firstArgPos = xs !! (xs !! (index + 1))
     secondArgPos = xs !! (xs !! (index + 2))
-    thirdArg = xs !! (xs !! (index + 3))
-    thirdArgImmediate = xs !! (index + 3)    
+    thirdArg = xs !! (index + 3)
+--    thirdArgImmediate = xs !! (index + 3)    
     firstArgImmediate = xs !! (index + 1)
     secondArgImmediate = xs !! (index + 2)
     args = case digits opCode of
       [1] -> firstArgPos + secondArgPos
       [2] -> firstArgPos * secondArgPos
-      [0,0,0,1] -> firstArgPos + secondArgPos
-      [0,1,0,1] -> firstArgImmediate + secondArgPos
+      [4] -> firstArgPos
+      [1,0,4] -> firstArgImmediate      
+--      [0,0,0,1] -> firstArgPos + secondArgPos
       [1,1,0,1] -> firstArgImmediate + secondArgImmediate
-      [0,0,0,2] -> firstArgPos * secondArgPos
-      [0,1,0,2] -> firstArgImmediate * secondArgPos
+      [1,0,0,1] -> firstArgPos + secondArgImmediate      
+--      [0,0,0,2] -> firstArgPos * secondArgPos
+      [1,0,1] -> firstArgImmediate + secondArgPos
+      [1,0,2] -> firstArgImmediate * secondArgPos
       [1,1,0,2] -> firstArgImmediate * secondArgImmediate
+      [1,0,0,2] -> firstArgImmediate * secondArgImmediate      
+      [99] -> 0
     index' | opCode `elem` [1,2] = index + 4
-           | opCode `elem` [3,4] = index + 2
+           | opCode `elem` [1100,1101,1001,1002,1102,102,101] = index + 4    
+           | opCode `elem` [3,4,104] = index + 2
+--           | opCode > 999 && opCode < 10000 = index + 4
            | otherwise = length xs
     xs' = case digits opCode of
-      [1,_,_,_,_] -> setAt thirdArgImmediate args xs
-      [0,_,_,_,_] -> setAt thirdArgImmediate args xs
+--      [1,_,_,_,_] -> setAt thirdArgImmediate args xs
+--      [0,_,_,_,_] -> setAt thirdArgImmediate args xs
       [1] -> setAt thirdArg args xs
       [2] -> setAt thirdArg args xs
-      [1,1,0,0] -> xs -- what it his case?
-      [0,0,0,1] -> setAt thirdArg args xs
-      [0,1,0,1] -> setAt thirdArg args xs
+      [4] -> xs
+      [9,9] -> xs      
+      [1,0,1] -> setAt thirdArg args xs
+      [1,0,2] -> setAt thirdArg args xs
+      [1,0,4] -> xs
       [1,1,0,1] -> setAt thirdArg args xs
-      [0,0,0,2] -> setAt thirdArg args xs
-      [0,1,0,2] -> setAt thirdArg args xs
+      [1,0,0,1] -> setAt thirdArg args xs
+      [1,0,0,2] -> setAt thirdArg args xs            
       [1,1,0,2] -> setAt thirdArg args xs
+      --      [0,0,0,1] -> setAt thirdArg args xs
+--      [0,0,0,2] -> setAt thirdArg args xs
+
 --    xs'  | opCode == 1 = setAt thirdArg args xs
 --         | opCode == 2 = setAt thirdArg args xs
---         | opCode == 99 = xs
+
 --         | length (digits opCode) 
 --         | opCode > 999 && opCode < 10000  = xs -- catches everything, now rebuild the whole thing to support "mode parameters"
     acc' | opCode == 4 =
-           acc ++ [xs !! (xs !! succ index)]  -- position mode first arg
-         | otherwise = 1: acc
-
-
+             acc ++ [xs !! (xs !! succ index)]  -- position mode first arg
+         | opCode == 104 =
+             acc ++ [xs !! (xs !! (xs !! succ index))] -- immediate mode
+         | otherwise = acc
+         
+-- not 3761776537 too high
 provideInput programID xs = setAt (xs !! 1) programID xs
 
 insertNounAndVerb n v = setAt 1 n . setAt 2 v
