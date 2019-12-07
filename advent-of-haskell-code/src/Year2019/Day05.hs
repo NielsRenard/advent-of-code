@@ -1,5 +1,3 @@
-{-# HLINT ignore "Eta reduce" #-}
-
 module Year2019.Day05 where
 
 -- this puzzle continues from Day02
@@ -24,22 +22,9 @@ runProgramID id =
 
 provideInput programID xs = setAt (xs !! 1) programID xs
 
-type Program = [Int]
-
-type Output = [Int]
-
 newtype Result = Result (Program, Output) deriving (Show)
 
-getFinalProgram :: Result -> Output
-getFinalProgram (Result (_, age)) = age
-
-getOutput :: Result -> Output
-getOutput (Result (_, age)) = age
-
-getDiagnosticCode :: Output -> Int
-getDiagnosticCode = last
-
-slurp :: [Int] -> Int -> [Int] -> Result
+slurp :: Program -> Index -> Output -> Result
 slurp [] index acc = Result ([], acc)
 slurp xs index acc =
   if index >= length xs
@@ -91,6 +76,22 @@ slurp xs index acc =
 
 -- not 3761776537 too high (problems in test output)
 -- yes 15259545
+
+--bunch of types to make the intcode machine nicer to work with------------------
+type Program = [Int]
+
+type Output = [Int]
+
+type Index = Int
+
+getFinalProgram :: Result -> Output
+getFinalProgram (Result (_, age)) = age
+
+getOutput :: Result -> Output
+getOutput (Result (_, age)) = age
+
+getDiagnosticCode :: Output -> Int
+getDiagnosticCode = last
 
 --(example)input below----------------------------------------------------------
 exampleInput :: [Int]
