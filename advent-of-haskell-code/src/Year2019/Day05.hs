@@ -12,10 +12,8 @@ import Utils
 solvePartOne :: Int
 solvePartOne = getDiagnosticCode $ getOutput $ runProgramID 1
 
-runProgramID id =
-  slurp (provideInput id input) 2 []
-
-provideInput programID xs = setAt (xs !! 1) programID xs
+solvePartTwo :: Int
+solvePartTwo = getDiagnosticCode $ getOutput $ runProgramID 5
 
 newtype Result = Result (Program, Output) deriving (Show)
 
@@ -83,7 +81,6 @@ slurp xs index acc =
       -- jump-if-false
       | opCode `elem` [6, 106, 1006, 1106] = args
       | otherwise = length xs
---      | opCode `elem` [99] = length xs
     xs' = case digits opCode of
       [1] -> setAt thirdArg args xs
       [1, 0, 1] -> setAt thirdArg args xs
@@ -126,10 +123,13 @@ slurp xs index acc =
         acc ++ [xs !! (xs !! (xs !! succ index))] -- immediate mode first arg
       | otherwise = acc
 
--- not 3761776537 too high (problems in test output)
--- yes 15259545
 
 --bunch of types to make the intcode machine nicer to work with------------------
+runProgramID id =
+  slurp (provideInput id input) 2 []
+
+provideInput programID xs = setAt (xs !! 1) programID xs
+
 type Program = [Int]
 
 type Output = [Int]
