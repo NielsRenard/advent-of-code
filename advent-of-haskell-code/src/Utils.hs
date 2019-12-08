@@ -3,7 +3,7 @@
 module Utils
   ( frequencies,
     digits,
-    digitsToInt
+    digitsToInt,
   )
 where
 
@@ -15,11 +15,10 @@ import Prelude (read)
 frequencies :: (Ord k, Num a) => [k] -> [(k, a)]
 frequencies xs = M.toList $ M.fromListWith (+) [(c, 1) | c <- xs]
 
+-- be aware these functions take off leading zeros --
+digits :: Int -> [Int]
+digits i = map (read . return) . show $ i
 
--- be aware these functions take off leading zeros -- 
-digits :: Int -> [Int]                             -- 
-digits i = map (read . return) . show $ i          -- 
-                                                   -- 
-digitsToInt :: [Integer] -> Integer                -- 
-digitsToInt = read . concatMap show                --
+digitsToInt :: [Integer] -> Integer
+digitsToInt = read . concatMap show
 -----------------------------------------------------
