@@ -19,8 +19,7 @@ partTwoExInput = [0, 2, 2, 2, 1, 1, 2, 2, 2, 2, 1, 2, 0, 0, 0, 0]
 
 solvePartOne =
   let layers = layers25x6 input
-      fewestZerosLayerIndex = fst $ head $ sortOn snd $ indexed $ map countZerosInLayer layers
-      fewestZerosLayer = layers !! fewestZerosLayerIndex
+      fewestZerosLayer = layers !! fst (head $ sortOn snd $ indexed $ map countZerosInLayer layers)
       ones = countOnesInLayer fewestZerosLayer
       twos = countTwosInLayer fewestZerosLayer
    in ones * twos
