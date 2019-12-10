@@ -11,12 +11,6 @@ public class Day01Test
      */
 
     @Test
-    public void twelveGivesTwo()
-    {
-        assertTrue( Day01.myMethod(12) == 2);
-    }
-    
-    @Test
     public void shouldAnswerWithTrue()
     {
         assertTrue( true );

@@ -21,9 +21,6 @@ public class Day01 {
 	System.out.println("Day 2: " + totalFuel);
     }
 
-    public static int myMethod (int i){
-	return 2;
-    }
 
     public static int calcFuel(int mass) {
 	return mass / 3 - 2;
