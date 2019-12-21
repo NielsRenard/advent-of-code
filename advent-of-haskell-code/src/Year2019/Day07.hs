@@ -3,14 +3,20 @@ module Year2019.Day07 where
 -- this puzzle continues from Day05
 
 import Data.Function ((&))
+import Data.Set as Set
 import Data.List
 import Data.List.Index
 import Utils
 
--- The program will request an  ID of the system to test.
--- Provide it with 1, the ID for the ship's air conditioner unit.
-solvePartOne :: Int
-solvePartOne = getDiagnosticCode $ runProgramID 1
+--solvePartOne :: Int
+solvePartOne input = maximum $ [getOutput $ amplify [a,b,c,d,e] 0 input 0 | 
+                 a <- [0..4],
+                 b <- [0..4],
+                 c <- [0..4],
+                 d <- [0..4],
+                 e <- [0..4],
+                 (Set.fromList [a,b,c,d,e] & Set.size) == 5]
+
 
 solvePartTwo :: Int
 solvePartTwo = getDiagnosticCode $ runProgramID 5
