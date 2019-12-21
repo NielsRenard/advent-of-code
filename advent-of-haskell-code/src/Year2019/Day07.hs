@@ -8,7 +8,7 @@ import Data.List
 import Data.List.Index
 import Utils
 
---solvePartOne :: Int
+solvePartOne :: Program -> Output
 solvePartOne input = maximum $ [getOutput $ amplify [a,b,c,d,e] 0 input 0 | 
                  a <- [0..4],
                  b <- [0..4],
@@ -17,9 +17,14 @@ solvePartOne input = maximum $ [getOutput $ amplify [a,b,c,d,e] 0 input 0 |
                  e <- [0..4],
                  (Set.fromList [a,b,c,d,e] & Set.size) == 5]
 
-
-solvePartTwo :: Int
-solvePartTwo = getDiagnosticCode $ runProgramID 5
+solvePartTwo :: Program -> [Output]
+solvePartTwo input = [getOutput $ amplify [a,b,c,d,e] 0 input 0 |
+                 a <- [5..9],
+                 b <- [5..9],
+                 c <- [5..9],
+                 d <- [5..9],
+                 e <- [5..9],
+                 (Set.fromList [a,b,c,d,e] & Set.size) == 5]
 
 amplify :: [Phase] -> Int -> Program -> Int -> Result
 amplify phases input program ampIndex =
