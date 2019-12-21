@@ -3,7 +3,7 @@ module Year2019.Day07 where
 -- this puzzle continues from Day05
 
 import Data.Function ((&))
-import Data.Set as Set
+import Data.Set as Set hiding (take)
 import Data.List
 import Data.List.Index
 import Utils
@@ -27,7 +27,7 @@ amplify phases input program ampIndex =
   then
     let result = runPhaseInputProgram (phases !! ampIndex) input program
     in
-      amplify phases (getDiagnosticCode result) (getFinalProgram result) (succ ampIndex)
+      amplify phases (getDiagnosticCode result) program (succ ampIndex)
   else Result ([], [input])
   
 
@@ -133,8 +133,12 @@ slurp xs index acc =
 --bunch of types to make the intcode machine nicer to work with------------------
 
 setPhaseAndInput :: Phase -> InputSignal -> Program -> Program
-setPhaseAndInput phase inputSignal program = setAt (program !! 1) phase program &
-                                             setAt (program !! 3) inputSignal
+setPhaseAndInput phase inputSignal program =
+  let
+    inputIndices = take 2 $ elemIndices 3 program
+    in
+  setAt (program !! succ (head inputIndices)) phase program &
+  setAt (program !! succ (last inputIndices)) inputSignal
 
 runPhaseInputProgram :: Phase -> InputSignal -> Program -> Result
 runPhaseInputProgram phase inputSignal program =
