@@ -1,10 +1,10 @@
 module Year2019.Intcode where
 
 import Data.Function ((&))
-import Data.Tuple.Utils
 --import Data.Set as Set hiding (take, drop)
 import Data.List
 import Data.List.Index
+import Data.Tuple.Utils
 import Utils
 
 type Program = [Int]
@@ -29,10 +29,9 @@ getOutput (Result (_, output)) = output
 getDiagnosticCode :: Result -> Int
 getDiagnosticCode = last . getOutput
 
-
 newtype Result = Result (Program, Output) deriving (Show)
 
-intcodeUntilHalt :: [Int] -> Int -> [Int]-> [Int] -> ([Int], Int, [Int])
+intcodeUntilHalt :: [Int] -> Int -> [Int] -> [Int] -> ([Int], Int, [Int])
 intcodeUntilHalt program@[] index inputs output = ([], 0, output) -- what is the instructionPointer here
 intcodeUntilHalt program index inputs output =
   if index >= length program
@@ -124,21 +123,21 @@ intcodeUntilHalt program index inputs output =
       [1, 0, 0, 8] -> setAt thirdArg args program
       [1, 1, 0, 8] -> setAt thirdArg args program
       [9, 9] -> program
---      _ -> digits opCode ++ [999]
+    --      _ -> digits opCode ++ [999]
     output'
       | opCode == 4 =
         output ++ [program !! (program !! succ index)] -- position mode first arg
       | opCode == 104 =
         output ++ [program !! (program !! (program !! succ index))] -- immediate mode first arg
       | otherwise = output
-      
-intcode :: [Int] -> Int -> [Int]-> [Int] -> ([Int], Int, [Int])
+
+intcode :: [Int] -> Int -> [Int] -> [Int] -> ([Int], Int, [Int])
 intcode program@[] index inputs output = ([], 0, output) -- what is the instructionPointer here
 intcode program index inputs output =
-    if index >= length program
+  if index >= length program
     then (program, 99999, output)
     else
-        if opCode == 4
+      if opCode == 4
         then (program', index', output')
         else intcode program' index' inputs' output'
   where
@@ -227,7 +226,7 @@ intcode program index inputs output =
       [1, 0, 0, 8] -> setAt thirdArg args program
       [1, 1, 0, 8] -> setAt thirdArg args program
       [9, 9] -> program
---      _ -> digits opCode ++ [999]
+    --      _ -> digits opCode ++ [999]
     output'
       | opCode == 4 =
         output ++ [program !! (program !! succ index)] -- position mode first arg
