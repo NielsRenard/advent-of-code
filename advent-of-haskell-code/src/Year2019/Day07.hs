@@ -3,7 +3,7 @@ module Year2019.Day07 where
 -- this puzzle continues from Day05
 
 import Data.Function ((&))
-import Data.Set as Set hiding (take)
+import qualified Data.Set as Set hiding (take)
 import Data.List
 import Data.Tuple.Utils
 import Data.List.Index
@@ -21,8 +21,8 @@ solvePartOne input = maximum $ [getOutput $ amplify [a,b,c,d,e] 0 input 0 |
 
 --[getOutput $ amplify [a,b,c,d,e] 0 input 0 | a <- [0..4], b <- [0..4], c <- [0..4], d <- [0..4], e <- [0..4], (Set.fromList [a,b,c,d,e] & Set.size) == 5]
 
---solvePartTwo :: Program -> [Output]
-solvePartTwo input = [feedback [a,b,c,d,e] 0 input 0 [0,0,0,0,0] False |
+solvePartTwo :: Program -> [([Int],Int,[Int])]
+solvePartTwo input = [feedback [a,b,c,d,e] 0 (replicate 5 input) 0 [0,0,0,0,0] False |
                  a <- [5..9],
                  b <- [5..9],
                  c <- [5..9],
@@ -41,20 +41,21 @@ amplify phases inputSignal program ampIndex =
     let result = runPhaseInputProgramUntilHalt (phases !! pred ampIndex) inputSignal program 0 in
       result
 
-feedback :: [Phase] -> Int -> Program -> Int -> [Int] -> Bool -> ([Int],Int,[Int])
-feedback phases input program ampIndex indexes looping =
+feedback :: [Phase] -> Int -> [Program] -> Int -> [Int] -> Bool -> ([Int],Int,[Int])
+feedback phases input programs ampIndex indexes looping =
   let
     currentAmpIndex = indexes !! ampIndex
     ampIndex' = if succ ampIndex < length phases then succ ampIndex else 0
     looping' = looping || (succ ampIndex == length phases)
     result = if looping
-             then runInputProgramUntilResult input program currentAmpIndex
-             else runPhaseInputProgramUntilResult (phases !! ampIndex) input program currentAmpIndex
+             then runInputProgramUntilResult input (programs !! ampIndex) currentAmpIndex
+             else runPhaseInputProgramUntilResult (phases !! ampIndex) input (programs !! ampIndex) currentAmpIndex
     indexes' = setAt ampIndex (getInstructionPointer result) indexes
+    programs' = setAt ampIndex (getProgram result) programs 
     in
     if ampIndex == 4 && getInstructionPointer result == 99999
     then result
-    else feedback phases (getDiagnosticCode result) (getProgram result) ampIndex' indexes' looping'
+    else feedback phases (getDiagnosticCode result) programs' ampIndex' indexes' looping'
 
 
 newtype Result = Result (Program, Output) deriving (Show)
