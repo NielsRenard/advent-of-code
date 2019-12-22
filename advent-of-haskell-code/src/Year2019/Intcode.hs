@@ -129,18 +129,18 @@ runUntilHalt xs index acc =
       | otherwise = acc
       
 intcode :: [Int] -> Int -> [Int] -> ([Int], [Int])
-intcode [] index acc = ([], acc)
-intcode xs index acc =
-  if index >= length xs
-    then (xs, acc)
-    else intcode xs' index' acc'
+intcode program@[] index output = ([], output)
+intcode program index output =
+  if index >= length program
+    then (program, output)
+    else intcode program' index' output'
   where
-    opCode = xs !! index
-    firstArgPos = xs !! (xs !! (index + 1))
-    firstArgImmediate = xs !! (index + 1)
-    secondArgPos = xs !! (xs !! (index + 2))
-    secondArgImmediate = xs !! (index + 2)
-    thirdArg = xs !! (index + 3)
+    opCode = program !! index
+    firstArgPos = program !! (program !! (index + 1))
+    firstArgImmediate = program !! (index + 1)
+    secondArgPos = program !! (program !! (index + 2))
+    secondArgImmediate = program !! (index + 2)
+    thirdArg = program !! (index + 3)
     args = case digits opCode of
       [1] -> firstArgPos + secondArgPos
       [2] -> firstArgPos * secondArgPos
@@ -187,40 +187,40 @@ intcode xs index acc =
       | opCode `elem` [5, 105, 1005, 1105] = args
       -- jump-if-false
       | opCode `elem` [6, 106, 1006, 1106] = args
-      | otherwise = length xs
-    xs' = case digits opCode of
-      [1] -> setAt thirdArg args xs
-      [1, 0, 1] -> setAt thirdArg args xs
-      [1, 1, 0, 1] -> setAt thirdArg args xs
-      [1, 0, 0, 1] -> setAt thirdArg args xs
-      [2] -> setAt thirdArg args xs
-      [1, 0, 2] -> setAt thirdArg args xs
-      [1, 0, 0, 2] -> setAt thirdArg args xs
-      [1, 1, 0, 2] -> setAt thirdArg args xs
-      [3] -> setAt secondArgImmediate args xs
-      [4] -> xs
-      [1, 0, 4] -> xs
-      [5] -> xs
-      [1, 0, 5] -> xs
-      [1, 0, 0, 5] -> xs
-      [1, 1, 0, 5] -> xs
-      [6] -> xs
-      [1, 0, 6] -> xs
-      [1, 0, 0, 6] -> xs
-      [1, 1, 0, 6] -> xs
-      [7] -> setAt thirdArg args xs
-      [1, 0, 7] -> setAt thirdArg args xs
-      [1, 0, 0, 7] -> setAt thirdArg args xs
-      [1, 1, 0, 7] -> setAt thirdArg args xs
-      [8] -> setAt thirdArg args xs
-      [1, 0, 8] -> setAt thirdArg args xs
-      [1, 0, 0, 8] -> setAt thirdArg args xs
-      [1, 1, 0, 8] -> setAt thirdArg args xs
-      [9, 9] -> xs
+      | otherwise = length program
+    program' = case digits opCode of
+      [1] -> setAt thirdArg args program
+      [1, 0, 1] -> setAt thirdArg args program
+      [1, 1, 0, 1] -> setAt thirdArg args program
+      [1, 0, 0, 1] -> setAt thirdArg args program
+      [2] -> setAt thirdArg args program
+      [1, 0, 2] -> setAt thirdArg args program
+      [1, 0, 0, 2] -> setAt thirdArg args program
+      [1, 1, 0, 2] -> setAt thirdArg args program
+      [3] -> setAt secondArgImmediate args program
+      [4] -> program
+      [1, 0, 4] -> program
+      [5] -> program
+      [1, 0, 5] -> program
+      [1, 0, 0, 5] -> program
+      [1, 1, 0, 5] -> program
+      [6] -> program
+      [1, 0, 6] -> program
+      [1, 0, 0, 6] -> program
+      [1, 1, 0, 6] -> program
+      [7] -> setAt thirdArg args program
+      [1, 0, 7] -> setAt thirdArg args program
+      [1, 0, 0, 7] -> setAt thirdArg args program
+      [1, 1, 0, 7] -> setAt thirdArg args program
+      [8] -> setAt thirdArg args program
+      [1, 0, 8] -> setAt thirdArg args program
+      [1, 0, 0, 8] -> setAt thirdArg args program
+      [1, 1, 0, 8] -> setAt thirdArg args program
+      [9, 9] -> program
 --      _ -> digits opCode ++ [999]
-    acc'
+    output'
       | opCode == 4 =
-        acc ++ [xs !! (xs !! succ index)] -- position mode first arg
+        output ++ [program !! (program !! succ index)] -- position mode first arg
       | opCode == 104 =
-        acc ++ [xs !! (xs !! (xs !! succ index))] -- immediate mode first arg
-      | otherwise = acc
+        output ++ [program !! (program !! (program !! succ index))] -- immediate mode first arg
+      | otherwise = output
