@@ -37,6 +37,7 @@ dependencies:
 - containers
 - digits
 - utility-ht
+- MissingH
 
 library:
   source-dirs: src

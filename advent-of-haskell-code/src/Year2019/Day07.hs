@@ -5,6 +5,7 @@ module Year2019.Day07 where
 import Data.Function ((&))
 import Data.Set as Set hiding (take)
 import Data.List
+import Data.Tuple.Utils
 import Data.List.Index
 import Utils
 import qualified Year2019.Intcode as IC
@@ -21,7 +22,7 @@ solvePartOne input = maximum $ [getOutput $ amplify [a,b,c,d,e] 0 input 0 |
 --[getOutput $ amplify [a,b,c,d,e] 0 input 0 | a <- [0..4], b <- [0..4], c <- [0..4], d <- [0..4], e <- [0..4], (Set.fromList [a,b,c,d,e] & Set.size) == 5]
 
 --solvePartTwo :: Program -> [Output]
-solvePartTwo input = [getOutput $ feedback [a,b,c,d,e] 0 input 0 0 |
+solvePartTwo input = [feedback [a,b,c,d,e] 0 input 0 [0,0,0,0,0] False |
                  a <- [5..9],
                  b <- [5..9],
                  c <- [5..9],
@@ -29,30 +30,31 @@ solvePartTwo input = [getOutput $ feedback [a,b,c,d,e] 0 input 0 0 |
                  e <- [5..9],
                  (Set.fromList [a,b,c,d,e] & Set.size) == 5]
 
-amplify :: [Phase] -> Int -> Program -> Int -> ([Int], [Int])
+amplify :: [Phase] -> Int -> Program -> Int -> ([Int],Int,[Int])
 amplify phases inputSignal program ampIndex =
   if ampIndex < length phases
   then
-    let result = runPhaseInputProgram (phases !! ampIndex) inputSignal program
+    let result = runPhaseInputProgramUntilHalt (phases !! ampIndex) inputSignal program 0
     in
       amplify phases (getDiagnosticCode result) program (succ ampIndex)
   else
-    let result = runPhaseInputProgram (phases !! pred ampIndex) inputSignal program in
+    let result = runPhaseInputProgramUntilHalt (phases !! pred ampIndex) inputSignal program 0 in
       result
 
-feedback :: [Phase] -> Int -> Program -> Int -> Int -> ([Int], [Int])
-feedback phases input program ampIndex index =
+feedback :: [Phase] -> Int -> Program -> Int -> [Int] -> Bool -> ([Int],Int,[Int])
+feedback phases input program ampIndex indexes looping =
   let
+    currentAmpIndex = indexes !! ampIndex
     ampIndex' = if succ ampIndex < length phases then succ ampIndex else 0
+    looping' = looping || (succ ampIndex == length phases)
+    result = if looping
+             then runInputProgramUntilResult input program currentAmpIndex
+             else runPhaseInputProgramUntilResult (phases !! ampIndex) input program currentAmpIndex
+    indexes' = setAt ampIndex (getInstructionPointer result) indexes
     in
-  if ampIndex < length phases
-  then
-    let result = if index > 5
-                 then runPhaseInputProgram (phases !! ampIndex) input program
-                 else runInputProgram input program
-    in
-      feedback phases (getDiagnosticCode result) program ampIndex' (succ index)
-  else ([], [input])
+    if ampIndex == 4 && getInstructionPointer result == 99999
+    then result
+    else feedback phases (getDiagnosticCode result) (getProgram result) ampIndex' indexes' looping'
 
 
 newtype Result = Result (Program, Output) deriving (Show)
@@ -156,32 +158,41 @@ slurp xs index acc =
 
 --bunch of types to make the intcode machine nicer to work with------------------
 
-setPhaseAndInput :: Phase -> InputSignal -> Program -> Program
-setPhaseAndInput phase inputSignal program =
-  let
-    inputIndices = take 2 $ elemIndices 3 program
-    in
-  setAt (program !! succ (head inputIndices)) phase program &
-  setAt (program !! succ (last inputIndices)) inputSignal
+--setPhaseAndInput :: Phase -> InputSignal -> Program -> Program
+--setPhaseAndInput phase inputSignal program =
+--  let
+--    inputIndices = take 2 $ elemIndices 3 program
+--    in
+--  setAt (program !! succ (head inputIndices)) phase program &
+--  setAt (program !! succ (last inputIndices)) inputSignal
+--
+--setInput :: InputSignal -> Program -> Program
+--setInput inputSignal program =  let
+--    inputIndex = head $ elemIndices 3 program
+--    in
+--      setAt (program !! succ inputIndex) inputSignal program
+--
+runPhaseInputProgramUntilHalt :: Phase -> InputSignal -> Program -> Int -> ([Int],Int, [Int])
+runPhaseInputProgramUntilHalt phase inputSignal program index =
+  IC.intcodeUntilHalt program index [phase, inputSignal] []
 
-setInput :: InputSignal -> Program -> Program
-setInput inputSignal program =  let
-    inputIndex = head $ elemIndices 3 program
-    in
-      setAt (program !! succ inputIndex) inputSignal program
+runInputProgramUntilHalt :: InputSignal -> Program -> Int -> ([Int], Int,[Int])
+runInputProgramUntilHalt inputSignal program index =
+  IC.intcodeUntilHalt program index [inputSignal] []  
 
-runPhaseInputProgram :: Phase -> InputSignal -> Program -> ([Int], [Int])
-runPhaseInputProgram phase inputSignal program =
-  IC.intcode program 0 [phase, inputSignal] []
+runPhaseInputProgramUntilResult :: Phase -> InputSignal -> Program -> Int -> ([Int],Int, [Int])
+runPhaseInputProgramUntilResult phase inputSignal program index =
+  IC.intcode program index [phase, inputSignal] []
 
-runInputProgram :: InputSignal -> Program -> ([Int],[Int])
-runInputProgram inputSignal program =
-  IC.intcode program 0 [inputSignal] []  
+runInputProgramUntilResult :: InputSignal -> Program -> Int -> ([Int], Int,[Int])
+runInputProgramUntilResult inputSignal program index =
+  IC.intcode program index [inputSignal] []  
 
-runProgramID id =
-  slurp (provideInput id input) 2 []
 
-provideInput programID xs = setAt (xs !! 1) programID xs
+--runProgramID id =
+--  slurp (provideInput id input) 2 []
+--
+--provideInput programID xs = setAt (xs !! 1) programID xs
 
 type Program = [Int]
 
@@ -196,15 +207,21 @@ type InputSignal = Int
 getFinalProgram :: Result -> Output
 getFinalProgram (Result (program, _)) = program
 
+getProgram :: ([Int],Int,[Int]) -> [Int]
+getProgram (program,_,_)= program
 
 -- 0 means the test was successful. Non-zero outputs mean that a function is not working correctly;
 -- If all outputs were zero except the diagnostic code, the diagnostic program ran successfully.
-getOutput :: ([Int],[Int]) -> [Int]
-getOutput = snd
+getOutput :: ([Int],Int,[Int]) -> [Int]
+getOutput (_,_,outputs)= outputs
+
+getInstructionPointer :: ([Int],Int,[Int]) -> Int
+getInstructionPointer (_,instructionPointer,_) = instructionPointer
+
 
 -- FINALLY it will output a diagnostic code and immediately halt. An output followed immediately by a halt means the program finished.
-getDiagnosticCode :: ([Int],[Int]) -> Int
-getDiagnosticCode = last . snd
+getDiagnosticCode :: ([Int],Int,[Int]) -> Int
+getDiagnosticCode (_,_,outputs) = last outputs
 
 --(example)input below----------------------------------------------------------
 
