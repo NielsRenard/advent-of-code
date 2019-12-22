@@ -8,7 +8,6 @@ module Utils
 where
 
 import RIO
-import qualified RIO.List as L
 import qualified RIO.Map as M
 import Prelude (read)
 
