@@ -138,9 +138,6 @@ intcode program index inputs output =
     if index >= length program
     then (program, 99999, output)
     else
-      if opCode == 3 && null inputs 
-      then (program, index, output)
-      else 
         if opCode == 4
         then (program', index', output')
         else intcode program' index' inputs' output'

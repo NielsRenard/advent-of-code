@@ -21,8 +21,10 @@ solvePartOne input = maximum $ [getOutput $ amplify [a,b,c,d,e] 0 input 0 |
 
 --[getOutput $ amplify [a,b,c,d,e] 0 input 0 | a <- [0..4], b <- [0..4], c <- [0..4], d <- [0..4], e <- [0..4], (Set.fromList [a,b,c,d,e] & Set.size) == 5]
 
-solvePartTwo :: Program -> [([Int],Int,[Int])]
-solvePartTwo input = [feedback [a,b,c,d,e] 0 (replicate 5 input) 0 [0,0,0,0,0] False |
+solvePartTwo :: Program -> Int
+solvePartTwo input =
+  maximum $
+  [(maximum . getOutput) $ feedback [a,b,c,d,e] 0 (replicate 5 input) 0 [0,0,0,0,0] False [] |
                  a <- [5..9],
                  b <- [5..9],
                  c <- [5..9],
@@ -41,21 +43,23 @@ amplify phases inputSignal program ampIndex =
     let result = runPhaseInputProgramUntilHalt (phases !! pred ampIndex) inputSignal program 0 in
       result
 
-feedback :: [Phase] -> Int -> [Program] -> Int -> [Int] -> Bool -> ([Int],Int,[Int])
-feedback phases input programs ampIndex indexes looping =
+feedback :: [Phase] -> Int -> [Program] -> Int -> [Int] -> Bool -> [Int] -> ([Int],Int,[Int])
+feedback phases input programs ampIndex indexes looping outputs =
   let
     currentAmpIndex = indexes !! ampIndex
     ampIndex' = if succ ampIndex < length phases then succ ampIndex else 0
     looping' = looping || (succ ampIndex == length phases)
-    result = if looping
-             then runInputProgramUntilResult input (programs !! ampIndex) currentAmpIndex
-             else runPhaseInputProgramUntilResult (phases !! ampIndex) input (programs !! ampIndex) currentAmpIndex
+    result =
+      if looping
+      then runInputProgramUntilResult input (programs !! ampIndex) currentAmpIndex outputs
+      else runPhaseInputProgramUntilResult (phases !! ampIndex) input (programs !! ampIndex) currentAmpIndex outputs
     indexes' = setAt ampIndex (getInstructionPointer result) indexes
+    outputs' = outputs ++ [getDiagnosticCode result]
     programs' = setAt ampIndex (getProgram result) programs 
     in
     if ampIndex == 4 && getInstructionPointer result == 99999
     then result
-    else feedback phases (getDiagnosticCode result) programs' ampIndex' indexes' looping'
+    else feedback phases (getDiagnosticCode result) programs' ampIndex' indexes' looping' outputs'
 
 
 newtype Result = Result (Program, Output) deriving (Show)
@@ -181,13 +185,13 @@ runInputProgramUntilHalt :: InputSignal -> Program -> Int -> ([Int], Int,[Int])
 runInputProgramUntilHalt inputSignal program index =
   IC.intcodeUntilHalt program index [inputSignal] []  
 
-runPhaseInputProgramUntilResult :: Phase -> InputSignal -> Program -> Int -> ([Int],Int, [Int])
-runPhaseInputProgramUntilResult phase inputSignal program index =
-  IC.intcode program index [phase, inputSignal] []
+runPhaseInputProgramUntilResult :: Phase -> InputSignal -> Program -> Int -> [Int] -> ([Int],Int, [Int])
+runPhaseInputProgramUntilResult phase inputSignal program index outputs=
+  IC.intcode program index [phase, inputSignal] outputs
 
-runInputProgramUntilResult :: InputSignal -> Program -> Int -> ([Int], Int,[Int])
-runInputProgramUntilResult inputSignal program index =
-  IC.intcode program index [inputSignal] []  
+runInputProgramUntilResult :: InputSignal -> Program -> Int -> [Int] -> ([Int], Int,[Int])
+runInputProgramUntilResult inputSignal program index outputs =
+  IC.intcode program index [inputSignal] outputs
 
 
 --runProgramID id =
