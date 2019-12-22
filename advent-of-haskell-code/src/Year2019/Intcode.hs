@@ -1,7 +1,7 @@
 module Year2019.Intcode where
 
 import Data.Function ((&))
-import Data.Set as Set hiding (take)
+import Data.Set as Set hiding (take, drop)
 import Data.List
 import Data.List.Index
 import Utils
@@ -128,14 +128,17 @@ runUntilHalt xs index acc =
         acc ++ [xs !! (xs !! (xs !! succ index))] -- immediate mode first arg
       | otherwise = acc
       
-intcode :: [Int] -> Int -> [Int] -> ([Int], [Int])
-intcode program@[] index output = ([], output)
-intcode program index output =
+intcode :: [Int] -> Int -> [Int]-> [Int] -> ([Int], [Int])
+intcode program@[] index inputs output = ([], output)
+intcode program index inputs output =
   if index >= length program
     then (program, output)
-    else intcode program' index' output'
+    else intcode program' index' inputs' output'
   where
     opCode = program !! index
+    inputs' = case digits opCode of
+      [3] -> drop 1 inputs
+      _ -> inputs
     firstArgPos = program !! (program !! (index + 1))
     firstArgImmediate = program !! (index + 1)
     secondArgPos = program !! (program !! (index + 2))
@@ -144,7 +147,7 @@ intcode program index output =
     args = case digits opCode of
       [1] -> firstArgPos + secondArgPos
       [2] -> firstArgPos * secondArgPos
-      [3] -> firstArgPos
+      [3] -> head inputs
       -- support modes for 1103 etc?
       [4] -> firstArgPos
       [1, 0, 4] -> firstArgImmediate
@@ -197,7 +200,7 @@ intcode program index output =
       [1, 0, 2] -> setAt thirdArg args program
       [1, 0, 0, 2] -> setAt thirdArg args program
       [1, 1, 0, 2] -> setAt thirdArg args program
-      [3] -> setAt secondArgImmediate args program
+      [3] -> setAt firstArgImmediate args program
       [4] -> program
       [1, 0, 4] -> program
       [5] -> program

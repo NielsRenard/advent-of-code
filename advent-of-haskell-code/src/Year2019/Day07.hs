@@ -30,14 +30,14 @@ solvePartTwo input = [getOutput $ feedback [a,b,c,d,e] 0 input 0 0 |
                  (Set.fromList [a,b,c,d,e] & Set.size) == 5]
 
 amplify :: [Phase] -> Int -> Program -> Int -> ([Int], [Int])
-amplify phases input program ampIndex =
+amplify phases inputSignal program ampIndex =
   if ampIndex < length phases
   then
-    let result = runPhaseInputProgram (phases !! ampIndex) input program
+    let result = runPhaseInputProgram (phases !! ampIndex) inputSignal program
     in
       amplify phases (getDiagnosticCode result) program (succ ampIndex)
   else
-    let result = runPhaseInputProgram (phases !! pred ampIndex) input program in
+    let result = runPhaseInputProgram (phases !! pred ampIndex) inputSignal program in
       result
 
 feedback :: [Phase] -> Int -> Program -> Int -> Int -> ([Int], [Int])
@@ -172,11 +172,11 @@ setInput inputSignal program =  let
 
 runPhaseInputProgram :: Phase -> InputSignal -> Program -> ([Int], [Int])
 runPhaseInputProgram phase inputSignal program =
-  IC.intcode (setPhaseAndInput phase inputSignal program) 2 []
+  IC.intcode program 0 [phase, inputSignal] []
 
 runInputProgram :: InputSignal -> Program -> ([Int],[Int])
 runInputProgram inputSignal program =
-  IC.intcode (setInput inputSignal program) 2 []  
+  IC.intcode program 0 [inputSignal] []  
 
 runProgramID id =
   slurp (provideInput id input) 2 []
