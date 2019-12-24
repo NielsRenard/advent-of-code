@@ -5,6 +5,8 @@ module Year2019.Day24 where
 import Data.Function ((&))
 import Data.List.Split
 import Data.List as L
+import Data.Set (Set)
+import qualified Data.Set as Set
 import Data.Text as T
 import Utils
 
@@ -13,6 +15,14 @@ type Grid = [Text]
 type Tile = Char
 type X = Int
 type Y = Int
+
+slurp :: Grid -> Set Grid -> Grid
+slurp grid acc =
+  let grid' = tick grid
+  in
+    if Set.member grid' acc
+    then grid'
+    else slurp grid' (Set.insert grid' acc)
 
 tick :: Grid -> Grid
 tick g =
