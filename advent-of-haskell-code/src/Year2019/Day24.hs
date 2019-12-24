@@ -27,6 +27,7 @@ bioDiversity grid =
   in 
     sum [powersOfTwo !! idx | idx <- bugIndexes]
 
+-- returns the first layout that appeared before
 slurp :: Grid -> Set Grid -> Grid
 slurp grid acc =
   let grid' = tick grid
