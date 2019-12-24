@@ -16,6 +16,17 @@ type Tile = Char
 type X = Int
 type Y = Int
 
+solvePartOne input' =
+  bioDiversity $ slurp input' Set.empty
+
+bioDiversity :: Grid -> Integer
+bioDiversity grid =
+  let powersOfTwo =  [2^n | n<-[0..25]]
+      oneLine = T.unpack $ T.concat grid
+      bugIndexes = elemIndices '#' oneLine
+  in 
+    sum [powersOfTwo !! idx | idx <- bugIndexes]
+
 slurp :: Grid -> Set Grid -> Grid
 slurp grid acc =
   let grid' = tick grid
