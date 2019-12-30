@@ -15,14 +15,13 @@ stepsToCoordinate wire coord =
    in elemIndex coord $ reverse $ concatMap coordinates $ lines
 
 exo1a = ["R8", "U5", "L5", "D3"]
-
 exo1b = ["U7", "R6", "D4", "L4"]
 
 exy1a = ["R75", "D30", "R83", "U83", "L12", "D49", "R71", "U7", "L72"]
-
 exy1b = ["U62", "R66", "U55", "R34", "D71", "R55", "D58", "R83"]
 
-exy2 = ["R98", "U47", "R26", "D63", "R33", "U87", "L62", "D20", "R33", "U53", "R5", "U98", "R91", "D20", "R16", "D6", "R40", "U7", "R15", "U6", "R7"]
+exy2a = ["R98", "U47", "R26", "D63", "R33", "U87", "L62", "D20", "R33", "U53", "R51"]
+exy2b = ["U98", "R91", "D20", "R16", "D67", "R40", "U7", "R15", "U6", "R7"]
 
 -- S.map (stepsToCoordinate exo1a) $ allIntersections exo1a exo1b
 --fromList [Just 0,Just 16,Just 22]
@@ -57,6 +56,12 @@ shortestIntersectionCoord w list =
 solvePartOne =
   let coords1 = S.fromList $ concatMap coordinates $ foldWire wire1
       coords2 = S.fromList $ concatMap coordinates $ foldWire wire2
+      biglist = S.intersection coords1 coords2
+   in S.findMin $ S.drop 1 $ S.map (\it -> distanceFromPort (x it) (y it)) biglist
+
+solveOne w1 w2 =
+  let coords1 = S.fromList $ concatMap coordinates $ foldWire w1
+      coords2 = S.fromList $ concatMap coordinates $ foldWire w2
       biglist = S.intersection coords1 coords2
    in S.findMin $ S.drop 1 $ S.map (\it -> distanceFromPort (x it) (y it)) biglist
 
