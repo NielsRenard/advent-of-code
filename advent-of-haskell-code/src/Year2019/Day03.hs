@@ -1,69 +1,64 @@
 {-# LANGUAGE ScopedTypeVariables #-}
-
-{-# HLINT ignore "Eta reduce" #-}
 module Year2019.Day03 where
 
-import Data.List
+import Data.List as L
 import Data.List.Index
 import qualified Data.Set as S
 import qualified RIO.Text as T
 import Utils (frequencies)
 
+solvePartOne = solveOne wire1 wire2
+solvePartTwo = solveTwo wire1 wire2
+
+-- *Year2019.Day03> solvePartOne
+-- (1.17 secs, 390,856,352 bytes)
+-- *Year2019.Day03> solvePartTwo
+-- 35038
+-- (7.17 secs, 8,075,884,016 bytes) ...yikes
+
+solveOne w1 w2 =
+  let coords1 = S.fromList $ concatMap coordinates $ foldWire w1
+      coords2 = S.fromList $ concatMap coordinates $ foldWire w2
+      biglist = S.intersection coords1 coords2
+   in closestIntersection biglist
+
+solveTwo w1 w2 =
+  minimum $ filter (/= 0) $ concat $ sequence $ combinedStepsToAllIntersections w1 w2
+      
+combinedStepsToAllIntersections w1 w2=
+  let
+    intersections = S.toList $ allIntersections w1 w2
+  in
+    map (combinedStepsToIntersection w1 w2) intersections
+  
 stepsToCoordinate :: [String] -> Coordinate -> Maybe Int
 stepsToCoordinate wire coord =
   let lines = foldWire wire
-   in elemIndex coord $ reverse $ concatMap coordinates $ lines
+   in elemIndex coord $ reverse $ concatMap coordinates lines
 
-exo1a = ["R8", "U5", "L5", "D3"]
-exo1b = ["U7", "R6", "D4", "L4"]
+combinedStepsToIntersection w1 w2 coordinate
+  = sum <$> sequence
+  [stepsToCoordinate w1 coordinate,
+   stepsToCoordinate w2 coordinate]
 
-exy1a = ["R75", "D30", "R83", "U83", "L12", "D49", "R71", "U7", "L72"]
-exy1b = ["U62", "R66", "U55", "R34", "D71", "R55", "D58", "R83"]
-
-exy2a = ["R98", "U47", "R26", "D63", "R33", "U87", "L62", "D20", "R33", "U53", "R51"]
-exy2b = ["U98", "R91", "D20", "R16", "D67", "R40", "U7", "R15", "U6", "R7"]
-
--- S.map (stepsToCoordinate exo1a) $ allIntersections exo1a exo1b
---fromList [Just 0,Just 16,Just 22]
---S.map (stepsToCoordinate exo1b) $ allIntersections exo1a exo1b
---fromList [Just 0,Just 16,Just 22]
-
--- not 7140 too low
--- not 120836 too high
--- not 84613 too many guess
--- not 7134 (even lower than first guess)
 
 allIntersectionsList w1 w2 =
   let coords1 :: [Coordinate] = concatMap coordinates $ foldWire w1
       coords2 :: [Coordinate] = concatMap coordinates $ foldWire w2
    in intersect coords1 coords2
 
+allIntersections :: [String] -> [String] -> S.Set Coordinate
 allIntersections w1 w2 =
   let coords1 :: S.Set Coordinate = S.fromList $ concatMap coordinates $ foldWire w1
       coords2 :: S.Set Coordinate = S.fromList $ concatMap coordinates $ foldWire w2
    in S.intersection coords1 coords2
 
-closetIntersection list =
+closestIntersection list =
   S.findMin $ S.drop 1 $ S.map (\it -> distanceFromPort (x it) (y it)) list
 
-closetIntersectionCoord list =
+closestIntersectionCoord list =
   S.map (\it -> (distanceFromPort (x it) (y it), it)) list
 
---shortestIntersectionCoord :: [String] -> [Coordinate]
-shortestIntersectionCoord w list =
-  S.map (\it -> (stepsToCoordinate w it)) list
-
-solvePartOne =
-  let coords1 = S.fromList $ concatMap coordinates $ foldWire wire1
-      coords2 = S.fromList $ concatMap coordinates $ foldWire wire2
-      biglist = S.intersection coords1 coords2
-   in S.findMin $ S.drop 1 $ S.map (\it -> distanceFromPort (x it) (y it)) biglist
-
-solveOne w1 w2 =
-  let coords1 = S.fromList $ concatMap coordinates $ foldWire w1
-      coords2 = S.fromList $ concatMap coordinates $ foldWire w2
-      biglist = S.intersection coords1 coords2
-   in S.findMin $ S.drop 1 $ S.map (\it -> distanceFromPort (x it) (y it)) biglist
 
 exInput1 = ["R8", "U5", "L5", "D3"]
 
@@ -143,6 +138,18 @@ foldWire wireInput =
     )
     [Line {coordinates = [center]}]
     wireInput
+
+
+-- (example) input below -------------------------------------------------------
+
+exo1a = ["R8", "U5", "L5", "D3"]
+exo1b = ["U7", "R6", "D4", "L4"]
+
+exy1a = ["R75", "D30", "R83", "U83", "L12", "D49", "R71", "U7", "L72"]
+exy1b = ["U62", "R66", "U55", "R34", "D71", "R55", "D58", "R83"]
+
+exy2a = ["R98", "U47", "R26", "D63", "R33", "U87", "L62", "D20", "R33", "U53", "R51"]
+exy2b = ["U98", "R91", "D20", "R16", "D67", "R40", "U7", "R15", "U6", "R7"]
 
 wire1 = ["R1000", "D940", "L143", "D182", "L877", "D709", "L253", "U248", "L301", "U434", "R841", "U715", "R701", "U92", "R284", "U115", "R223", "U702", "R969", "U184", "L992", "U47", "L183", "U474", "L437", "D769", "L71", "U96", "R14", "U503", "R144", "U432", "R948", "U96", "L118", "D696", "R684", "U539", "L47", "D851", "L943", "U606", "L109", "D884", "R157", "U946", "R75", "U702", "L414", "U347", "R98", "D517", "L963", "D177", "R467", "D142", "L845", "U427", "R357", "D528", "L836", "D222", "L328", "U504", "R237", "U99", "L192", "D147", "L544", "D466", "R765", "U845", "L267", "D217", "L138", "U182", "R226", "U466", "R785", "U989", "R55", "D822", "L101", "U292", "R78", "U962", "R918", "U218", "L619", "D324", "L467", "U885", "L658", "U890", "L764", "D747", "R369", "D930", "L264", "D916", "L696", "U698", "R143", "U537", "L922", "U131", "R141", "D97", "L76", "D883", "R75", "D657", "R859", "U503", "R399", "U33", "L510", "D318", "L455", "U128", "R146", "D645", "L147", "D651", "L388", "D338", "L998", "U321", "L982", "U150", "R123", "U834", "R913", "D200", "L455", "D479", "L38", "U860", "L471", "U945", "L946", "D365", "L377", "U816", "R988", "D597", "R181", "D253", "R744", "U472", "L345", "U495", "L187", "D443", "R924", "D536", "R847", "U430", "L145", "D827", "L152", "D831", "L886", "D597", "R699", "D751", "R638", "D580", "L488", "D566", "L717", "D220", "L965", "D587", "L638", "D880", "L475", "D165", "L899", "U388", "R326", "D568", "R940", "U550", "R788", "D76", "L189", "D641", "R629", "D383", "L272", "D840", "L441", "D709", "L424", "U158", "L831", "D576", "R96", "D401", "R425", "U525", "L378", "D907", "L645", "U609", "L336", "D232", "L259", "D280", "L523", "U938", "R190", "D9", "L284", "U941", "L254", "D657", "R572", "U443", "L850", "U508", "L742", "D661", "L977", "U910", "L190", "U626", "R140", "U762", "L673", "U741", "R317", "D518", "R111", "U28", "R598", "D403", "R465", "D684", "R79", "U725", "L556", "U302", "L367", "U306", "R632", "D550", "R89", "D292", "R561", "D84", "L923", "D109", "L865", "D880", "L387", "D24", "R99", "U934", "L41", "U29", "L225", "D12", "L818", "U696", "R652", "U327", "L69", "D773", "L618", "U803", "L433", "D467", "R840", "D281", "R161", "D400", "R266", "D67", "L205", "D94", "R551", "U332", "R938", "D759", "L437", "D515", "L480", "U774", "L373", "U478", "R963", "D863", "L735", "U138", "L580", "U72", "L770", "U968", "L594"]
 
