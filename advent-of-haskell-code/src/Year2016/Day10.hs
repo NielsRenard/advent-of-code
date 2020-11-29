@@ -1,31 +1,29 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE  RecordWildCards#-}
-
 
 module Year2016.Day10
   (
   )
 where
 
+import Data.Maybe (fromJust, mapMaybe)
+import qualified Data.Set as Set
 import RIO hiding (try)
 import qualified RIO.List as L
 import qualified RIO.Text as T
-import Data.Maybe (fromJust, mapMaybe)
 import Text.Megaparsec
-import Text.Megaparsec.Char (char,  string, alphaNumChar )
+import Text.Megaparsec.Char (alphaNumChar, char, string)
 import qualified Text.Megaparsec.Char.Lexer as Lex
-import qualified Data.Set as Set
-
 import Prelude
   ( head,
     last,
+    max,
     read,
     repeat,
-    max
   )
 
--- ✓ value 5 goes to bot 2 => 0:[], 1:[], 2:[5] 
+-- ✓ value 5 goes to bot 2 => 0:[], 1:[], 2:[5]
 -- bot 2 gives low to bot 1 and high to bot 0 => 0:[], 1:[], 2:[5]
 -- ✓ value 3 goes to bot 1  => 0:[], 1:[3], 2:[5]
 -- bot 1 gives low to output 1 and high to bot 0 => 0:[], 1:[3], 2:[5]
@@ -36,17 +34,18 @@ import Prelude
 -- ✓ bot 1 gives low to output 1 and high to bot 0 => 0:[3,5], 1:[], 2:[5] output1:[2]
 -- ✓ bot 0 gives low to output 2 and high to output 0 => 0:[], 1:[3], 2:[5] output2:[3] output0:[5]
 
-data Bot
-  = Bot { botId :: Int,
-          low :: Maybe Int,
-          high :: Maybe Int
-        } deriving (Show)
+data Bot = Bot
+  { botId :: Int,
+    low :: Maybe Int,
+    high :: Maybe Int
+  }
+  deriving (Show)
 
-data Output
-  = Output { outputId :: Int,
-             values :: [Int]
-           } deriving (Show)
-
+data Output = Output
+  { outputId :: Int,
+    values :: [Int]
+  }
+  deriving (Show)
 
 data Instruction
   = BotInstruction
@@ -74,24 +73,24 @@ botGivesParser = do
   space <- char ' '
   givesLow <- string "gives low to"
   space <- char ' '
-  lowToBotOrOutput <- choice [ string "bot", string "output"]  
+  lowToBotOrOutput <- choice [string "bot", string "output"]
   space <- char ' '
   low <- Lex.decimal
-  space <- char ' '  
+  space <- char ' '
   andHigh <- string "and high to"
   space <- char ' '
-  highToBotOrOutput  <- choice [ string "bot", string "output"]  
+  highToBotOrOutput <- choice [string "bot", string "output"]
   space <- char ' '
   high <- Lex.decimal
   case (lowToBotOrOutput, highToBotOrOutput) of
-    ("bot","bot") ->
-      return $ BotInstruction id low BotReceives high BotReceives  
-    ("bot","output") ->
-      return $ BotInstruction id low BotReceives high OutputReceives  
-    ("output","bot") ->
-      return $ BotInstruction id low OutputReceives high BotReceives  
-    ("output","output") ->
-      return $ BotInstruction id low OutputReceives high OutputReceives    
+    ("bot", "bot") ->
+      return $ BotInstruction id low BotReceives high BotReceives
+    ("bot", "output") ->
+      return $ BotInstruction id low BotReceives high OutputReceives
+    ("output", "bot") ->
+      return $ BotInstruction id low OutputReceives high BotReceives
+    ("output", "output") ->
+      return $ BotInstruction id low OutputReceives high OutputReceives
 
 valuePassParser :: Parser Instruction
 valuePassParser = do
@@ -102,7 +101,7 @@ valuePassParser = do
   goesTo <- string "goes to"
   space <- char ' '
   botId <- string "bot"
-  space <- char ' '  
+  space <- char ' '
   botOrOutputId <- Lex.decimal
   return $
     ValuePass value botOrOutputId
@@ -117,7 +116,6 @@ valuePassParser = do
    bot2Gives = fromJust $ parseMaybe (botGivesParser) $ T.pack "bot 2 gives low to bot 1 and high to bot 0"
    executeBotInstruction (bots, []) bot2Gives
 
-
    L.map (fromRight (Bot 0 0 0))  $ L.map (runParser botGivesParser "whatever") $ L.filter (\line -> not(T.isPrefixOf "value" line)) input
    L.map (runParser botGivesParser "notImportant") $ input
    L.map (runParser botGivesParser "whatever") $ L.filter (\line -> not(T.isPrefixOf "value" line)) input
@@ -126,79 +124,92 @@ valuePassParser = do
    parseTest valuePassParser $ T.pack "value 67 goes to bot 187"
    parseTest (satisfy (== 'bot') :: botGivesParser) $ T.pack "ba-"
 -}
-  
-executeBotInstruction :: ([Bot], [Output]) -> Instruction -> ([Bot],[Output])
+
+executeBotInstruction :: ([Bot], [Output]) -> Instruction -> ([Bot], [Output])
 executeBotInstruction (bots, outputs) instruction =
-  let
-    giver = fromJust $ L.find (\it -> botId it == bot instruction) bots
-    updatedBotsAndOutputs =
-      case (lowReceiver instruction, highReceiver instruction) of
-        (BotReceives, BotReceives) ->
-          ((L.map (\bot' ->
+  let giver = fromJust $ L.find (\it -> botId it == bot instruction) bots
+      updatedBotsAndOutputs =
+        case (lowReceiver instruction, highReceiver instruction) of
+          (BotReceives, BotReceives) ->
+            ( ( L.map
+                  ( \bot' ->
                       -- low
                       if (botId bot') == (givesLowTo instruction)
-                      then giveBotValue bot' (fromJust $ takeLowValue giver)
-                      else
-                        -- high
-                        if (botId bot') == (givesHighTo instruction)
+                        then giveBotValue bot' (fromJust $ takeLowValue giver)
+                        else -- high
+
+                          if (botId bot') == (givesHighTo instruction)
+                            then giveBotValue bot' (fromJust $ takeHighValue giver)
+                            else bot'
+                  )
+                  bots
+              ),
+              outputs
+            )
+          (BotReceives, OutputReceives) ->
+            ( ( L.map
+                  ( \bot' ->
+                      -- low
+                      if (botId bot') == (givesLowTo instruction)
+                        then giveBotValue bot' (fromJust $ takeLowValue giver)
+                        else bot'
+                  )
+                  bots
+              ),
+              ( L.map
+                  ( \output ->
+                      if outputId output == givesHighTo instruction
+                        then giveOutputValue output (fromJust $ takeHighValue giver)
+                        else output
+                  )
+                  outputs
+              )
+            )
+          (OutputReceives, BotReceives) ->
+            ( ( L.map
+                  ( \bot' ->
+                      -- low
+                      if (botId bot') == (givesHighTo instruction)
                         then giveBotValue bot' (fromJust $ takeHighValue giver)
                         else bot'
                   )
-             bots),
-            outputs)
-          
-        (BotReceives, OutputReceives) ->
-          ((L.map (\bot' ->
-                      -- low
-                      if (botId bot') == (givesLowTo instruction)
-                      then giveBotValue bot' (fromJust $ takeLowValue giver)
-                      else bot'
-                  )
-             bots),
-            (L.map (\output ->
-                      if outputId output == givesHighTo instruction
-                      then giveOutputValue output (fromJust $ takeHighValue giver)
-                      else output
-                        )
-              outputs))
-        (OutputReceives, BotReceives) ->
-          ((L.map (\bot' ->
-                      -- low
-                      if (botId bot') == (givesHighTo instruction)
-                      then giveBotValue bot' (fromJust $ takeHighValue giver)
-                      else bot'
-                  )
-             bots),
-            (L.map (\output ->
+                  bots
+              ),
+              ( L.map
+                  ( \output ->
                       if outputId output == givesLowTo instruction
-                      then giveOutputValue output (fromJust $ takeLowValue giver)
-                      else output
-                        )
-              outputs))
-        (OutputReceives, OutputReceives) ->
-          (bots,
-           (L.map (\output' ->
+                        then giveOutputValue output (fromJust $ takeLowValue giver)
+                        else output
+                  )
+                  outputs
+              )
+            )
+          (OutputReceives, OutputReceives) ->
+            ( bots,
+              ( L.map
+                  ( \output' ->
                       -- low
                       if (outputId output') == (givesLowTo instruction)
-                      then giveOutputValue output' (fromJust $ takeLowValue giver)
-                      else
-                        -- high
-                        if (outputId output') == (givesHighTo instruction)
-                        then giveOutputValue output' (fromJust $ takeHighValue giver)
-                        else output'
+                        then giveOutputValue output' (fromJust $ takeLowValue giver)
+                        else -- high
+
+                          if (outputId output') == (givesHighTo instruction)
+                            then giveOutputValue output' (fromJust $ takeHighValue giver)
+                            else output'
                   )
-             outputs))
-  in
-    updatedBotsAndOutputs
-  
+                  outputs
+              )
+            )
+   in updatedBotsAndOutputs
+
 -- should refactor Bot to just have a tuple, instead of specific low and high
 takeLowValue :: Bot -> Maybe Int
 takeLowValue bot =
   case low bot of
     Just l -> Just l
     Nothing -> case high bot of
-                 Just h -> Just h
-                 Nothing -> Nothing
+      Just h -> Just h
+      Nothing -> Nothing
 
 -- should refactor Bot to just have a tuple, instead of specific low and high
 takeHighValue :: Bot -> Maybe Int
@@ -206,62 +217,57 @@ takeHighValue bot =
   case high bot of
     Just h -> Just h
     Nothing -> case low bot of
-                 Just l -> Just l
-                 Nothing -> Nothing
+      Just l -> Just l
+      Nothing -> Nothing
 
 giveOutputValue :: Output -> Int -> Output
 giveOutputValue output value =
   let newValues = (values output) ++ [value]
-  in
-    output { values = newValues } 
-    
+   in output {values = newValues}
 
 giveBotValue :: Bot -> Int -> Bot
 giveBotValue bot value =
   let botLow = low bot
       botHigh = high bot
-  in
-    if botLow /= Nothing
-    then if Just value < botLow
-         then
-           bot { low = Just value, high = botLow }
-         else
-           bot { low = botLow, high = Just value }
-    else
-      if Just value < botHigh
-         then
-           bot { low = Just value, high = botHigh }
-         else
-           bot { low = botHigh, high = Just value }
-    
+   in if botLow /= Nothing
+        then
+          if Just value < botLow
+            then bot {low = Just value, high = botLow}
+            else bot {low = botLow, high = Just value}
+        else
+          if Just value < botHigh
+            then bot {low = Just value, high = botHigh}
+            else bot {low = botHigh, high = Just value}
+
 executeValueInstruction :: [Bot] -> Instruction -> [Bot]
 executeValueInstruction bots valuePass =
-    map (\bot ->
-           if botId bot == (receiver valuePass)
-           then
-             case (low bot, high bot) of
-               (Just _, Just _) -> -- hands are full
-                 bot
-               (Nothing, Just _) ->
-                 let lower = min (low bot) (Just (value valuePass))
-                     higher = max (low bot) (Just (value valuePass))
-                 in
-                 bot { low =  lower
-                     , high =  higher}
-               (Just _, Nothing) ->
-                 let lower = min (low bot) (Just (value valuePass))
-                     higher = max (low bot) (Just (value valuePass))
-                 in                 
-                 bot { low = lower,
-                       high =  higher}
-               (Nothing, Nothing) -> -- doesn't matter which field we use
-                 bot { low =  Just (value valuePass) }
-           else
-             bot
-        )
-         bots
-
-
+  map
+    ( \bot ->
+        if botId bot == (receiver valuePass)
+          then case (low bot, high bot) of
+            (Just _, Just _) ->
+              -- hands are full
+              bot
+            (Nothing, Just _) ->
+              let lower = min (low bot) (Just (value valuePass))
+                  higher = max (low bot) (Just (value valuePass))
+               in bot
+                    { low = lower,
+                      high = higher
+                    }
+            (Just _, Nothing) ->
+              let lower = min (low bot) (Just (value valuePass))
+                  higher = max (low bot) (Just (value valuePass))
+               in bot
+                    { low = lower,
+                      high = higher
+                    }
+            (Nothing, Nothing) ->
+              -- doesn't matter which field we use
+              bot {low = Just (value valuePass)}
+          else bot
+    )
+    bots
 
 parseInstructions :: [Text] -> [Instruction]
 parseInstructions input =
@@ -269,55 +275,46 @@ parseInstructions input =
 
 allBots :: [Instruction] -> [Bot]
 allBots instructions =
-  let
-    allBotInstructions = L.filter (\it -> case it of BotInstruction _ _ _ _ _ -> True; ValuePass _ _ -> False) instructions  
-    allBotIds = L.map bot allBotInstructions
-  in
-    L.map (\it -> (Bot it Nothing Nothing)) allBotIds
+  let allBotInstructions = L.filter (\it -> case it of BotInstruction _ _ _ _ _ -> True; ValuePass _ _ -> False) instructions
+      allBotIds = L.map bot allBotInstructions
+   in L.map (\it -> (Bot it Nothing Nothing)) allBotIds
 
 allOutputs :: [Instruction] -> [Output]
 allOutputs instructions =
-  let
-    allBotInstructions = L.filter (\it -> case it of
-                                      BotInstruction _ _ OutputReceives _ _ -> True
-                                      BotInstruction _ _ _ _ OutputReceives -> True
-                                      BotInstruction _ _ _ _ _ -> False
-                                      ValuePass _ _ -> False) instructions  
-    outputsThatReceiveLow = L.map givesLowTo allBotInstructions
-    outputsThatReceiveHigh = L.map givesHighTo allBotInstructions
-    distinctOutputIds = Set.toList . Set.fromList $ (outputsThatReceiveLow ++ outputsThatReceiveHigh)
-  in
-    L.map (\outputId -> Output outputId [] ) distinctOutputIds
-  
+  let allBotInstructions =
+        L.filter
+          ( \it -> case it of
+              BotInstruction _ _ OutputReceives _ _ -> True
+              BotInstruction _ _ _ _ OutputReceives -> True
+              BotInstruction _ _ _ _ _ -> False
+              ValuePass _ _ -> False
+          )
+          instructions
+      outputsThatReceiveLow = L.map givesLowTo allBotInstructions
+      outputsThatReceiveHigh = L.map givesHighTo allBotInstructions
+      distinctOutputIds = Set.toList . Set.fromList $ (outputsThatReceiveLow ++ outputsThatReceiveHigh)
+   in L.map (\outputId -> Output outputId []) distinctOutputIds
 
 executeInstructions :: ([Bot], [Output]) -> [Instruction] -> ([Bot], [Output])
 executeInstructions (bots, outputs) instructions =
-  let
-    instruction = head instructions
-  in
-    if trace ("bots: " <> (T.pack $ show bots)) $ L.length instructions > 0
-    then 
-      case instruction of
-        BotInstruction bot' lowTo lowBotOrOutput highTo highBotOrOutput ->
-          -- bot x gives low to y and high to z
-          -- only proceed when bot has two chips
-          let
-            giver = fromJust $ L.find (\it -> botId it == bot instruction) bots
-          in
-            if (low giver) == Nothing || (high giver) == Nothing
-            then
-              -- trace ("skipping bot instruction for giver: " <> (T.pack $ show giver)
-              --        <> (T.pack $ show instruction)) $ 
-            executeInstructions (bots, outputs) $ L.drop 1 instructions ++ [instruction]              
-            else
-              -- trace ("performing bot instruction for giver: " <> (T.pack $ show giver) <> (T.pack $ show instruction)) $ 
-              executeInstructions (executeBotInstruction (bots, outputs) instruction) $ L.drop 1 instructions
-        ValuePass val receiver ->
-          -- value x goes to bot y
-          -- trace "valuepass instruction" 
-          executeInstructions ((executeValueInstruction bots instruction), outputs) $ L.drop 1 instructions
-      else
-      (bots, outputs)
+  let instruction = head instructions
+   in if trace ("bots: " <> (T.pack $ show bots)) $ L.length instructions > 0
+        then case instruction of
+          BotInstruction bot' lowTo lowBotOrOutput highTo highBotOrOutput ->
+            -- bot x gives low to y and high to z
+            -- only proceed when bot has two chips
+            let giver = fromJust $ L.find (\it -> botId it == bot instruction) bots
+             in if (low giver) == Nothing || (high giver) == Nothing
+                  then -- trace ("skipping bot instruction for giver: " <> (T.pack $ show giver)
+                  --        <> (T.pack $ show instruction)) $
+                    executeInstructions (bots, outputs) $ L.drop 1 instructions ++ [instruction]
+                  else -- trace ("performing bot instruction for giver: " <> (T.pack $ show giver) <> (T.pack $ show instruction)) $
+                    executeInstructions (executeBotInstruction (bots, outputs) instruction) $ L.drop 1 instructions
+          ValuePass val receiver ->
+            -- value x goes to bot y
+            -- trace "valuepass instruction"
+            executeInstructions ((executeValueInstruction bots instruction), outputs) $ L.drop 1 instructions
+        else (bots, outputs)
 
 {- repl example
  exampleInstructions = parseInstructions exampleInput
@@ -342,7 +339,7 @@ executeInstructions (bots, outputs) instructions =
 exampleInput =
   L.map
     T.pack
-    [ "value 5 goes to bot 2",                                   
+    [ "value 5 goes to bot 2",
       "bot 2 gives low to bot 1 and high to bot 0",
       "value 3 goes to bot 1",
       "bot 1 gives low to output 1 and high to bot 0",
@@ -586,4 +583,3 @@ input =
       "bot 53 gives low to output 0 and high to bot 6",
       "bot 48 gives low to bot 190 and high to bot 156"
     ]
-
