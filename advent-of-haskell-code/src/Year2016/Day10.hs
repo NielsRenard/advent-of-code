@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE  RecordWildCards#-}
+
 
 module Year2016.Day10
   (
@@ -13,12 +15,14 @@ import Data.Maybe (fromJust, mapMaybe)
 import Text.Megaparsec
 import Text.Megaparsec.Char (char,  string, alphaNumChar )
 import qualified Text.Megaparsec.Char.Lexer as Lex
+import qualified Data.Set as Set
 
 import Prelude
   ( head,
     last,
     read,
     repeat,
+    max
   )
 
 -- ✓ value 5 goes to bot 2 => 0:[], 1:[], 2:[5] 
@@ -60,16 +64,7 @@ data Instruction
 
 data BotOrOutputReceives = BotReceives | OutputReceives deriving (Enum, Show)
 
--- data ValuePass
---   = ValuePass
---       { value :: Int,
---         receiver :: Int
---       } deriving (Show)
-
 type Parser = Parsec Void Text
-
-dummyParser :: Parser Text
-dummyParser = string "bot"
 
 botGivesParser :: Parser Instruction
 botGivesParser = do
@@ -166,6 +161,33 @@ executeBotInstruction (bots, outputs) instruction =
                       else output
                         )
               outputs))
+        (OutputReceives, BotReceives) ->
+          ((L.map (\bot' ->
+                      -- low
+                      if (botId bot') == (givesHighTo instruction)
+                      then giveBotValue bot' (fromJust $ takeHighValue giver)
+                      else bot'
+                  )
+             bots),
+            (L.map (\output ->
+                      if outputId output == givesLowTo instruction
+                      then giveOutputValue output (fromJust $ takeLowValue giver)
+                      else output
+                        )
+              outputs))
+        (OutputReceives, OutputReceives) ->
+          (bots,
+           (L.map (\output' ->
+                      -- low
+                      if (outputId output') == (givesLowTo instruction)
+                      then giveOutputValue output' (fromJust $ takeLowValue giver)
+                      else
+                        -- high
+                        if (outputId output') == (givesHighTo instruction)
+                        then giveOutputValue output' (fromJust $ takeHighValue giver)
+                        else output'
+                  )
+             outputs))
   in
     updatedBotsAndOutputs
   
@@ -199,9 +221,18 @@ giveBotValue bot value =
   let botLow = low bot
       botHigh = high bot
   in
-    if Just value <= botHigh 
-    then bot { low = Just value }
-    else bot { high = Just value }
+    if botLow /= Nothing
+    then if Just value < botLow
+         then
+           bot { low = Just value, high = botLow }
+         else
+           bot { low = botLow, high = Just value }
+    else
+      if Just value < botHigh
+         then
+           bot { low = Just value, high = botHigh }
+         else
+           bot { low = botHigh, high = Just value }
     
 executeValueInstruction :: [Bot] -> Instruction -> [Bot]
 executeValueInstruction bots valuePass =
@@ -212,9 +243,17 @@ executeValueInstruction bots valuePass =
                (Just _, Just _) -> -- hands are full
                  bot
                (Nothing, Just _) ->
-                 bot { low =  Just (value valuePass) }
+                 let lower = min (low bot) (Just (value valuePass))
+                     higher = max (low bot) (Just (value valuePass))
+                 in
+                 bot { low =  lower
+                     , high =  higher}
                (Just _, Nothing) ->
-                 bot { high =  Just (value valuePass) }
+                 let lower = min (low bot) (Just (value valuePass))
+                     higher = max (low bot) (Just (value valuePass))
+                 in                 
+                 bot { low = lower,
+                       high =  higher}
                (Nothing, Nothing) -> -- doesn't matter which field we use
                  bot { low =  Just (value valuePass) }
            else
@@ -223,26 +262,91 @@ executeValueInstruction bots valuePass =
          bots
 
 
+
 parseInstructions :: [Text] -> [Instruction]
 parseInstructions input =
   mapMaybe (parseMaybe (try botGivesParser <|> valuePassParser)) input
 
-executeInstructions :: [Instruction] -> [Bot]
-executeInstructions instructions =
-  L.map (\instruction ->
-            case instruction of
-             BotInstruction _ _ _ _ _ -> Bot 0 (Just 0) (Just 0)
-             ValuePass _ _ -> Bot 1 (Just 1) (Just 1)) instructions
+allBots :: [Instruction] -> [Bot]
+allBots instructions =
+  let
+    allBotInstructions = L.filter (\it -> case it of BotInstruction _ _ _ _ _ -> True; ValuePass _ _ -> False) instructions  
+    allBotIds = L.map bot allBotInstructions
+  in
+    L.map (\it -> (Bot it Nothing Nothing)) allBotIds
 
+allOutputs :: [Instruction] -> [Output]
+allOutputs instructions =
+  let
+    allBotInstructions = L.filter (\it -> case it of
+                                      BotInstruction _ _ OutputReceives _ _ -> True
+                                      BotInstruction _ _ _ _ OutputReceives -> True
+                                      BotInstruction _ _ _ _ _ -> False
+                                      ValuePass _ _ -> False) instructions  
+    outputsThatReceiveLow = L.map givesLowTo allBotInstructions
+    outputsThatReceiveHigh = L.map givesHighTo allBotInstructions
+    distinctOutputIds = Set.toList . Set.fromList $ (outputsThatReceiveLow ++ outputsThatReceiveHigh)
+  in
+    L.map (\outputId -> Output outputId [] ) distinctOutputIds
+  
+
+executeInstructions :: ([Bot], [Output]) -> [Instruction] -> ([Bot], [Output])
+executeInstructions (bots, outputs) instructions =
+  let
+    instruction = head instructions
+  in
+    if trace ("bots: " <> (T.pack $ show bots)) $ L.length instructions > 0
+    then 
+      case instruction of
+        BotInstruction bot' lowTo lowBotOrOutput highTo highBotOrOutput ->
+          -- bot x gives low to y and high to z
+          -- only proceed when bot has two chips
+          let
+            giver = fromJust $ L.find (\it -> botId it == bot instruction) bots
+          in
+            if (low giver) == Nothing || (high giver) == Nothing
+            then
+              -- trace ("skipping bot instruction for giver: " <> (T.pack $ show giver)
+              --        <> (T.pack $ show instruction)) $ 
+            executeInstructions (bots, outputs) $ L.drop 1 instructions ++ [instruction]              
+            else
+              -- trace ("performing bot instruction for giver: " <> (T.pack $ show giver) <> (T.pack $ show instruction)) $ 
+              executeInstructions (executeBotInstruction (bots, outputs) instruction) $ L.drop 1 instructions
+        ValuePass val receiver ->
+          -- value x goes to bot y
+          -- trace "valuepass instruction" 
+          executeInstructions ((executeValueInstruction bots instruction), outputs) $ L.drop 1 instructions
+      else
+      (bots, outputs)
+
+{- repl example
+ exampleInstructions = parseInstructions exampleInput
+ botsList= allBots exampleInstructions
+ outputsList= allOutputs exampleInstructions
+ executeInstructions (botsList, outputsList) exampleInstructions
+-}
+
+{- repl real input
+ instructions = parseInstructions input
+ botsList= allBots instructions
+ outputsList= allOutputs instructions
+ executeInstructions (botsList, outputsList) instructions
+
+ then I manually went through the trace logging to find
+ Bot {botId = 27, low = Just 17, high = Just 61}
+ (Could easily filter here too).
+
+  TODO: Refactor so bots don't have lower/higher fields, but rather two fields, calculating which one is higher only when running instructions.
+-}
 
 exampleInput =
   L.map
     T.pack
-    [ "value 5 goes to bot 2",
+    [ "value 5 goes to bot 2",                                   
       "bot 2 gives low to bot 1 and high to bot 0",
       "value 3 goes to bot 1",
       "bot 1 gives low to output 1 and high to bot 0",
-      "bot 0 gives low to output 2 and high to output 0",
+      "bot 0 gives low to output 2 and high to output 0", --  gets skipped
       "value 2 goes to bot 2"
     ]
 
