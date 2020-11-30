@@ -18,9 +18,11 @@ solvePartOne =
 solvePartTwo =
   renderLayer $ chunksOf 25 $ allLayersPixels (layers25x6 input) 25 6
 
-allLayersPixels layers width height =  [visiblePixel $ map ((!! that) . map (!! it)) layers |
-                                         that <- [0..pred height],
-                                         it <- [0..pred width]]
+allLayersPixels layers width height =
+  [ visiblePixel $ map ((!! that) . map (!! it)) layers
+    | that <- [0 .. pred height],
+      it <- [0 .. pred width]
+  ]
 
 visiblePixel :: [Integer] -> Integer
 visiblePixel stackedPixel = head $ dropWhile (== 2) stackedPixel
@@ -30,7 +32,6 @@ layers25x6 = chunksOf 6 . chunksOf 25
 -- silly that these aren't just one function ---------------------
 countZerosInLayer :: (Eq a, Num a) => [[a]] -> Int
 countZerosInLayer = length . concatMap (filter (== 0))
-
 
 -- render functions ----------------------------------------------------
 renderLayer :: [[Integer]] -> IO ()
