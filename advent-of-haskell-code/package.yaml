@@ -37,6 +37,7 @@ dependencies:
 - digits
 - utility-ht
 - MissingH
+- directory
 
 library:
   source-dirs: src
