@@ -23,7 +23,6 @@ validPassword partOneOrTwo passwordString =
     minChars :: Int = read (T.unpack $ head $ T.splitOn "-" $ T.pack rules) :: Int
     maxChars :: Int = read (T.unpack $ last $ T.splitOn "-" $ T.pack rules) :: Int
     reqChar = head $ words passwordString !! 1
-    groupedChars = group password
     countedChars = L.length (L.filter (== reqChar) password)
   in
     if partOneOrTwo == 1
