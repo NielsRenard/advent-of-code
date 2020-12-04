@@ -4,12 +4,16 @@ module Utils
   ( frequencies,
     digits,
     digitsToInt,
+    atLeastAtMost
   )
 where
 
 import RIO
 import qualified RIO.Map as M
 import Prelude (read)
+
+atLeastAtMost :: Integer -> Integer -> Integer -> Bool
+atLeastAtMost l h number = l <= number && number <= h
 
 frequencies :: (Ord k, Num a) => [k] -> [(k, a)]
 frequencies xs = M.toList $ M.fromListWith (+) [(c, 1) | c <- xs]

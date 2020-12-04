@@ -6,32 +6,32 @@ import java.util.Arrays;
 public class Day01 {
 
     public static void solvePartOne() {
-	int fuel = 0;
-	for(Integer module : input()){
-	    fuel += calcFuel(module);
-	}
-	System.out.println("Day 1: " + fuel);
+        int fuel = 0;
+        for (Integer module : input()) {
+            fuel += calcFuel(module);
+        }
+        System.out.println("Day 1: " + fuel);
     }
 
     public static void solvePartTwo() {
-	int totalFuel = 0;
-	for(Integer module : input()){
-	    totalFuel += recursiveFuel(module);
-	}
-	System.out.println("Day 2: " + totalFuel);
+        int totalFuel = 0;
+        for (Integer module : input()) {
+            totalFuel += recursiveFuel(module);
+        }
+        System.out.println("Day 2: " + totalFuel);
     }
 
     public static int calcFuel(int mass) {
-	return mass / 3 - 2;
+        return mass / 3 - 2;
     }
 
     public static int recursiveFuel(int mass) {
-	int fuel = calcFuel(mass);
-	if(fuel > 5){
-	    return fuel + recursiveFuel(fuel);
-	} else {
-	    return fuel;
-	}
+        int fuel = calcFuel(mass);
+        if (fuel > 5) {
+            return fuel + recursiveFuel(fuel);
+        } else {
+            return fuel;
+        }
     }
 
     public static ArrayList<Integer> input(){

@@ -78,7 +78,7 @@ main = do
   let answer1 = startPart1 listOfStrings
   let ex2 = foldr (*) 1 $ L.filter (/= 0) $ L.map (\it -> startPart2 it exinp) listOfSlopes  
   let answer2 = foldr (*) 1 $ L.filter (/= 0) $ L.map (\it -> startPart2 it listOfStrings) listOfSlopes
-  putStrLn $ "Example part 1: " <> show ex1
-  putStrLn $ "Example part 2: " <> show ex2
-  putStrLn $ "Part 1: " <> show answer1
-  putStrLn $ "Part 2: " <> show answer2  
+  putStrLn $ "Example 1: " <> show ex1
+  putStrLn $ "Example 2: " <> show ex2
+  putStrLn $ "   Part 1: " <> show answer1
+  putStrLn $ "   Part 2: " <> show answer2  

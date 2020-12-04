@@ -45,7 +45,7 @@ part1 input = L.length $ L.filter (== True) $ L.map (validPassword 1) input
 part2 :: [String] -> Int
 part2 input = L.length $ L.filter (== True) $ L.map (validPassword 2) input
 
-exampleInput =
+exinp =
   [ "1-3 a: abcde", 
     "1-3 b: cdefg", 
     "2-9 c: ccccccccc"
@@ -54,7 +54,12 @@ exampleInput =
 main :: IO ()
 main = do
   listOfStrings <- lines <$> readFile "data/2020/2.input"  
+  let ex1 = part1 exinp
+  let ex2 = part2 exinp
   let answer1 = part1 listOfStrings
   let answer2 = part2 listOfStrings  
-  putStrLn $ show answer1
-  putStrLn $ show answer2
+  putStrLn $ "Example 1: " <> show ex1
+  putStrLn $ "Example 2: " <> show ex2
+  putStrLn $ "   Part 1: " <> show answer1
+  putStrLn $ "   Part 2: " <> show answer2
+
