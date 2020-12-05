@@ -24,6 +24,21 @@ type Column = Int
 
 type Seat = (Row, Column)
 
+-- Alternative solution, interpreting the boarding pass as binary
+solvePart1Binary :: [Text] -> Int
+solvePart1Binary input =
+  let binaryLists :: [[Int]] = L.map passToBinary input
+      seatIds :: [Int] = L.map Utils.binaryToDecimal binaryLists
+   in last $ sort $ seatIds
+
+passToBinary :: Text -> [Int]
+passToBinary inp =
+  Utils.stringToInts $
+    T.replace "R" "1" $
+      T.replace "L" "0" $
+        T.replace "B" "1" $
+          T.replace "F" "0" inp
+
 -- Every seat also has a unique seat ID: multiply the row by 8, then
 -- add the column. In this example, the seat has ID 44 * 8 + 5 = 357.
 
@@ -68,10 +83,12 @@ main = do
   input <- map T.pack <$> lines <$> readFile "data/2020/5.input"
   let ex1 = solvePart1 exinp
   let answer1 = solvePart1 input
+  let answer1Alt = solvePart1Binary input
   let answer2 = solvePart2 input
-  putStrLn $ "Example 1: " <> show ex1
-  putStrLn $ "   Part 1: " <> show answer1
-  putStrLn $ "   Part 2: " <> show answer2
+  putStrLn $ " Example 1: " <> show ex1
+  putStrLn $ "    Part 1: " <> show answer1
+  putStrLn $ "Alt Part 1: " <> show answer1Alt
+  putStrLn $ "    Part 2: " <> show answer2
 
 {-- Test and example input --}
 
