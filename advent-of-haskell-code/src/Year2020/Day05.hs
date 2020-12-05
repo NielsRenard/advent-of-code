@@ -29,7 +29,7 @@ solvePart1Binary :: [Text] -> Int
 solvePart1Binary input =
   let binaryLists :: [[Int]] = L.map passToBinary input
       seatIds :: [Int] = L.map Utils.binaryToDecimal binaryLists
-   in last $ sort $ seatIds
+   in maximum seatIds
 
 passToBinary :: Text -> [Int]
 passToBinary inp =
