@@ -11,11 +11,13 @@ import Utils (frequencies)
 solvePartOne = solveOne wire1 wire2
 
 -- * Year2019.Day03> solvePartOne
+
 -- (1.17 secs, 390,856,352 bytes)
 
 solvePartTwo = solveTwo wire1 wire2
 
 -- * Year2019.Day03> solvePartTwo
+
 -- 35038
 -- (7.17 secs, 8,075,884,016 bytes) ...yikes
 
@@ -88,39 +90,43 @@ makeLine segment origin =
    in case direction of
         'R' ->
           Line
-            ( reverse $ drop 1 $
-                reverse
-                  [ Coordinate {x = x', y = y'}
-                    | x' <- reverse [oldX .. (oldX + distance)],
-                      y' <- [oldY]
-                  ]
+            ( reverse $
+                drop 1 $
+                  reverse
+                    [ Coordinate {x = x', y = y'}
+                      | x' <- reverse [oldX .. (oldX + distance)],
+                        y' <- [oldY]
+                    ]
             )
         'L' ->
           Line
-            ( reverse $ drop 1 $
-                reverse
-                  [ Coordinate {x = x', y = y'}
-                    | x' <- [(oldX - distance) .. oldX],
-                      y' <- [oldY]
-                  ]
+            ( reverse $
+                drop 1 $
+                  reverse
+                    [ Coordinate {x = x', y = y'}
+                      | x' <- [(oldX - distance) .. oldX],
+                        y' <- [oldY]
+                    ]
             )
         'U' ->
           Line
-            ( reverse $ drop 1 $
-                reverse
-                  [ Coordinate {x = x', y = y'}
-                    | y' <- reverse [oldY .. (oldY + distance)],
-                      x' <- [oldX]
-                  ]
+            ( reverse $
+                drop 1 $
+                  reverse
+                    [ Coordinate {x = x', y = y'}
+                      | y' <- reverse [oldY .. (oldY + distance)],
+                        x' <- [oldX]
+                    ]
             )
         'D' ->
           Line
-            ( reverse $ drop 1 $
-                reverse
-                  [ Coordinate {x = x', y = y'}
-                    | y' <- [(oldY - distance) .. oldY],
-                      x' <- [oldX]
-                  ]
+            ( reverse $
+                drop 1 $
+                  reverse
+                    [ Coordinate {x = x', y = y'}
+                      | y' <- [(oldY - distance) .. oldY],
+                        x' <- [oldX]
+                    ]
             )
 
 distanceFromPort x y =

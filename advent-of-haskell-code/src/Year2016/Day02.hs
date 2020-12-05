@@ -10,9 +10,9 @@ import RIO.List as L
 import RIO.Text as T
 import Text.ParserCombinators.ReadP
 import Prelude
-  ( (!!),
-    head,
+  ( head,
     last,
+    (!!),
   )
 
 answerOne = L.map face solvePartOne

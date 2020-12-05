@@ -12,10 +12,10 @@ import qualified RIO.Map as M
 import qualified RIO.Text as T
 import qualified Utils as U
 import Prelude
-  ( (!!),
-    head,
+  ( head,
     last,
     read,
+    (!!),
   )
 
 answerOne =

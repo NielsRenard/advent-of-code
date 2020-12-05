@@ -4,9 +4,9 @@
 module Year2020.Day01 where
 
 import Data.List
-import Utils
-import Debug.Trace (trace)
 import Data.Maybe
+import Debug.Trace (trace)
+import Utils
 
 part1 :: [Int] -> Maybe Int
 part1 input =
@@ -26,9 +26,9 @@ main = do
   input <- map read . lines <$> readFile "data/2020/1.input"
   let ex1 = part1 exinp
   let answer1 = part1 input
-  let ex2 = part2 exinp  
+  let ex2 = part2 exinp
   let answer2 = part2 input
   putStrLn $ "Example 1: " <> show ex1
-  putStrLn $ "Example 2: " <> show ex2  
+  putStrLn $ "Example 2: " <> show ex2
   putStrLn $ "   Part 1: " <> show (fromJust answer1)
   putStrLn $ "   Part 2: " <> show (fromJust answer2)

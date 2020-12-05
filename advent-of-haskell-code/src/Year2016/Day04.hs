@@ -13,17 +13,16 @@ import qualified RIO.Text as T
 import Text.ParserCombinators.ReadP
 import qualified Utils as U
 import Prelude
-  ( (!!),
-    head,
+  ( head,
     read,
+    (!!),
   )
 
-data Room
-  = Room
-      { name :: String,
-        sector :: Int,
-        check :: String
-      }
+data Room = Room
+  { name :: String,
+    sector :: Int,
+    check :: String
+  }
   deriving (Show)
 
 answerOne =

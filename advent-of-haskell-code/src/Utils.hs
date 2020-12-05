@@ -4,7 +4,7 @@ module Utils
   ( frequencies,
     digits,
     digitsToInt,
-    atLeastAtMost
+    atLeastAtMost,
   )
 where
 
@@ -24,4 +24,5 @@ digits i = map (read . return) . show $ i
 
 digitsToInt :: [Integer] -> Integer
 digitsToInt = read . concatMap show
+
 -----------------------------------------------------

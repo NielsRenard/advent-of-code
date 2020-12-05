@@ -11,9 +11,9 @@ import qualified RIO.List as L
 import qualified RIO.Seq as Seq
 import RIO.Text as T
 import Prelude
-  ( (!!),
-    head,
+  ( head,
     last,
+    (!!),
   )
 
 answerOne = L.length $ L.filter (== True) $ L.map possible input

@@ -10,10 +10,10 @@ import Data.Char
 import RIO
 import qualified RIO.List as L
 import Prelude
-  ( (!!),
-    head,
+  ( head,
     last,
     read,
+    (!!),
   )
 
 {-- Part one

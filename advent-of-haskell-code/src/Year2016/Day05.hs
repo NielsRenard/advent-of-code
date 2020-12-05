@@ -15,9 +15,9 @@ import qualified RIO.Map as M
 import qualified RIO.Set as S
 import qualified RIO.Text.Lazy as TL
 import Prelude
-  ( (!!),
-    head,
+  ( head,
     read,
+    (!!),
   )
 
 {--

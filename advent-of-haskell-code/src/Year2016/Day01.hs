@@ -57,11 +57,12 @@ answers = do
   --  print $ followPath initialPosition moves
   pure (answerPartOne, answerPartTwo)
 
-initialPosition = Position
-  { coordinate = Coordinate {x = 0, y = 0},
-    facing = North,
-    visited = []
-  }
+initialPosition =
+  Position
+    { coordinate = Coordinate {x = 0, y = 0},
+      facing = North,
+      visited = []
+    }
 
 solvePartOne initPosition moves =
   let endPosition = followPath initPos moves
@@ -80,11 +81,12 @@ parseString =
 followPath :: Position -> [Move] -> Position
 followPath = L.foldl translate
 
-initPos = Position
-  { coordinate = Coordinate {x = 0, y = 0},
-    facing = North,
-    visited = []
-  }
+initPos =
+  Position
+    { coordinate = Coordinate {x = 0, y = 0},
+      facing = North,
+      visited = []
+    }
 
 passedMultipleTimes :: [Coordinate] -> [Coordinate]
 passedMultipleTimes cols =
@@ -105,11 +107,10 @@ taxicabDiff p1 p2 =
 
 cartDiff x1 x2 y1 y2 = abs (x1 - x2) + abs (y1 - y2)
 
-data Move
-  = Move
-      { direction :: Turn,
-        steps :: Int
-      }
+data Move = Move
+  { direction :: Turn,
+    steps :: Int
+  }
   deriving (Show)
 
 data Turn
@@ -124,19 +125,17 @@ data Compass
   | West
   deriving (Show)
 
-data Position
-  = Position
-      { coordinate :: Coordinate,
-        facing :: Compass,
-        visited :: [Coordinate]
-      }
+data Position = Position
+  { coordinate :: Coordinate,
+    facing :: Compass,
+    visited :: [Coordinate]
+  }
   deriving (Show)
 
-data Coordinate
-  = Coordinate
-      { x :: Int,
-        y :: Int
-      }
+data Coordinate = Coordinate
+  { x :: Int,
+    y :: Int
+  }
   deriving (Show, Eq)
 
 translate :: Position -> Move -> Position
