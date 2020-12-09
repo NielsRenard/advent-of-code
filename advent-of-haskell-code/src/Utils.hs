@@ -1,7 +1,8 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
 module Utils
-  ( frequencies,
+  ( takeWhileInclusive,
+    frequencies,
     digits,
     digitsToInt,
     atLeastAtMost,
@@ -11,11 +12,16 @@ module Utils
 where
 
 import Data.Char
+import Data.List as L
 import RIO
-import qualified RIO.List as L
 import qualified RIO.Map as M
 import qualified RIO.Text as T
 import Prelude (read)
+
+takeWhileInclusive :: Eq a => [a] -> (a -> Bool) -> [a]
+takeWhileInclusive xs pred =
+  let (upTo, rest) = span pred xs
+   in upTo ++ [(head rest)]
 
 atLeastAtMost :: Integer -> Integer -> Integer -> Bool
 atLeastAtMost l h number = l <= number && number <= h
