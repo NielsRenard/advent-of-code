@@ -14,11 +14,49 @@ import Data.String
 import Data.Text as T (Text, pack, unpack)
 import qualified Data.Text as T
 import Debug.Trace (trace)
-import RIO (comparing)
+import RIO hiding (many)
 import System.Directory
 import Text.Megaparsec
-import Text.Megaparsec.Char (alphaNumChar, char, string)
+import Text.Megaparsec.Char (alphaNumChar, char, separatorChar, space, string)
+import qualified Text.Megaparsec.Char.Lexer as Lex
 import Utils
+
+type Bag = String
+
+type Rule = (Bag, [(Int, Bag)])
+
+type Parser = Parsec Void String
+
+parseInput input =
+  id
+
+--parseMaybe (ruleParser) input
+
+--ruleParser :: Parser Rule
+--ruleParser = do
+--  bag <- bag
+--  space
+--  string "contain"
+--  space
+--  containingBags <- -- string "no other bags" <|>
+--    otherBags
+--  return $ (bag, [containingBags] )
+--  where
+--    bag = do
+--      attribute <- many alphaNumChar
+--      space
+--      color <- many alphaNumChar
+--      space
+--      string "bags"
+--      return (attribute <> "" <> color)
+--    otherBags = do
+--      otherBag
+--      char '.'
+--      return otherBag
+----    otherBag = do
+--      number <- Lex.decimal
+--      containingBag <- bag
+--      return (number, containingBag)
 
 -- subtract 1 for the "shiny gold bag" rule itself
 solvePart1 input =
@@ -43,15 +81,28 @@ simpleLoop allRules rule =
         then True
         else or $ map (simpleLoop allRules) nestedBagRules
 
+solvePart2 input =
+  id
+
+--countNestedBags input
+
+-- part 2
+--countNestedBags :: [Rule] -> Int -> Rule -> Int
+--countNestedBags allRules accum rule =
+--  let
+--    nestedBags = containsBags rule
+--    nestedBagRules :: [Rule] = concatMap (\bag -> filter (isPrefixOf (bag <> " bags contain ")) allRules) nestedBags
+--  in
+--    if length nestedBags > 0
+--    then 1
+--    else sum $ map (simpleLoop allRules (inc accum)) nestedBagRules
+
 canBagHoldColor :: [String] -> String -> String -> Bool
 canBagHoldColor rules color bag =
   let thisBag = L.filter (isPrefixOf (bag <> " bags contain ")) rules
    in if thisBag /= []
         then (isSubsequenceOf $ "contain " <> color <> " bag") $ head thisBag
         else False
-
-solvePart2 input =
-  input
 
 main :: IO ()
 main = do

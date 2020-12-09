@@ -38,6 +38,7 @@ dependencies:
 - utility-ht
 - MissingH
 - directory
+- lens
 
 library:
   source-dirs: src
