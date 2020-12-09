@@ -3,26 +3,9 @@
 
 module Year2020.Day09 where
 
-import Control.Lens
-import Data.Char
-import Data.Function ((&))
-import Data.List as L
-import Data.List.Index
-import qualified Data.List.Split as Split
-import Data.Maybe
-import qualified Data.Set as S
 import Data.String
-import Data.Text as T (Text, pack, unpack)
-import qualified Data.Text as T
-import Debug.Trace (trace)
-import RIO hiding (many, trace, (.~))
 import System.Directory
-import Text.Megaparsec
-import Text.Megaparsec.Char (alphaNumChar, char, separatorChar, space, string)
-import qualified Text.Megaparsec.Char.Lexer as Lex
 import Utils
-
-type Parser = Parsec Void String
 
 solvePart1 :: Int -> [Int] -> Int
 solvePart1 preamble input =
@@ -78,10 +61,12 @@ main = do
   let answerEx2 = solvePart2 preambleEx exinp
   let answer2 = solvePart2 preamble input
 
-  putStrLn $ "Example 1: " <> show answerEx1
-  putStrLn $ "   Part 1: " <> show answer1
-  putStrLn $ "Example 2: " <> show answerEx2
-  putStrLn $ "   Part 2: " <> show answer2
+  putStrLn $ "Example 1: " <> show answerEx1  -- Example 1: 127
+  putStrLn $ "   Part 1: " <> show answer1    --    Part 1: 18272118
+  putStrLn $ "Example 2: " <> show answerEx2  -- Example 2: 62
+  putStrLn $ "   Part 2: " <> show answer2    --    Part 2: 2186361
+                                              -- (0.70 secs, 1,665,136,952 bytes)
+
 
 {-- Test and example input --}
 
