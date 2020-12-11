@@ -39,7 +39,7 @@ dependencies:
 - MissingH
 - directory
 - lens
-
+- unordered-containers
 library:
   source-dirs: src
 
