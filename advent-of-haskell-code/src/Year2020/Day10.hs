@@ -3,30 +3,19 @@
 
 module Year2020.Day10 where
 
-import Control.Lens
-import Data.Char
-import Data.Function ((&))
 import Data.List as L
-import Data.List.Index
-import qualified Data.List.Split as Split
 import Data.Maybe
-import qualified Data.Set as S
 import Data.String
-import Data.Text as T (Text, pack, unpack)
-import qualified Data.Text as T
-import Debug.Trace (trace)
-import RIO hiding (many, trace, (.~))
 import System.Directory
-import Utils
 import qualified Data.HashMap.Strict as HM
 
 solvePart1 :: [Int] -> Int
 solvePart1 input =
-  let builtInAdapter = ((maximum input) + 3)
+  let builtInAdapter = (maximum input) + 3
       sorted         = 0 : sort input ++ [builtInAdapter]
       differences    = zipWith (-) (tail sorted) $ sorted
-      ones           = L.filter (== 1) differences
-      threes         = L.filter (== 3) differences
+      ones           = filter (== 1) differences
+      threes         = filter (== 3) differences
   in
     length ones * length threes
 
