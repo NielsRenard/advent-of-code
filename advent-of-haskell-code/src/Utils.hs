@@ -29,6 +29,8 @@ atLeastAtMost l h number = l <= number && number <= h
 frequencies :: (Ord k, Num a) => [k] -> [(k, a)]
 frequencies xs = M.toList $ M.fromListWith (+) [(c, 1) | c <- xs]
 
+-- conversion
+
 binaryToDecimal :: [Int] -> Int
 binaryToDecimal binaryList =
   convert (reverse binaryList) 0
