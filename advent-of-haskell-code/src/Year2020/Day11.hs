@@ -38,7 +38,7 @@ loopUntilStable matrix accum =
   in
     if stable
     then matrix
-    else loopUntilStable (advanceGrid matrix) (matrix : accum)
+    else loopUntilStable (advanceGrid matrix) [matrix]
 
 advanceGrid :: Matrix -> Matrix
 advanceGrid matrix =
@@ -59,9 +59,9 @@ advanceTile tile adjacents =
       adjacentsOccupied = filter (== OccupiedSeat) adjacents
   in
   case tile of
+    Floor        -> Floor
     OccupiedSeat -> if (length adjacentsOccupied) >= 4 then EmptySeat else OccupiedSeat
     EmptySeat    -> if (null adjacentsOccupied)        then OccupiedSeat else EmptySeat
-    Floor        -> Floor
 
 
 -- part 2 solution
@@ -79,7 +79,7 @@ loopUntilStable2 matrix accum =
   in
     if stable
     then matrix
-    else loopUntilStable2 (advanceGrid2 matrix) (matrix : accum)
+    else loopUntilStable2 (advanceGrid2 matrix) [matrix]
 
 advanceGrid2 :: Matrix -> Matrix
 advanceGrid2 matrix =
@@ -135,7 +135,7 @@ main = do
   putStrLn $ "   Part 1: " <> show answer1   --    Part 1: 2126 -- (14.61 secs, 5,112,938,080 bytes)
   putStrLn $ "Example 2: " <> show ex2       -- Example 2: 26
   putStrLn $ "   Part 2: " <> show answer2   --    Part 2: 1914 -- (20.25 secs, 16,163,914,848 bytes)
-
+ 
 {-- Test and example input --}
 
 exinp :: [String]

@@ -89,10 +89,10 @@ executeInstruction ferry instruction =
       West  v ->  ((x-v,y),   direction)
       TurnLeft degrees ->  ((x,y), ( turnLeft direction degrees  ))
       TurnRight degrees -> ((x,y), ( turnRight direction degrees ))
-      MoveForward v -> (moveMoveForward ferry v)
+      MoveForward v -> (moveForward ferry v)
 
-moveMoveForward :: Ferry -> Int -> Ferry
-moveMoveForward ferry steps =
+moveForward :: Ferry -> Int -> Ferry
+moveForward ferry steps =
   let
     (x,y) = (fst ferry)
     direction = (snd ferry)
@@ -140,13 +140,11 @@ main = do
   input <- lines <$> readFile "data/2020/12.input"
   let ex1 = solvePart1 exinp
   let answer1 = solvePart1 input
---  let ex2 = solvePart2 exinp
---  let answer2 = solvePart2 input         
   putStrLn $ "Example 1: " <> show ex1     
   putStrLn $ "   Part 1: " <> show answer1 
---  putStrLn $ "Example 2: " <> show ex2   
---  putStrLn $ "   Part 2: " <> show answer2
 
+-- Part two is in a separate file Day12b.hs
+  
 {-- Test and example input --}
 
 exinp :: [String]
@@ -158,19 +156,3 @@ exinp =
       "R90",
       "F11"
     ]
-
-{- repl
-   value5GoesToBot2 = fromJust $ parseMaybe (valuePassParser) $ T.pack "value 5 goes to bot 2"
-   bots = executeValueInstruction [bot0, bot1, bot2] value5GoesToBot2
-
-   bot2Gives = fromJust $ parseMaybe (botGivesParser) $ T.pack "bot 2 gives low to bot 1 and high to bot 0"
-   executeBotInstruction (bots, []) bot2Gives
-
-   L.map (fromRight (Bot 0 0 0))  $ L.map (runParser botGivesParser "whatever") $ L.filter (\line -> not(T.isPrefixOf "value" line)) input
-   L.map (runParser botGivesParser "notImportant") $ input
-   L.map (runParser botGivesParser "whatever") $ L.filter (\line -> not(T.isPrefixOf "value" line)) input
-   parseTest botGivesParser $ T.pack "bot 88 gives low to bot 51 and high to bot 42"
-   parseTest botGivesParser $ T.pack "bot 57 gives low to output 16 and high to bot 3"
-   parseTest valuePassParser $ T.pack "value 67 goes to bot 187"
-   parseTest (satisfy (== 'bot') :: botGivesParser) $ T.pack "ba-"
--}
