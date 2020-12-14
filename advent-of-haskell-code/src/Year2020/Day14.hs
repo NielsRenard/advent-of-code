@@ -59,6 +59,7 @@ writeToMemoryParser = do
   return $ WriteToMemory (address, value)
 
 {- conversion -}
+
 toBitmask :: String -> [(Index, Value)]
 toBitmask s =
   map (second digitToInt) $
@@ -67,19 +68,12 @@ toBitmask s =
 toThirtysixBits :: Int -> Vector Int
 toThirtysixBits = V.fromList . leftPadZeroes 36 . toBinary
 
-
 solvePart1 input =
-  let instructions =
-        mapMaybe (parseMaybe (try updateBitmaskParser <|> writeToMemoryParser)) input
+  let instructions    = mapMaybe (parseMaybe (try updateBitmaskParser <|> writeToMemoryParser)) input
       initInstruction = (head instructions)
---      memoryInstructions = [ mem | mem@(WriteToMemory _) <- instructions]
-      initMemory = V.fromList (take 100000 (repeat 0))
+      initMemory      = V.fromList (take 70000 (repeat 0)) -- could extract the maximum address and use it here
   in
-    case initInstruction of
-      UpdateBitmask bitmask -> 
-        V.sum $ loop (tail instructions) bitmask initMemory
-      _ ->
-        0
+    V.sum $ loop instructions [] initMemory
 
 loop :: [Instruction] -> Bitmask -> Vector Int -> Vector Int
 loop [] _ memory = memory
