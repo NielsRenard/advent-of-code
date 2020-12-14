@@ -8,6 +8,9 @@ module Utils
     atLeastAtMost,
     stringToInts,
     binaryToDecimal,
+    fromBinary,
+    toBinary,
+    leftPadZeroes
   )
 where
 
@@ -30,6 +33,18 @@ frequencies :: (Ord k, Num a) => [k] -> [(k, a)]
 frequencies xs = M.toList $ M.fromListWith (+) [(c, 1) | c <- xs]
 
 -- conversion
+
+leftPadZeroes :: Int -> [Int] -> [Int]
+leftPadZeroes desiredLength xs =
+  replicate (desiredLength - length ys) 0 ++ ys
+  where ys = take desiredLength xs
+
+toBinary :: Int -> [ Int ]
+toBinary 0 = []
+toBinary n = toBinary (n `quot` 2) ++ [n `rem` 2]
+
+fromBinary :: [Int] -> Int
+fromBinary = binaryToDecimal
 
 binaryToDecimal :: [Int] -> Int
 binaryToDecimal binaryList =

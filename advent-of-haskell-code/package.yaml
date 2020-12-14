@@ -40,6 +40,8 @@ dependencies:
 - directory
 - lens
 - unordered-containers
+- vector
+
 library:
   source-dirs: src
 
