@@ -73,8 +73,8 @@ main = do
   let answer1 = solvePart1 input
   let ex2 = solvePart2 exinp
   let answer2 = solvePart2 input
---  putStrLn $ "Example 1: " <> show ex1
---  putStrLn $ "   Part 1: " <> show answer1
+  putStrLn $ "Example 1: " <> show ex1
+  putStrLn $ "   Part 1: " <> show answer1
 --  putStrLn $ "Example 2: " <> show ex2
   putStrLn $ "   Part 2: " <> show answer2
 

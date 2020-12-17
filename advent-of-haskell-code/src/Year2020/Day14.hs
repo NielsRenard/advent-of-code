@@ -61,13 +61,13 @@ writeToMemoryParser = do
 {- conversion -}
 
 toBitmask :: String -> [(Index, Value)]
-toBitmask s =
-  map (second digitToInt) $
-  filter (\(a,v) -> v /= 'X') $ indexed s
+toBitmask = map (second digitToInt) . filter (\(a,v) -> v /= 'X') . indexed
 
 toThirtysixBits :: Int -> Vector Int
 toThirtysixBits = V.fromList . leftPadZeroes 36 . toBinary
 
+{- part 1 -}
+solvePart1 :: [String] -> Int
 solvePart1 input =
   let instructions    = mapMaybe (parseMaybe (try updateBitmaskParser <|> writeToMemoryParser)) input
       initInstruction = (head instructions)
