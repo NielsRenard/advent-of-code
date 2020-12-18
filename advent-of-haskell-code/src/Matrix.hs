@@ -2,6 +2,7 @@
 
 module Matrix
   ( Matrix.lookup,
+    lookup3d,
     adjacent4,
     adjacent8,
     lineOfSightNorthWest,
@@ -21,6 +22,23 @@ import Data.List ((!!), zip, reverse)
 import qualified RIO.Map as M
 import qualified RIO.Text as T
 import Prelude (Int, (+), (-), ($), length, head, (<), (>), (||), (>=), otherwise, repeat, succ, pred)
+
+{- 3d three dimensional matrix operations -}
+
+lookup3d :: Int -> Int -> Int -> [[[b]]] -> Maybe b
+lookup3d x y z matrix
+    | (x < 0 || x >= width)  = Nothing
+    | (y < 0 || y >= height) = Nothing
+    | (z < 0 || z >= depth) = Nothing    
+    | otherwise = Just (matrix !! z !! y !! x)
+  where
+    height = length matrix
+    width  = length $ head matrix
+    depth  = length $ head matrix    
+
+
+
+{- 2d two dimensional matrix operations -}
 
 lookup :: Int -> Int -> [[b]] -> Maybe b
 lookup x y matrix
