@@ -114,6 +114,7 @@ chomp [] allRules ruleId  = []
 main = do
   input <- readFile "data/2020/19.input"
   let ex1 = solvePart1 exinp
+  putStrLn "hey"
 --  let answer1 = length $ solvePart1 input
 --  let ex2 = solvePart2 exinp2
 --  let answer2 = solvePart2 input

@@ -42,4 +42,4 @@ main = do
 
 {-- Test and example input --}
 
-exinp = 
+exinp = ""

@@ -41,6 +41,7 @@ dependencies:
 - lens
 - unordered-containers
 - vector
+- neatinterpolation
 
 library:
   source-dirs: src
