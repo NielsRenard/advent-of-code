@@ -54,6 +54,7 @@ parseInput input =
   in
     twoDecks
 
+solvePart1 :: String -> Int
 solvePart1 input =
   let
     (player1, player2) = (head $ parseInput input, last $ parseInput input)
@@ -62,14 +63,12 @@ solvePart1 input =
     sum $ zipWith (*) (snd (loop (player1, player2)))  (reverse [1..amountOfValues])
 
 loop :: (Deck, Deck) -> Deck
-loop (player1Deck, (_, [])) =
-  player1Deck
-loop ((_, []), player2Deck) =
-  player2Deck
+loop (player1Deck, (_, []))     = player1Deck
+loop ((_, [])    , player2Deck) = player2Deck
 loop ((p1, (x:xs)), (p2, (y:ys))) =
-         if x > y
-         then loop ((p1, (xs ++ [x,y])), (p2, ys))
-         else loop ((p1, xs), (p2, (ys ++ [y, x])))
+  if x > y
+  then loop ((p1, (xs ++ [x,y])), (p2, ys))
+  else loop ((p1, xs)           , (p2, (ys ++ [y, x])))
                             
 
 main = do
