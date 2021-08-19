@@ -66,10 +66,10 @@ takeBagFromRule rule =
   (unwords . take 2 . words) rule
 
 containsBags rule =
-  L.map unwords $ L.map (take 2 . drop 1) $ Split.chunksOf 4 $ drop 4 $ words $ rule
+  map (unwords . (take 2 . drop 1)) (Split.chunksOf 4 $ drop 4 $ words rule)
 
 canHoldGold rule =
-  (isInfixOf $ "shiny gold bag") rule
+  "shiny gold bag" `isInfixOf` rule
 
 -- drill down
 simpleLoop :: [String] -> String -> Bool
@@ -77,9 +77,7 @@ simpleLoop allRules rule =
   let nestedBags = containsBags rule
       nestedBagRules :: [String] = concatMap (\bag -> filter (isPrefixOf (bag <> " bags contain ")) allRules) nestedBags
       currentCanHoldGold = canHoldGold rule
-   in if currentCanHoldGold
-        then True
-        else or $ map (simpleLoop allRules) nestedBagRules
+   in currentCanHoldGold || any (simpleLoop allRules) nestedBagRules
 
 solvePart2 input =
   id
@@ -100,9 +98,7 @@ solvePart2 input =
 canBagHoldColor :: [String] -> String -> String -> Bool
 canBagHoldColor rules color bag =
   let thisBag = L.filter (isPrefixOf (bag <> " bags contain ")) rules
-   in if thisBag /= []
-        then (isSubsequenceOf $ "contain " <> color <> " bag") $ head thisBag
-        else False
+   in (thisBag /= []) && isSubsequenceOf ("contain " <> color <> " bag") (head thisBag)
 
 main :: IO ()
 main = do
