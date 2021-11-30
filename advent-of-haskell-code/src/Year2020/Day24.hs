@@ -34,7 +34,7 @@ type Parser = Parsec Void String
 type X = Int
 type Y = Int
 data Colour = Black | White deriving (Show, Eq)
-type Tile = (X, Y, Colour)
+type Tile = ((X, Y), Colour)
 
 data Direction = N | W | E | S | NW | NE | SW | SE deriving (Show, Eq)
 
@@ -83,16 +83,33 @@ move pos@(x,y) dir =
     SW -> ( x     , y - 1 )
     S  -> ( x     , y - 1 )
     SE -> ( x + 1 , y - 1 )
+
+{- part 2 -}
+
+solvePart2 :: String -> [Tile]
+solvePart2 input =
+   let directions      = parseInput input
+       allEndPositions = map (followDirections (0,0)) directions
+       howManyFlips    = frequencies allEndPositions
+       blackTiles      = filter (odd . snd) howManyFlips 
+   in
+     map (\it -> (fst it, Black)) blackTiles
+
+--getAdjacent :: [Tile] -> (X,Y) -> [Tile]
+--getAdjacent tiles pos =
+--  let n = find (x,y) tiles
+--  in
+--    [n]
   
 main = do
   input <- readFile "data/2020/24.input"
   let ex1 = solvePart1 exinp
   let answer1 = solvePart1 input
---  let ex2 = solvePart2 exinp
+  let ex2 = solvePart2 exinp
 --  let answer2 = solvePart2 input
   putStrLn $ "Example 1: " <> show ex1
   putStrLn $ "   Part 1: " <> show answer1
---  putStrLn $ "Example 2: " <> show ex2
+  putStrLn $ "Example 2: " <> show ex2
 --  putStrLn $ "   Part 2: " <> show answer2
 
 -- 278659341 too high
