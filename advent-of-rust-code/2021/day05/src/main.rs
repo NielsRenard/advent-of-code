@@ -31,7 +31,7 @@ struct Point {
 }
 
 fn solve_part_one(input: &str) -> i32 {
-    let lines = input.lines().into_iter().map(|s| parse_line_from_string(s));
+    let lines = input.lines().into_iter().map(parse_line_from_string);
     let all_points: Vec<Vec<Point>> = lines
         .map(|line| generate_coordinates_from_line(line, "part_1"))
         .collect();
@@ -45,7 +45,7 @@ fn solve_part_one(input: &str) -> i32 {
 }
 
 fn solve_part_two(input: &str) -> i32 {
-    let lines = input.lines().into_iter().map(|s| parse_line_from_string(s));
+    let lines = input.lines().into_iter().map(parse_line_from_string);
     let mut map: HashMap<Point, i32> = HashMap::new();
     let all_points: Vec<Vec<Point>> = lines
         .map(|line| generate_coordinates_from_line(line, "part_two"))
@@ -91,7 +91,7 @@ fn pretty_print_map(map: &HashMap<Point, i32>) {
                 }
             }
             if x == max_x {
-                print!("\n")
+                println!()
             }
         }
     }
