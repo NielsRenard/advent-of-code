@@ -75,6 +75,12 @@ fn solve_part_two(input: &str) -> u64 {
     for i in 1.. {
         let adjacent = get_adjacent(0, 0, &matrix);
         let flashed: u32 = advance_step(&mut matrix);
+        // if i % 1 == 0 {
+        //     println!("After {} steps:", i);
+        //     combination_print(&matrix);
+        //     let millis = time::Duration::from_millis(350);
+        //     thread::sleep(millis);
+        // }
         if flashed == 100 {
             println!("All synchronized at {} steps", i);
             synchronized_at = i as u64;
