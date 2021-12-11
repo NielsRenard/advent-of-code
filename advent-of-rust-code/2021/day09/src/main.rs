@@ -57,17 +57,17 @@ fn solve_part_two(input: &str) -> u32 {
         let mut basin: HashSet<(usize, usize)> = HashSet::from([(x, y)]);
         for adjacent in all_adjacent {
             let mut keep_going = true;
-            let mut higher_adjecent: Vec<(usize, usize)> = vec![adjacent];
+            let mut higher_adjacent: Vec<(usize, usize)> = vec![adjacent];
             let mut idx = 0;
             while keep_going {
-                let current = higher_adjecent[idx];
+                let current = higher_adjacent[idx];
                 let mut new_highers: Vec<(usize, usize)> =
                     get_higher_adjacent(current.0, current.1, &heightmap);
 
                 if !new_highers.is_empty() {
-                    higher_adjecent.append(&mut new_highers);
+                    higher_adjacent.append(&mut new_highers);
                 }
-                if idx < higher_adjecent.len() - 1 {
+                if idx < higher_adjacent.len() - 1 {
                     idx += 1;
                     // continue
                 } else {
@@ -76,7 +76,7 @@ fn solve_part_two(input: &str) -> u32 {
                 }
             }
             basin.extend(HashSet::<(usize, usize)>::from_iter(
-                higher_adjecent.iter().cloned(),
+                higher_adjacent.iter().cloned(),
             ));
         }
         all_basins.push(basin);
