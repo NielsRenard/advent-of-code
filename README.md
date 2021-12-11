@@ -1,7 +1,7 @@
 # What is this repo
 
 These are my [Advent Of Code](https://www.adventofcode.com) solutions. A series of daily programming challenges that runs in December.  
-I did 2017 and 2018 clojure, 2016, 2019 and 2020 in Haskell, and 2021 in Rust.
+I did 2017 and 2018 in [clojure](https://clojure.org/), 2016, 2019 and 2020 in [Haskell](https://www.haskell.org/), and 2021 in [Rust](https://www.rust-lang.org/).
 Huge props to AOC creator Eric Wastl. Not only has it been a ton of fun, it also (drastically) improved my programming and problem solving skills.
 
 ### Advent of Code ?
