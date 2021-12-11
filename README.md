@@ -26,7 +26,7 @@ Huge props to AOC creator Eric Wastl. Not only has it been a ton of fun, it also
 >full. Although your lights are off, maybe you could navigate through
 >the cave without disturbing the octopuses if you could predict when
 >the flashes of light will happen."
-![octopus](adventofcode/advent-of-rust-code/2021/day11/terminal_visualisation_octopus.gif)
+![octopus](advent-of-rust-code/2021/day11/terminal_visualisation_octopus.gif)
 
 
 [2021 --- Day 5: Hydrothermal Venture ---](https://adventofcode.com/2021/day/5)
@@ -34,4 +34,4 @@ Huge props to AOC creator Eric Wastl. Not only has it been a ton of fun, it also
 >"You come across a field of hydrothermal vents on the ocean floor!
 >These vents constantly produce large, opaque clouds, so it would be
 >best to avoid them if possible."
-![hydrothermal vents](adventofcode/advent-of-rust-code/2021/day05/terminal_visualisation.gif)
+![hydrothermal vents](advent-of-rust-code/2021/day05/terminal_visualisation.gif)
