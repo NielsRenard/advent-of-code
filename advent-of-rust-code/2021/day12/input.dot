@@ -1,0 +1,62 @@
+digraph caves {
+
+graph [
+       //// node layout engine (default is dot)
+       // layout = dot,
+       // layout = neato,
+       layout = circo,
+       // layout = sfdp,
+
+       //// ways to draw the lines between nodes
+       // splines = ortho,
+       // splines = polyline,
+       // splines = lines,
+
+       //// direction, leftright topbottom
+       // rankdir = "LR"
+       // rankdir = "TB"
+       ]
+
+edge [ labeldistance=2,
+       arrowhead = none
+      ]
+
+    node [color = PowderBlue,
+    style     = filled,
+    shape     = circle,
+    // fixedsize = true,
+    fontsize  = 12,
+    fontname  = "Helvetica bold",
+    ]
+
+    "end" [color = Orangered1];
+    "start" [color = LawnGreen];
+
+    QF [fontsize = 20];    
+    XL [fontsize = 20];    
+
+    QF -> bw
+    end -> ne
+    po -> ju
+    QF -> lo
+    po -> start
+    XL -> ne
+    bw -> US
+    ne -> lo
+    nu -> ne
+    bw -> po
+    QF -> ne
+    ne -> ju
+    start -> lo
+    lo -> XL
+    QF -> ju
+    end -> ju
+    XL -> end
+    bw -> ju
+    nu -> start
+    lo -> nu
+    nu -> XL
+    xb -> XL
+    XL -> po
+    
+}

@@ -35,3 +35,12 @@ Huge props to AOC creator Eric Wastl. Not only has it been a ton of fun, it also
 >These vents constantly produce large, opaque clouds, so it would be
 >best to avoid them if possible."
 ![hydrothermal vents](advent-of-rust-code/2021/day05/terminal_visualisation.gif)
+
+
+[2021 --- Day 12: Passage Pathing ---](https://adventofcode.com/2021/day/12)
+
+>With your submarine's subterranean subsystems subsisting
+>suboptimally, the only way you're getting out of this cave anytime
+>soon is by finding a path yourself. Not just a path - the only way to
+>know if you've found the best path is to find all of them.
+![cave pathing](advent-of-rust-code/2021/day12/CaveSystem.png)
