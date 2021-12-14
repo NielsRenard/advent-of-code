@@ -31,10 +31,10 @@ for day in $(seq ${2:-1} ${2:-25}); do
       echo "$day input data already present, skipping fetch."
     continue  # make sure we don't fetch the same file twice!
   fi
-  echo "getting input for year: $thisyear, day: $day "
-  #echo "filename: $filename"
-  #echo "curl -sS -o "$filename" -b "$AOC_COOKIE" https://adventofcode.com/"$thisyear"/day/"$thisday"/input"
+
+  echo "getting input and assignment for year: $thisyear, day: $day "
+  curl -sS -b "$AOC_COOKIE" https://adventofcode.com/"$thisyear"/day/"$day" > "./data/$thisyear/$day-assignment.html"
   curl -sS -o "$filename" -b "$AOC_COOKIE" https://adventofcode.com/"$thisyear"/day/"$day"/input
-  echo "sleep 2 seconds"
-  sleep 2
+  echo "sleep 1 second"
+  sleep 1
 done
