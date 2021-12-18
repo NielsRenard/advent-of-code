@@ -17,7 +17,8 @@ fn main() {
     let answer_2 = solve_part_two(target_area);
     // 4969 too low
     println!("part 2: {}", answer_2);
-    // execution took 2.49ms
+    // execution took 3.18ms
+
 }
 
 fn step(
