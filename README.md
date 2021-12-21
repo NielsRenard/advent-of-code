@@ -36,6 +36,14 @@ Huge props to AOC creator Eric Wastl. Not only has it been a ton of fun, it also
 >best to avoid them if possible."
 ![hydrothermal vents](advent-of-rust-code/2021/day05/terminal_visualisation.gif)
 
+[2021 --- Day 20: Trench Map ---](https://adventofcode.com/2021/day/20)
+
+>"With the scanners fully deployed, you turn their attention to
+>mapping the floor of the ocean trench. Through advances in imaging
+>technology, the images being operated on here are infinite in
+>size. Truly incredible - now the small details are really starting to
+>come through."
+![image enhancing](advent-of-rust-code/2021/day20/day_20_pixels_pretty_printer.png)
 
 [2021 --- Day 12: Passage Pathing ---](https://adventofcode.com/2021/day/12)
 
