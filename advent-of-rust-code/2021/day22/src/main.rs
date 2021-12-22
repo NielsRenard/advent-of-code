@@ -21,6 +21,8 @@ fn main() {
     let input = &input_from_file();
     let answer_1 = solve_part_one(&input);
     println!("part 1: {:?}", answer_1);
+    let answer_2 = solve_part_two(&input);
+    println!("part 1: {:?}", answer_2);
     // execution took: 0.16ms
 }
 
@@ -156,9 +158,9 @@ on x=-16..35,y=-41..10,z=-47..6
 off x=-32..-23,y=11..30,z=-14..3
 on x=-49..-5,y=-3..45,z=-29..18
 off x=18..30,y=-20..-8,z=-3..13
-on x=-41..9,y=-7..43,z=-33..15";
-    // on x=-54112..-39298,y=-85059..-49293,z=-27449..7877
-    // on x=967..23432,y=45373..81175,z=27513..53682";
+on x=-41..9,y=-7..43,z=-33..15
+on x=-54112..-39298,y=-85059..-49293,z=-27449..7877
+on x=967..23432,y=45373..81175,z=27513..53682";
 
     #[test]
     fn test_1() {
