@@ -52,3 +52,14 @@ Huge props to AOC creator Eric Wastl. Not only has it been a ton of fun, it also
 >soon is by finding a path yourself. Not just a path - the only way to
 >know if you've found the best path is to find all of them.
 ![cave pathing](advent-of-rust-code/2021/day12/CaveSystem.png)
+
+
+
+[2021 --- Day 25: Sea Cucumber ---](https://adventofcode.com/2021/day/25)
+
+>"Sea cucumbers? Yeah, they're probably hunting for food. But don't
+>worry, they're predictable critters: they move in perfectly straight
+>lines, only moving forward when there's space to do so. They're
+>actually quite polite!"  You explain that you'd like to predict when
+>you could land your submarine.
+![sea cucumbers](advent-of-rust-code/2021/day25/cucumbers.gif)
