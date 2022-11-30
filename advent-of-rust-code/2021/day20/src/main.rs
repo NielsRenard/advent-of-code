@@ -1,7 +1,8 @@
 #![allow(dead_code, unused_mut, unused_variables, unused_imports)]
 #![feature(iter_advance_by, iter_zip, destructuring_assignment, map_try_insert)]
 
-use std::{num, collections::HashSet};
+use core::time;
+use std::{num, collections::HashSet, thread};
 use itertools::Itertools;
 
 #[macro_use]
@@ -44,6 +45,7 @@ fn solve_part_one(input: &str) -> i64 {
     // let mut output_pixels: Vec<Vec<bool>> = Vec::new();
     let mut count = 0;
     loop {
+
         if count >= 7 { break }
         for y in 0..y_max {
             for x in 0..x_max {
