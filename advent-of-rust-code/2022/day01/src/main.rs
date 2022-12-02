@@ -14,10 +14,6 @@ fn main() {
     println!("part 2: {}", answer_2);
 }
 
-fn char_to_int(c: char) -> i32 {
-    c.to_digit(10).unwrap().try_into().unwrap()
-}
-
 fn solve_part_one(input: &str) -> i32 {
     let elves: Vec<&str> = input.split("\n\n").collect();
     let calories_per_elf = calories_summed_per_elf(&elves);
