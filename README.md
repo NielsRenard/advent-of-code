@@ -16,6 +16,25 @@ Huge props to AOC creator Eric Wastl. Not only has it been a ton of fun, it also
 
 ### Some visualizations
 
+[2022 --- Day 9: Rope Bridge ---](https://adventofcode.com/2022/day/9)
+
+>"This rope bridge creaks as you walk along it. You aren't sure how old
+>it is, or whether it can even support your weight.  It seems to
+>support the Elves just fine, though. The bridge spans a gorge which
+>was carved out by the massive river far below you. You step
+>carefully; as you do, the ropes stretch and twist. You decide to
+>distract yourself by modeling rope physics; maybe you can even figure
+>out where not to step."
+![rope bridge](advent-of-rust-code/2022/day09/rope_bridge.gif)
+
+>"Sea cucumbers? Yeah, they're probably hunting for food. But don't
+>worry, they're predictable critters: they move in perfectly straight
+>lines, only moving forward when there's space to do so. They're
+>actually quite polite!"  You explain that you'd like to predict when
+>you could land your submarine.
+![sea cucumbers](advent-of-rust-code/2021/day25/cucumbers.gif)
+
+
 [2021 --- Day 11: Dumbo Octopus ---](https://adventofcode.com/2021/day/11)
 
 >"You enter a large cavern full of rare bioluminescent dumbo
