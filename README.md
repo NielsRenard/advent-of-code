@@ -27,13 +27,6 @@ Huge props to AOC creator Eric Wastl. Not only has it been a ton of fun, it also
 >out where not to step."
 ![rope bridge](advent-of-rust-code/2022/day09/rope_bridge.gif)
 
->"Sea cucumbers? Yeah, they're probably hunting for food. But don't
->worry, they're predictable critters: they move in perfectly straight
->lines, only moving forward when there's space to do so. They're
->actually quite polite!"  You explain that you'd like to predict when
->you could land your submarine.
-![sea cucumbers](advent-of-rust-code/2021/day25/cucumbers.gif)
-
 
 [2021 --- Day 11: Dumbo Octopus ---](https://adventofcode.com/2021/day/11)
 
