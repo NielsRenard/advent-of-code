@@ -1,7 +1,7 @@
 # What is this repo
 
 These are my [Advent Of Code](https://www.adventofcode.com) solutions. A series of daily programming challenges that runs in December.  
-I did 2017 and 2018 in [clojure](https://clojure.org/), 2016, 2019 and 2020 in [Haskell](https://www.haskell.org/), and 2021 in [Rust](https://www.rust-lang.org/).
+I did 2017 and 2018 in [clojure](https://clojure.org/), 2016, 2019 and 2020 in [Haskell](https://www.haskell.org/), and 2021 and 2022 in [Rust](https://www.rust-lang.org/).
 Huge props to AOC creator Eric Wastl. Not only has it been a ton of fun, it also (drastically) improved my programming and problem solving skills.
 
 ### Advent of Code ?
@@ -15,6 +15,16 @@ Huge props to AOC creator Eric Wastl. Not only has it been a ton of fun, it also
 >practice problems, or to challenge each other."
 
 ### Some visualizations
+
+[2022 --- Day 10: Cathode-Ray Tube ---](https://adventofcode.com/2022/day/10)
+
+>"(...)the amount of water slowly draining from a big crack in its
+>screen tells you it probably won't be of much immediate use.  Unless,
+>that is, you can design a replacement for the device's video system!
+>It seems to be some kind of cathode-ray tube screen and simple CPU
+>that are both driven by a precise clock circuit. The clock circuit
+>ticks at a constant rate; each tick is called a cycle."
+![cathode ray tube](advent-of-rust-code/2022/day10/cathode_ray_tube.gif)
 
 [2022 --- Day 9: Rope Bridge ---](https://adventofcode.com/2022/day/9)
 
