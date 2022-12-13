@@ -54,18 +54,18 @@ pub fn solve_part_two(input: &str) -> usize {
 pub fn arrays_in_order(left: &Packet, right: &Packet) -> bool {
     let left_iter = left.0.iter();
     let mut right_iter = right.0.iter();
-    let mut is_correct = false;
-    for left_value in left_iter {
+    let mut is_correct_order = false;
+    for l_val in left_iter {
         match right_iter.next() {
             None => {
                 return false;
             }
-            Some(right_value) => {
-                if left_value == right_value {
-                    is_correct = true;
+            Some(r_val) => {
+                if l_val == r_val {
+                    is_correct_order = true;
                     continue;
                 }
-                return correct_order(left_value, right_value);
+                return correct_order(l_val, r_val);
             }
         }
     }
@@ -73,7 +73,7 @@ pub fn arrays_in_order(left: &Packet, right: &Packet) -> bool {
     if right_iter.next().is_some() {
         return true;
     }
-    is_correct
+    is_correct_order
 }
 
 /// Checks that the lower value is on the left.
