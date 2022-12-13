@@ -52,10 +52,9 @@ pub fn solve_part_two(input: &str) -> usize {
 }
 
 pub fn arrays_in_order(left: &Packet, right: &Packet) -> bool {
-    let left_iter = left.0.iter();
     let mut right_iter = right.0.iter();
     let mut is_correct_order = false;
-    for l_val in left_iter {
+    for l_val in &left.0 {
         match right_iter.next() {
             None => {
                 return false;
