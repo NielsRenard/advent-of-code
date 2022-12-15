@@ -1,19 +1,20 @@
 #![allow(dead_code, unused_mut, unused_variables)]
 
 pub use std::collections::HashMap;
+use rand::Rng;
 use std::{convert::Infallible, str::FromStr, thread, time};
 
-#[macro_use]
-extern crate measure_time;
+// #[macro_use]
+// extern crate measure_time;
 
 fn input_from_file() -> String {
     std::fs::read_to_string("../../data/2022/14.input").unwrap()
 }
 
 fn main() {
-    print_time!("execution");
+    // print_time!("execution");
     let answer_1 = solve_part_one(&input_from_file());
-    println!("part 1: {answer_1}");
+    // println!("part 1: {answer_1}");
 }
 
 fn solve_part_one(input: &str) -> usize {
@@ -23,13 +24,12 @@ fn solve_part_one(input: &str) -> usize {
 }
 
 fn pour_sand_till_overflow(mut map: &mut Vec<Vec<char>>) {
-    // for n in 0..=858 {
     let mut sand_count = 0;
     loop {
-        simulate_sand_drop(map);
+        simulate_sand_drop(map, sand_count);
         let new_count = map.iter_mut().flatten().filter(|c| **c == 'o').count();
         if sand_count == new_count {
-            println!("Sand rolling into the void");
+            // println!("Sand rolling into the void");
             break;
         } else {
             sand_count = new_count;
@@ -38,18 +38,23 @@ fn pour_sand_till_overflow(mut map: &mut Vec<Vec<char>>) {
 }
 
 /// simulates a sand drop falling
-fn simulate_sand_drop(mut map: &mut Vec<Vec<char>>) {
+fn simulate_sand_drop(mut map: &mut Vec<Vec<char>>, sand_count: usize) {
     let source_x = map[0].iter().position(|&c| c == '+').unwrap();
+
+    let mut start_printing = sand_count > 861;
 
     let (map_width, map_height) = (map[0].len(), map.len());
     let (mut x, mut y): (usize, usize) = (source_x, 1);
     map[y][x] = 'o';
     let mut falling = true;
     while falling {
-        pretty_print(map);
 
+        if start_printing {
+            pretty_print(map, &(x, y));
+        }
+        
         if y + 1 == map_height {
-            println!("bottom of map reached");
+            // println!("bottom of map reached");
             map[y][x] = '.';
             break;
         }
@@ -62,19 +67,20 @@ fn simulate_sand_drop(mut map: &mut Vec<Vec<char>>) {
         if map[y + 1][x] == '.' {
             map[y][x] = '.';
             y += 1;
-            map[y][x] = 'o';
+            map[y][x] = 'O';
         } else if map[y + 1][x - 1] == '.' {
             map[y][x] = '.';
             y += 1;
             x -= 1;
-            map[y][x] = 'o';
+            map[y][x] = 'O';
         } else if map[y + 1][x + 1] == '.' {
             map[y][x] = '.';
             y += 1;
             x += 1;
-            map[y][x] = 'o';
+            map[y][x] = 'O';
         } else {
             falling = false;
+            map[y][x] = 'o';
         }
     }
 
@@ -174,21 +180,69 @@ fn generate_coordinates_from_line(point_a: &Point, point_b: &Point) -> Vec<Point
 /// `⬛⬛⬛⬛🙂🙂🙂🙂⬜⬛ 7`  
 /// `🙂🙂⬛🙂🙂🙂🙂🙂⬜⬛ 8`  
 /// `⬜⬜⬜⬜⬜⬜⬜⬜⬜⬛ 9`  
-fn pretty_print(map: &[Vec<char>]) {
+fn pretty_print(map: &[Vec<char>], (_, y): &(usize, usize)) {
     let ten_millis = time::Duration::from_millis(100);
     let now = time::Instant::now();
     thread::sleep(ten_millis);
+
     for (i, row) in map.iter().enumerate() {
-        // if i < 2 { continue;}
-        // if i > 47 { break;}
+
+        // Viewing Window
+        
+        if *y > 10 {
+            if *y > (173-30) {
+                if i < *y -50 {
+                    continue;
+                }
+            } else
+                if 
+                i < *y -10 {
+                continue;
+            }
+        }
+        if i > y+20 { break;}
+
+        //
+
         for col in row {
             if col == &'#' {
-                print!("⬜");
+            if *y > 172 {
+                print!("🎅");
+            } else {
+                print!("🎄");
+            }
             } else if col == &'.' {
-                print!("⬛");
+                let mut rng = rand::thread_rng();
+                let n1: u8 = rng.gen();
+                match n1 {
+                    51..=52 => print!("☆ "),
+                    250..=251 => print!(" ✰"),
+                    10..=11 => print!(" ✶"),
+                    _ => print!("  "),
+                } 
+                // print!("  ");
+            }
+            else if col == &'O' {
+                let mut rng = rand::thread_rng();
+                let n1: u8 = rng.gen();
+                match n1 {
+                    // 51..=100 => print!("😍"),
+                    250..=255 => print!("😡"),
+                    _ => print!("🐻"),
+                } 
+                // print!("😍");
             }
             else if col == &'o' {
-                print!("🙂");
+                let mut rng = rand::thread_rng();
+                let n1: u8 = rng.gen();
+
+                match n1 {
+                    51..=100 => print!("😶"),
+                    200..=249 => print!("😉"),
+                    250..=255 => print!("🤔"),
+                    _ => print!("🙂"),
+                } 
+                // print!("🙂");
             }
             else if col == &'+' {
                 print!("🔽");

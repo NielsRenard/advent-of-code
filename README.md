@@ -21,7 +21,7 @@ Huge props to AOC creator Eric Wastl. Not only has it been a ton of fun, it also
 >ground rumble for a moment. Sand begins pouring into the cave! If you
 >don't quickly figure out where the sand is going, you could quickly
 >become trapped!
-![sand](advent-of-rust-code/2022/day14/sand.gif)
+![sand](advent-of-rust-code/2022/day14/sandy_claus.webm)
 
 [2022 --- Day 9: Rope Bridge ---](https://adventofcode.com/2022/day/9)
 
