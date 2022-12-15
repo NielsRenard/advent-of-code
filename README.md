@@ -16,15 +16,12 @@ Huge props to AOC creator Eric Wastl. Not only has it been a ton of fun, it also
 
 ### Some visualizations
 
-[2022 --- Day 10: Cathode-Ray Tube ---](https://adventofcode.com/2022/day/10)
-
->"(...)the amount of water slowly draining from a big crack in its
->screen tells you it probably won't be of much immediate use.  Unless,
->that is, you can design a replacement for the device's video system!
->It seems to be some kind of cathode-ray tube screen and simple CPU
->that are both driven by a precise clock circuit. The clock circuit
->ticks at a constant rate; each tick is called a cycle."
-![cathode ray tube](advent-of-rust-code/2022/day10/cathode_ray_tube.gif)
+[2022 --- Day 14: Regolith Reservoir ---](https://adventofcode.com/2022/day/14)
+>"As you begin to make your way deeper underground, you feel the
+>ground rumble for a moment. Sand begins pouring into the cave! If you
+>don't quickly figure out where the sand is going, you could quickly
+>become trapped!
+![sand](advent-of-rust-code/2022/day14/sand.gif)
 
 [2022 --- Day 9: Rope Bridge ---](https://adventofcode.com/2022/day/9)
 
