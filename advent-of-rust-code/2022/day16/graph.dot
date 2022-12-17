@@ -1,43 +1,271 @@
 graph valves {
     layout=circo; overlap=scalexy; sep="0.1";
+    "KR"[label="17
+KR"];
+    "JN"[label="0
+JN"];
+    "JY"[label="0
+JY"];
+    "WE"[label="0
+WE"];
+    "HW"[label="0
+HW"];
+    "QS"[label="0
+QS"];
+    "MF"[label="15
+MF"];
+    "IM"[label="0
+IM"];
+    "RJ"[label="0
+RJ"];
+    "IG"[label="0
+IG"];
+    "YL"[label="0
+YL"];
+    "LI"[label="25
+LI"];
+    "WW"[label="6
+WW"];
+    "QK"[label="0
+QK"];
+    "AU"[label="20
+AU"];
+    "WH"[label="0
+WH"];
+    "YS"[label="0
+YS"];
+    "FR"[label="0
+FR"];
+    "NX"[label="0
+NX"];
+    "OI"[label="5
+OI"];
+    "YJ"[label="0
+YJ"];
+    "DK"[label="0
+DK"];
+    "SU"[label="0
+SU"];
+    "OH"[label="0
+OH"];
+    "HS"[label="8
+HS"];
+    "UY"[label="0
+UY"];
+    "AP"[label="0
+AP"];
+    "JQ"[label="0
+JQ"];
+    "XK"[label="0
+XK"];
+    "PM"[label="0
+PM"];
+    "WJ"[label="0
+WJ"];
+    "VK"[label="0
+VK"];
+    "OX"[label="0
+OX"];
+    "ZL"[label="0
+ZL"];
+    "LW"[label="0
+LW"];
+    "TT"[label="0
+TT"];
+    "PJ"[label="0
+PJ"];
+    "UC"[label="0
+UC"];
+    "XU"[label="3
+XU"];
+    "XS"[label="4
+XS"];
+    "CW"[label="0
+CW"];
+    "TF"[label="0
+TF"];
+    "EB"[label="0
+EB"];
+    "WA"[label="0
+WA"];
+    "GY"[label="9
+GY"];
+    "IZ"[label="0
+IZ"];
+    "KI"[label="0
+KI"];
     "AA"[label="0
 AA"];
-    "BB"[label="13
-BB"];
-    "CC"[label="2
-CC"];
-    "DD"[label="20
-DD"];
-    "EE"[label="3
-EE"];
-    "FF"[label="0
-FF"];
-    "GG"[label="0
-GG"];
-    "HH"[label="22
-HH"];
-    "II"[label="0
-II"];
-    "JJ"[label="21
-JJ"];
-    "HH" -- "GG"[label=""];
-    "CC" -- "DD"[label=""];
-    "CC" -- "BB"[label=""];
-    "DD" -- "CC"[label=""];
-    "DD" -- "AA"[label=""];
-    "DD" -- "EE"[label=""];
-    "FF" -- "EE"[label=""];
-    "FF" -- "GG"[label=""];
-    "GG" -- "FF"[label=""];
-    "GG" -- "HH"[label=""];
-    "BB" -- "CC"[label=""];
-    "BB" -- "AA"[label=""];
-    "EE" -- "FF"[label=""];
-    "EE" -- "DD"[label=""];
-    "AA" -- "DD"[label=""];
-    "AA" -- "II"[label=""];
-    "AA" -- "BB"[label=""];
-    "II" -- "AA"[label=""];
-    "II" -- "JJ"[label=""];
-    "JJ" -- "II"[label=""];
+    "ZO"[label="0
+ZO"];
+    "QM"[label="0
+QM"];
+    "SI"[label="0
+SI"];
+    "BT"[label="0
+BT"];
+    "BC"[label="0
+BC"];
+    "NG"[label="21
+NG"];
+    "WX"[label="16
+WX"];
+    "GP"[label="0
+GP"];
+    "JH"[label="0
+JH"];
+    "CX"[label="13
+CX"];
+    "TL"[label="0
+TL"];
+    "MV"[label="14
+MV"];
+    "ZY"[label="10
+ZY"];
+    "GP" -- "HW"[label=""];
+    "GP" -- "GY"[label=""];
+    "YS" -- "ZL"[label=""];
+    "YS" -- "LI"[label=""];
+    "PJ" -- "UC"[label=""];
+    "PJ" -- "WW"[label=""];
+    "TT" -- "LW"[label=""];
+    "TT" -- "MV"[label=""];
+    "WW" -- "PJ"[label=""];
+    "WW" -- "QS"[label=""];
+    "AP" -- "JY"[label=""];
+    "AP" -- "GY"[label=""];
+    "JQ" -- "KR"[label=""];
+    "JQ" -- "JN"[label=""];
+    "FR" -- "XS"[label=""];
+    "FR" -- "AA"[label=""];
+    "IG" -- "WX"[label=""];
+    "IG" -- "ZY"[label=""];
+    "TL" -- "TF"[label=""];
+    "TL" -- "XU"[label=""];
+    "OH" -- "CX"[label=""];
+    "OH" -- "WX"[label=""];
+    "MV" -- "QK"[label=""];
+    "MV" -- "ZL"[label=""];
+    "MV" -- "WH"[label=""];
+    "MV" -- "TT"[label=""];
+    "VK" -- "AU"[label=""];
+    "VK" -- "SI"[label=""];
+    "WJ" -- "AA"[label=""];
+    "WJ" -- "HS"[label=""];
+    "AU" -- "QK"[label=""];
+    "AU" -- "BT"[label=""];
+    "AU" -- "VK"[label=""];
+    "MF" -- "RJ"[label=""];
+    "MF" -- "QS"[label=""];
+    "OX" -- "UY"[label=""];
+    "OX" -- "OI"[label=""];
+    "EB" -- "XU"[label=""];
+    "EB" -- "YL"[label=""];
+    "PM" -- "RJ"[label=""];
+    "PM" -- "ZY"[label=""];
+    "XS" -- "IZ"[label=""];
+    "XS" -- "CW"[label=""];
+    "XS" -- "WE"[label=""];
+    "XS" -- "JN"[label=""];
+    "XS" -- "FR"[label=""];
+    "SI" -- "LI"[label=""];
+    "SI" -- "VK"[label=""];
+    "GY" -- "GP"[label=""];
+    "GY" -- "AP"[label=""];
+    "GY" -- "YL"[label=""];
+    "GY" -- "ZO"[label=""];
+    "GY" -- "WE"[label=""];
+    "KI" -- "NX"[label=""];
+    "KI" -- "KR"[label=""];
+    "JY" -- "KR"[label=""];
+    "JY" -- "AP"[label=""];
+    "QK" -- "MV"[label=""];
+    "QK" -- "AU"[label=""];
+    "OI" -- "SU"[label=""];
+    "OI" -- "OX"[label=""];
+    "OI" -- "LW"[label=""];
+    "OI" -- "JH"[label=""];
+    "OI" -- "DK"[label=""];
+    "YL" -- "GY"[label=""];
+    "YL" -- "EB"[label=""];
+    "DK" -- "OI"[label=""];
+    "DK" -- "IZ"[label=""];
+    "UY" -- "HS"[label=""];
+    "UY" -- "OX"[label=""];
+    "WX" -- "IG"[label=""];
+    "WX" -- "OH"[label=""];
+    "HS" -- "UY"[label=""];
+    "HS" -- "IM"[label=""];
+    "HS" -- "WJ"[label=""];
+    "HS" -- "XK"[label=""];
+    "HS" -- "UC"[label=""];
+    "WA" -- "KR"[label=""];
+    "WA" -- "BT"[label=""];
+    "ZO" -- "GY"[label=""];
+    "ZO" -- "QM"[label=""];
+    "ZL" -- "YS"[label=""];
+    "ZL" -- "MV"[label=""];
+    "QM" -- "ZO"[label=""];
+    "QM" -- "CX"[label=""];
+    "YJ" -- "XK"[label=""];
+    "YJ" -- "XU"[label=""];
+    "WH" -- "MV"[label=""];
+    "WH" -- "IM"[label=""];
+    "CW" -- "XU"[label=""];
+    "CW" -- "XS"[label=""];
+    "XU" -- "EB"[label=""];
+    "XU" -- "CW"[label=""];
+    "XU" -- "SU"[label=""];
+    "XU" -- "TL"[label=""];
+    "XU" -- "YJ"[label=""];
+    "IM" -- "WH"[label=""];
+    "IM" -- "HS"[label=""];
+    "SU" -- "OI"[label=""];
+    "SU" -- "XU"[label=""];
+    "TF" -- "AA"[label=""];
+    "TF" -- "TL"[label=""];
+    "NX" -- "KI"[label=""];
+    "NX" -- "NG"[label=""];
+    "CX" -- "OH"[label=""];
+    "CX" -- "BC"[label=""];
+    "CX" -- "QM"[label=""];
+    "LW" -- "TT"[label=""];
+    "LW" -- "OI"[label=""];
+    "AA" -- "HW"[label=""];
+    "AA" -- "TF"[label=""];
+    "AA" -- "FR"[label=""];
+    "AA" -- "JH"[label=""];
+    "AA" -- "WJ"[label=""];
+    "BC" -- "CX"[label=""];
+    "BC" -- "ZY"[label=""];
+    "WE" -- "GY"[label=""];
+    "WE" -- "XS"[label=""];
+    "JH" -- "AA"[label=""];
+    "JH" -- "OI"[label=""];
+    "UC" -- "PJ"[label=""];
+    "UC" -- "HS"[label=""];
+    "ZY" -- "PM"[label=""];
+    "ZY" -- "BC"[label=""];
+    "ZY" -- "IG"[label=""];
+    "IZ" -- "DK"[label=""];
+    "IZ" -- "XS"[label=""];
+    "RJ" -- "MF"[label=""];
+    "RJ" -- "PM"[label=""];
+    "KR" -- "WA"[label=""];
+    "KR" -- "JQ"[label=""];
+    "KR" -- "JY"[label=""];
+    "KR" -- "KI"[label=""];
+    "XK" -- "YJ"[label=""];
+    "XK" -- "HS"[label=""];
+    "JN" -- "XS"[label=""];
+    "JN" -- "JQ"[label=""];
+    "HW" -- "GP"[label=""];
+    "HW" -- "AA"[label=""];
+    "LI" -- "YS"[label=""];
+    "LI" -- "SI"[label=""];
+    "QS" -- "WW"[label=""];
+    "QS" -- "MF"[label=""];
+    "NG" -- "NX"[label=""];
+    "BT" -- "AU"[label=""];
+    "BT" -- "WA"[label=""];
 }

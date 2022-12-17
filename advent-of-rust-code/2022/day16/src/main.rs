@@ -3,7 +3,7 @@
 
 use dot_graph::{Edge, Graph, Node};
 pub use std::collections::HashMap;
-use std::{collections::HashSet, fs};
+use std::fs;
 
 #[macro_use]
 extern crate measure_time;
@@ -18,6 +18,12 @@ fn main() {
     println!("part 1: {answer_1}");
     // part 1: 1647
     // execution took 1s 113ms
+
+    let answer_2 = solve_part_two(&input_from_file());
+    println!("part 2: {answer_2}");
+    // part 2: 2169
+    // execution took 2s 419ms
+
 }
 
 type AdjacencyList = HashMap<String, Vec<String>>;
@@ -36,13 +42,13 @@ type AdjacencyList = HashMap<String, Vec<String>>;
 
 fn solve_part_one(input: &str) -> i32 {
     let (adjacency_list, valves): (HashMap<String, Vec<String>>, Vec<Valve>) = parse_input(input);
-    print_graph(&(adjacency_list.clone(), valves.clone()));
+    // print_graph(&(adjacency_list.clone(), valves.clone()));
 
     let remaining_time: i32 = 30;
     let mut path: Vec<String> = vec![];
 
     let mut cache: HashMap<(String, Vec<String>, i32), i32> = HashMap::new();
-    let answer: i32 = recur(
+    let (answer, path): (i32, Vec<String>) = recur(
         "AA".to_string(),
         &mut path,
         &adjacency_list,
@@ -50,7 +56,52 @@ fn solve_part_one(input: &str) -> i32 {
         remaining_time,
         &mut cache,
     );
+    println!("path taken: {path:?}"); 
     answer
+}
+
+
+/// 1. calculate your own optimal (in 26 minutes), then 'remove' opened valves from graph
+/// 2. send the elephant to calculate its own optimal path (so, without aforementioned valves)
+/// 3. add the two answers together
+/// 4. ????
+/// 5. PROFIT!!!
+fn solve_part_two(input: &str) -> i32 {
+    let (adjacency_list, mut valves): (HashMap<String, Vec<String>>, Vec<Valve>) = parse_input(input);
+    
+    let remaining_time: i32 = 26;
+    let mut path: Vec<String> = vec![];
+
+    let mut cache: HashMap<(String, Vec<String>, i32), i32> = HashMap::new();
+    let (my_answer, valves_opened): (i32, Vec<String>) = recur(
+        "AA".to_string(),
+        &mut path,
+        &adjacency_list,
+        &valves,
+        remaining_time,
+        &mut cache,
+    );
+    println!("my_answer: {my_answer}");
+    println!("my path taken: {valves_opened:?}"); 
+
+    let mut disabled_valves = valves.clone();
+    for valve in valves_opened {
+        let v = disabled_valves.iter_mut().find(|v| v.id == valve).unwrap();
+        v.flow_rate = 0;
+    }
+
+    let mut cache: HashMap<(String, Vec<String>, i32), i32> = HashMap::new();
+    let (elephant_answer, valves_opened): (i32, Vec<String>) = recur(
+        "AA".to_string(),
+        &mut path,
+        &adjacency_list,
+        &disabled_valves,
+        remaining_time,
+        &mut cache,
+    );
+    println!("elephant_answer: {elephant_answer}");
+    println!("elephant path taken: {valves_opened:?}"); 
+    my_answer + elephant_answer
 }
 
 fn recur(
@@ -60,18 +111,19 @@ fn recur(
     valves: &Vec<Valve>,
     remaining_time: i32,
     cache: &mut HashMap<(String, Vec<String>, i32), i32>,
-) -> i32 {
+) -> (i32, Vec<String>) {
     if remaining_time <= 0 {
-        return 0;
+        return (0, path.to_owned());
     }
 
     if let Some(&answer) = cache.get(&(cur_pos.to_owned(), path.clone(), remaining_time)) {
-        return answer;
+        return (answer, path.to_owned());
     }
 
-    // this will be our answer, we replace it whenever we find a
+    // best is our heuristic, and will be our answer, we replace it whenever we find a
     // better outcome
-    let mut heuristic = 0;
+    let mut best = 0;
+    let mut best_path: Vec<String> = path.clone();
 
     let cur_valve = valves.iter().find(|v| v.id == cur_pos).unwrap();
     let non_zero_flow_rate = cur_valve.flow_rate > 0;
@@ -85,7 +137,7 @@ fn recur(
             path.push(cur_pos.to_owned());
             // time_remaining minus - 2 minutes because we moved AND
             // open this valve
-            let recur_answer = recur(
+            let (recur_answer, mut recur_path) = recur(
                 child.to_string(),
                 path,
                 graph,
@@ -100,19 +152,22 @@ fn recur(
             // our new flowrate.
             // if the new value is better, this means this path was
             // more succesful, so replace our heuristic value
-            heuristic = heuristic.max(recur_answer + cur_valve.flow_rate * (remaining_time - 1));
+            let new_heuristic = recur_answer + cur_valve.flow_rate * (remaining_time - 1);
+            if new_heuristic > best {
+                best = new_heuristic;
+                best_path = recur_path;
+            }
             // take current pos out of the path again, so other paths
             // can visit it
-            // println!("path {path:?}");
             path.pop();
         }
     }
-    else {
+    // else {
     // case 2: either the flow rate is 0, or we've already been
     // here (at a differen time).
     // We are NOT opening a valve, so only 1 minute deducation
     for tunnel in graph.get(&cur_pos).unwrap().iter() {
-        let recur_answer = recur(
+        let (recur_answer, recur_path) = recur(
             tunnel.to_string(),
             path,
             graph,
@@ -120,12 +175,15 @@ fn recur(
             remaining_time - 1,
             cache,
         );
-        heuristic = heuristic.max(recur_answer);
+        if recur_answer > best {
+            best = recur_answer;
+            best_path = recur_path;
+        }
     }
-    }
+    // }
 
-    cache.insert((cur_pos, path.clone(), remaining_time), heuristic);
-    heuristic
+    cache.insert((cur_pos, path.clone(), remaining_time), best);
+    (best, best_path)
 }
 
 fn print_graph((adj_list, valves): &(AdjacencyList, Vec<Valve>)) {
@@ -133,9 +191,9 @@ fn print_graph((adj_list, valves): &(AdjacencyList, Vec<Valve>)) {
     for valve in valves {
         graph.add_node(Node::new(&valve.id).label(&format!("{}\n{}", valve.flow_rate, valve.id)));
     }
-    for (node, tunnels) in adj_list.into_iter() {
+    for (node, tunnels) in adj_list.iter() {
         for tunnel in tunnels {
-            graph.add_edge(Edge::new(&node, &tunnel, ""));
+            graph.add_edge(Edge::new(node, tunnel, ""));
         }
     }
     let graph = graph.to_dot_string().unwrap();
@@ -212,5 +270,11 @@ Valve JJ has flow rate=21; tunnel leads to valve II
     #[test]
     fn test() {
         assert_eq!(solve_part_one(EXAMPLE_INPUT), 1651);
+    }
+
+    #[test]
+    fn test_two() {
+        let real_input = std::fs::read_to_string("../../data/2022/16.input").unwrap();
+        assert_eq!(solve_part_two(&real_input), 2169);
     }
 }
