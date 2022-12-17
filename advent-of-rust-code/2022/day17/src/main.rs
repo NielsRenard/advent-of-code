@@ -1,7 +1,7 @@
 #![allow(dead_code, unused_mut, unused_variables)]
 #![feature(result_option_inspect, string_extend_from_within)]
 
-use log::debug;
+use log::{debug, Level};
 use std::{cmp::Ordering, collections::VecDeque};
 
 #[macro_use]
@@ -46,27 +46,37 @@ pub fn solve(input: &str, number_of_rocks: usize) -> usize {
         debug!("rock {n} begins to fall");
         let rock = rocks.next().unwrap();
         new_rock(&mut chamber, rock);
-        pretty_print(&chamber);
+        if log_enabled!(Level::Debug) {
+            pretty_print(&chamber);
+        }
         let mut falling = true;
 
         while falling {
             let jet: Jet = jets.next().into();
             if moved_by_jet(&mut chamber, &jet) {
                 debug!("Jet of gas pushes rock {jet:?}:");
-                pretty_print(&chamber);
+                if log_enabled!(Level::Debug) {
+                    pretty_print(&chamber);
+                }
             } else {
                 debug!("Jet of gas pushes rock {jet:?}, but nothing happens.");
-                pretty_print(&chamber);
+                if log_enabled!(Level::Debug) {
+                    pretty_print(&chamber);
+                }
             }
             if moved_by_gravity(&mut chamber) {
                 debug!("Rock falls 1 unit:");
-                pretty_print(&chamber);
+                if log_enabled!(Level::Debug) {
+                    pretty_print(&chamber);
+                }
             } else {
                 falling = false;
             }
         }
         debug!("Rock {n} falls 1 unit, causing it to come to rest:");
-        pretty_print(&chamber);
+        if log_enabled!(Level::Debug) {
+            pretty_print(&chamber);
+        }
     });
 
     get_tower_height(&chamber)
