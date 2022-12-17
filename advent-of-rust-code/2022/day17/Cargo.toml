@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-dot_graph = "0.2.3"
 env_logger = "0.10.0"
 log = "0.4.17"
 measure_time = "0.8.2"

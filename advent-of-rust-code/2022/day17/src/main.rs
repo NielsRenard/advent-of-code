@@ -1,4 +1,3 @@
-#![allow(dead_code, unused_mut, unused_variables)]
 #![feature(result_option_inspect, string_extend_from_within)]
 
 use log::{debug, Level};
@@ -87,7 +86,7 @@ fn get_tower_height(chamber: &VecDeque<[char; 7]>) -> usize {
         .iter()
         .rev()
         .enumerate()
-        .filter(|(i, row)| row.contains(&'#'))
+        .filter(|(_, row)| row.contains(&'#'))
         .last()
         .map(|(i, _)| i)
     {
@@ -125,7 +124,7 @@ fn moved_by_gravity(chamber: &mut VecDeque<[char; 7]>) -> bool {
         // calculate new position
         falling_rock
             .iter_mut()
-            .for_each(|mut coord| *coord = (coord.0, coord.1 + 1));
+            .for_each(|coord| *coord = (coord.0, coord.1 + 1));
 
         // update chamber
         falling_rock.iter().for_each(|&(x, y)| {
@@ -159,7 +158,7 @@ fn moved_by_jet(chamber: &mut VecDeque<[char; 7]>, jet: &Jet) -> bool {
                 // transpose to the left
                 falling_rock
                     .iter_mut()
-                    .for_each(|mut coord| *coord = (coord.0 - 1, coord.1));
+                    .for_each(|coord| *coord = (coord.0 - 1, coord.1));
                 moved = true;
             }
         }
@@ -175,7 +174,7 @@ fn moved_by_jet(chamber: &mut VecDeque<[char; 7]>, jet: &Jet) -> bool {
                 // transpose to the right
                 falling_rock
                     .iter_mut()
-                    .for_each(|mut coord| *coord = (coord.0 + 1, coord.1));
+                    .for_each(|coord| *coord = (coord.0 + 1, coord.1));
                 moved = true;
             }
         }
@@ -203,14 +202,9 @@ pub fn new_rock(chamber: &mut VecDeque<[char; 7]>, rock: &Rock) {
     // |..####.|3|..####.|6
     // +-------+ +-------+
 
-    // x = 2 left of wall,
-    // y = leave 3 empty rows above tower
-    let offset_x = 2;
-    let offset_y = tower_height + 4;
-
     // make sure new rock has a place to spawn
     // by extending or shrinking our chamber
-    let need = tower_height + 3 + rock.height;
+    let need = tower_height + 3 + rock.1;
     let difference = usize::abs_diff(chamber.len(), need);
     debug!("need: {need} difference: {difference}");
     match need.cmp(&chamber.len()) {
@@ -228,7 +222,10 @@ pub fn new_rock(chamber: &mut VecDeque<[char; 7]>, rock: &Rock) {
         Ordering::Equal => {}
     }
 
-    for (x, y) in &rock.coords {
+    // x = 2 left of wall,
+    let offset_x = 2;
+
+    for (x, y) in &rock.0 {
         chamber[*y][offset_x + x] = '@';
     }
 }
@@ -237,68 +234,27 @@ pub fn new_rock(chamber: &mut VecDeque<[char; 7]>, rock: &Rock) {
 /// `                    #`  
 /// `####   #     #  ##  #`  
 /// `      ###    #  ##  #`  
-/// `       #   ###      #`  
+/// `       #   ###      #`
+/// we also store the height for convenience when growing the chamber
 #[derive(Clone)]
-pub struct Rock {
-    coords: Vec<(usize, usize)>,
-    height: usize,
-    left_most: (usize, usize),
-    bottom: (usize, usize),
-    right_most: (usize, usize),
-}
+pub struct Rock(Vec<(usize, usize)>, usize);
 
 pub fn rocks() -> Vec<Rock> {
-    let mut hero = Rock {
-        coords: vec![(0, 0), (1, 0), (2, 0), (3, 0)],
-        height: 0,
-        left_most: (0, 0),
-        bottom: (0, 0),
-        right_most: (0, 3),
-    };
-
-    let mut plus = Rock {
-        coords: vec![(1, 0), (0, 1), (1, 1), (1, 2), (2, 1)],
-        height: 0,
-        left_most: (0, 0),
-        bottom: (0, 0),
-        right_most: (0, 3),
-    };
-
-    let mut blue_ricky = Rock {
-        coords: vec![(2, 0), (2, 1), (0, 2), (1, 2), (2, 2)],
-        height: 0,
-        left_most: (0, 0),
-        bottom: (0, 0),
-        right_most: (0, 3),
-    };
-
-    let mut straight = Rock {
-        coords: vec![(0, 0), (0, 1), (0, 2), (0, 3)],
-        height: 0,
-        left_most: (0, 0),
-        bottom: (0, 0),
-        right_most: (0, 3),
-    };
-
-    let mut smashboy = Rock {
-        coords: vec![(0, 0), (1, 0), (0, 1), (1, 1)],
-        height: 0,
-        left_most: (0, 0),
-        bottom: (0, 0),
-        right_most: (0, 3),
-    };
-
-    hero.height = rock_height(&hero);
-    plus.height = rock_height(&plus);
-    blue_ricky.height = rock_height(&blue_ricky);
-    straight.height = rock_height(&straight);
-    smashboy.height = rock_height(&smashboy);
-
+    let mut hero = Rock(vec![(0, 0), (1, 0), (2, 0), (3, 0)], 0);
+    let mut plus = Rock(vec![(1, 0), (0, 1), (1, 1), (1, 2), (2, 1)], 0);
+    let mut blue_ricky = Rock(vec![(2, 0), (2, 1), (0, 2), (1, 2), (2, 2)], 0);
+    let mut straight = Rock(vec![(0, 0), (0, 1), (0, 2), (0, 3)], 0);
+    let mut smashboy = Rock(vec![(0, 0), (1, 0), (0, 1), (1, 1)], 0);
+    hero.1 = rock_height(&hero.0);
+    plus.1 = rock_height(&plus.0);
+    blue_ricky.1 = rock_height(&blue_ricky.0);
+    straight.1 = rock_height(&straight.0);
+    smashboy.1 = rock_height(&smashboy.0);
     vec![hero, plus, blue_ricky, straight, smashboy]
 }
 
-fn rock_height(rock: &Rock) -> usize {
-    rock.coords
+fn rock_height(coordinates: &[(usize, usize)]) -> usize {
+    coordinates
         .iter()
         .max_by(|(_, y_a), (_, y_b)| y_a.cmp(y_b))
         .unwrap()
