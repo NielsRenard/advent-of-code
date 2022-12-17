@@ -1,0 +1,43 @@
+graph valves {
+    layout=circo; overlap=scalexy; sep="0.1";
+    "AA"[label="0
+AA"];
+    "BB"[label="13
+BB"];
+    "CC"[label="2
+CC"];
+    "DD"[label="20
+DD"];
+    "EE"[label="3
+EE"];
+    "FF"[label="0
+FF"];
+    "GG"[label="0
+GG"];
+    "HH"[label="22
+HH"];
+    "II"[label="0
+II"];
+    "JJ"[label="21
+JJ"];
+    "HH" -- "GG"[label=""];
+    "CC" -- "DD"[label=""];
+    "CC" -- "BB"[label=""];
+    "DD" -- "CC"[label=""];
+    "DD" -- "AA"[label=""];
+    "DD" -- "EE"[label=""];
+    "FF" -- "EE"[label=""];
+    "FF" -- "GG"[label=""];
+    "GG" -- "FF"[label=""];
+    "GG" -- "HH"[label=""];
+    "BB" -- "CC"[label=""];
+    "BB" -- "AA"[label=""];
+    "EE" -- "FF"[label=""];
+    "EE" -- "DD"[label=""];
+    "AA" -- "DD"[label=""];
+    "AA" -- "II"[label=""];
+    "AA" -- "BB"[label=""];
+    "II" -- "AA"[label=""];
+    "II" -- "JJ"[label=""];
+    "JJ" -- "II"[label=""];
+}
