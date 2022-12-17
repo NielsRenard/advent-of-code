@@ -20,7 +20,7 @@ Huge props to AOC creator Eric Wastl. Not only has it been a ton of fun, it also
 >"...this isn't just a cave, it's a volcano!
 >
 >You need to get the elephants out of here, quickly."
-[valves](advent-of-rust-code/2022/day16/input_graph.svg)
+![valves](advent-of-rust-code/2022/day16/input_graph.svg)
 
 [2022 --- Day 14: Regolith Reservoir ---](https://adventofcode.com/2022/day/14)
 >"As you begin to make your way deeper underground, you feel the
