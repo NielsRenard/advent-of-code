@@ -36,21 +36,21 @@ impl From<Option<char>> for Jet {
 }
 
 pub fn solve_part_two() {
-    // picked an interesting shape: "whole row with a mushroom top right"
-    // |.#...#.|2859
-    // |.#..###|2858
-    // |.#...#.|2857
-    // |.#...#.|2856
-    // |.#...#.|2855
-    // |######.|2854
-    // |.#..###|2853
-    // |#######|2852
-    //
-    // checked when a rock came to a rest around this height:
-    // h=2853, r=1883
-    // then scrolled up the tower until I saw the shape again
-
     /*
+    picked an interesting shape: "whole row with a mushroom top right"
+    |.#...#.|2859
+    |.#..###|2858
+    |.#...#.|2857
+    |.#...#.|2856
+    |.#...#.|2855
+    |######.|2854
+    |.#..###|2853
+    |#######|2852
+
+    checked when a rock came to a rest around this height:
+    h=2853, r=1883
+    then scrolled up the tower until I saw the shape again
+
                  h=2853, r=1883
              +2597 h        +1705 rocks
                  h=5450, r=3588
