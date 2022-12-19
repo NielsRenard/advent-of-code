@@ -45,34 +45,36 @@ pub fn solve_part_two() {
     // |######.|2854
     // |.#..###|2853
     // |#######|2852
-
+    //
     // checked when a rock came to a rest around this height:
     // h=2853, r=1883
     // then scrolled up the tower until I saw the shape again
 
-    //              h=2853, r=1883
-    //          +2597 h        +1705 rocks
-    //              h=5450, r=3588
-    //          +2597          +1705 rocks
-    //              h=8047, r=5293
-    // + (_ * 2597) + rem      +(_ * 1705) + rem
-    //              h=?     r=1e12
+    /*
+                 h=2853, r=1883
+             +2597 h        +1705 rocks
+                 h=5450, r=3588
+             +2597          +1705 rocks
+                 h=8047, r=5293
+    + (_ * 2597) + rem      +(_ * 1705) + rem
+                 h=?     r=1e12
 
-    // from rock 1883 onwards, it is 999999998117 rocks to 1e12
-    // 999999998117 divided by cycles of 1705 = 586510262.8252199413
-    // that's 586510262 full cycles == 1523167150414 units
-    //                              or 999999996710 rocks
-    // total height - (rocks in full cycles) - (leading up to 'our' cycle start)
-    // 1e12         - 999999996710           - 1883 remainder =  1407 rocks
-    // ran the program and checked how much the tower grew after 1407 rocks, starting at 1883
-    // rocks = 3290, h=4990
-    // (height @ cycle start) - (height @ cycle start +  1407 rocks)
-    // 4990 - 2853 = 2137, this is the remaining bit after all the whole cycles
+    from rock 1883 onwards, it is 999999998117 rocks to 1e12
+    999999998117 divided by cycles of 1705 = 586510262.8252199413
+    that's 586510262 full cycles == 1523167150414 units
+                                 or 999999996710 rocks
+    total height - (rocks in full cycles) - (leading up to 'our' cycle start)
+    1e12         - 999999996710           - 1883 remainder =  1407 rocks
+    ran the program and checked how much the tower grew after 1407 rocks, starting at 1883
+    rocks = 3290, h=4990
+    (height @ cycle start) - (height @ cycle start +  1407 rocks)
+    4990 - 2853 = 2137, this is the remaining bit after all the whole cycles
 
-    // height at cycle start(1883) =  2853
-    // height from full cycles     =  1523167150414
-    // remaining bit (1407 rocks)  =  2137
-    //                                1523167155404    <--- answer
+    height at cycle start(1883) =  2853
+    height from full cycles     =  1523167150414
+    remaining bit (1407 rocks)  =  2137
+                                   1523167155404    <--- answer
+    */
 }
 
 pub fn solve(input: &str, number_of_rocks: usize) -> usize {
