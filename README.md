@@ -16,6 +16,15 @@ Huge props to AOC creator Eric Wastl. Not only has it been a ton of fun, it also
 
 ### Some visualizations
 
+[2022 --- Day 22: --- Monkey Map ---](https://adventofcode.com/2022/day/22)
+>"As you walk, the monkeys explain that the grove is protected by a
+>force field. To pass through the force field, you have to enter a
+>password; doing so involves tracing a specific path on a
+>strangely-shaped board. At least, you're pretty sure that's what you
+>have to do; the elephants aren't exactly fluent in monkey."
+![mp4](advent-of-rust-code/2022/day22/monkey_map.mp4)
+
+
 [2022 --- Day 16: --- Proboscidea Volcanium ---](https://adventofcode.com/2022/day/16)
 >"...this isn't just a cave, it's a volcano!
 >
@@ -26,7 +35,7 @@ Huge props to AOC creator Eric Wastl. Not only has it been a ton of fun, it also
 >"As you begin to make your way deeper underground, you feel the
 >ground rumble for a moment. Sand begins pouring into the cave! If you
 >don't quickly figure out where the sand is going, you could quickly
->become trapped!
+>become trapped!"
 ![mp4](advent-of-rust-code/2022/day14/sandy_claus.mp4)
 
 [2022 --- Day 9: Rope Bridge ---](https://adventofcode.com/2022/day/9)
