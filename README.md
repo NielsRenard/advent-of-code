@@ -16,6 +16,8 @@ Huge props to AOC creator Eric Wastl. Not only has it been a ton of fun, it also
 
 ### Some visualizations
 
+![finished](advent-of-rust-code/2022/finished_2022.png)
+
 [2022 --- Day 22: --- Monkey Map ---](https://adventofcode.com/2022/day/22)
 >"As you walk, the monkeys explain that the grove is protected by a
 >force field. To pass through the force field, you have to enter a
